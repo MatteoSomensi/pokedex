@@ -10,8 +10,7 @@ android {
 
 dependencies {
     implementation(project(":domain"))
-    implementation(libs.retrofit)
-    implementation(libs.retrofit.kotlinx.serialization)
+    implementation(libs.bundles.retrofit)
     implementation(libs.okhttp.logging)
     implementation(libs.kotlinx.serialization.json)
 }

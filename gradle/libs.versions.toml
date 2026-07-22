@@ -1,5 +1,7 @@
 [versions]
 androidGradlePlugin = "9.1.0"
+googleServicesPlugin = "4.4.2"
+firebaseBom = "33.8.0"
 androidxCore = "1.19.0"
 androidxLifecycle = "2.11.0"
 androidxActivity = "1.13.0"
@@ -9,7 +11,7 @@ androidxTestExt = "1.3.0"
 androidxTestRunner = "1.7.0"
 androidxTestEspresso = "3.7.0"
 composeAlpha = "1.11.4"
-coroutines = "1.10.2"
+coroutines = "1.11.0"
 junit = "4.13.2"
 kotlin = "2.3.10"
 ksp = "2.3.10"
@@ -21,14 +23,14 @@ adaptiveNavigation3 = "1.3.0-rc01"
 coil = "2.7.0"
 retrofit = "3.0.0"
 okhttp = "4.12.0"
-kotlinxSerializationJson = "1.9.0"
-detekt = "1.23.6"
-ktlint = "12.1.1"
+kotlinxSerializationJson = "1.11.0"
+detekt = "1.23.8"
+ktlint = "14.2.0"
 
-mockk = "1.14.3"
-robolectric = "4.15.1"
-coroutinesTest = "1.10.2"
-turbine = "1.2.0"
+mockk = "1.14.11"
+robolectric = "4.16.1"
+coroutinesTest = "1.11.0"
+turbine = "1.2.1"
 
 [libraries]
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidxCore" }
@@ -69,6 +71,11 @@ robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "
 coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutinesTest" }
 turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
 
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
+firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
+firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging" }
+firebase-auth = { group = "com.google.firebase", name = "firebase-auth" }
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
@@ -79,3 +86,26 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
+google-services = { id = "com.google.gms.google-services", version.ref = "googleServicesPlugin" }
+
+[bundles]
+compose = [
+    "androidx-compose-ui",
+    "androidx-compose-foundation-layout",
+    "androidx-compose-material3",
+    "androidx-compose-material-iconsCore",
+    "androidx-compose-ui-tooling-preview"
+]
+lifecycle = [
+    "androidx-lifecycle-viewmodel-compose",
+    "androidx-lifecycle-runtime-compose"
+]
+firebase = [
+    "firebase-analytics",
+    "firebase-messaging",
+    "firebase-auth"
+]
+retrofit = [
+    "retrofit",
+    "retrofit-kotlinx-serialization"
+]

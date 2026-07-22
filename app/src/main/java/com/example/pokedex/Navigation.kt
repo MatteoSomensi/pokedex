@@ -28,7 +28,7 @@ fun MainNavigation() {
   NavDisplay(
     backStack = backStack,
     onBack = { backStack.removeLastOrNull() },
-    sceneStrategy = listDetailStrategy,
+    sceneStrategies = listOf(listDetailStrategy),
     entryProvider =
       entryProvider {
         entry<PokemonList>(
