@@ -1,46 +1,15 @@
 plugins {
-  alias(libs.plugins.compose.compiler)
-  alias(libs.plugins.android.library)
-  alias(libs.plugins.hilt.android)
-  alias(libs.plugins.ksp)
+    id("pokedex.android.feature")
 }
 
 android {
-    namespace = "com.example.pokedex.featurepokemonlist"
-    compileSdk = 37
-    defaultConfig {
-        minSdk = 24
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-
-    buildFeatures {
-      compose = true
-    }
+    namespace = "com.example.pokedex.feature.pokemonlist"
 }
 
 dependencies {
-  implementation(libs.hilt.android)
-  ksp(libs.hilt.compiler)
-  
+    implementation(project(":domain"))
     implementation(project(":core"))
-  implementation(project(":domain"))
-  implementation(libs.androidx.lifecycle.runtime.compose)
-  implementation(libs.androidx.lifecycle.viewmodel.compose)
-  implementation(libs.androidx.hilt.navigation.compose)
-  implementation(libs.coil.compose)
-  val composeBom = platform(libs.androidx.compose.bom)
-  implementation(composeBom)
-  implementation(libs.androidx.compose.ui)
-  implementation(libs.androidx.compose.foundation.layout)
-  implementation(libs.androidx.compose.material3)
-  implementation(libs.androidx.compose.material.iconsCore)
-  implementation(libs.androidx.compose.ui.tooling.preview)
-
-}
-
-kotlin {
-    jvmToolchain(17)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.coil.compose)
 }
