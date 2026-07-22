@@ -1,0 +1,13 @@
+com.example.pokedex.core
+string app_name
+string base_stats
+string cd_back
+string cd_pokemon_image
+string error_default
+string height
+string height_format
+string list_detail_placeholder
+string search_hint
+string weight
+string weight_format
+style Theme_Pokedex
