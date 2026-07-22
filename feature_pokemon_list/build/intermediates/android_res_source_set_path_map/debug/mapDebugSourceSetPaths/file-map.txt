@@ -1,8 +1,0 @@
-com.example.pokedex.featurepokemonlist.feature_pokemon_list-pngs-0 /Users/matteosomensi/MatteoProjects/subito/feature_pokemon_list/build/generated/res/pngs/debug
-com.example.pokedex.featurepokemonlist.feature_pokemon_list-updated_navigation_xml-1 /Users/matteosomensi/MatteoProjects/subito/feature_pokemon_list/build/generated/updated_navigation_xml/debug
-com.example.pokedex.featurepokemonlist.feature_pokemon_list-mergeDebugResources-2 /Users/matteosomensi/MatteoProjects/subito/feature_pokemon_list/build/intermediates/incremental/debug/mergeDebugResources/merged.dir
-com.example.pokedex.featurepokemonlist.feature_pokemon_list-mergeDebugResources-3 /Users/matteosomensi/MatteoProjects/subito/feature_pokemon_list/build/intermediates/incremental/debug/mergeDebugResources/stripped.dir
-com.example.pokedex.featurepokemonlist.feature_pokemon_list-debug-4 /Users/matteosomensi/MatteoProjects/subito/feature_pokemon_list/build/intermediates/merged_res/debug/mergeDebugResources
-com.example.pokedex.featurepokemonlist.feature_pokemon_list-debug-5 /Users/matteosomensi/MatteoProjects/subito/feature_pokemon_list/build/intermediates/packaged_res/debug/packageDebugResources
-com.example.pokedex.featurepokemonlist.feature_pokemon_list-debug-6 /Users/matteosomensi/MatteoProjects/subito/feature_pokemon_list/src/debug/res
-com.example.pokedex.featurepokemonlist.feature_pokemon_list-main-7 /Users/matteosomensi/MatteoProjects/subito/feature_pokemon_list/src/main/res

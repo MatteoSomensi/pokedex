@@ -1,2 +1,0 @@
--keep,allowobfuscation,allowshrinking class com.example.pokedex.feature.pokemondetail.PokemonDetailViewModel
--keep,allowobfuscation,allowshrinking class com.example.pokedex.feature.pokemondetail.PokemonDetailViewModel

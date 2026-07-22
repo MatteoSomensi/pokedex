@@ -1,8 +1,0 @@
-com.example.pokedex.domain-pngs-0 /Users/matteosomensi/MatteoProjects/subito/domain/build/generated/res/pngs/debug
-com.example.pokedex.domain-updated_navigation_xml-1 /Users/matteosomensi/MatteoProjects/subito/domain/build/generated/updated_navigation_xml/debug
-com.example.pokedex.domain-mergeDebugResources-2 /Users/matteosomensi/MatteoProjects/subito/domain/build/intermediates/incremental/debug/mergeDebugResources/merged.dir
-com.example.pokedex.domain-mergeDebugResources-3 /Users/matteosomensi/MatteoProjects/subito/domain/build/intermediates/incremental/debug/mergeDebugResources/stripped.dir
-com.example.pokedex.domain-debug-4 /Users/matteosomensi/MatteoProjects/subito/domain/build/intermediates/merged_res/debug/mergeDebugResources
-com.example.pokedex.domain-debug-5 /Users/matteosomensi/MatteoProjects/subito/domain/build/intermediates/packaged_res/debug/packageDebugResources
-com.example.pokedex.domain-debug-6 /Users/matteosomensi/MatteoProjects/subito/domain/src/debug/res
-com.example.pokedex.domain-main-7 /Users/matteosomensi/MatteoProjects/subito/domain/src/main/res
