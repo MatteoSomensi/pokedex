@@ -43,7 +43,7 @@ class PokemonListViewModelTest {
         val fakeList = listOf(
             Pokemon(1, "Bulbasaur", "url", listOf("Grass"))
         )
-        coEvery { repository.getPokemonList() } returns Result.success(fakeList)
+        coEvery { repository.getPokemonList(any(), any()) } returns Result.success(fakeList)
 
         viewModel = PokemonListViewModel(repository)
 
@@ -58,7 +58,7 @@ class PokemonListViewModelTest {
 
     @Test
     fun `quando OnPokemonClicked viene chiamato, viene emesso l'effetto NavigateToDetail`() = runTest(testDispatcher) {
-        coEvery { repository.getPokemonList() } returns Result.success(emptyList())
+        coEvery { repository.getPokemonList(any(), any()) } returns Result.success(emptyList())
         viewModel = PokemonListViewModel(repository)
 
         viewModel.uiEffect.test {
