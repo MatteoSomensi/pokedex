@@ -22,25 +22,25 @@ class AuthViewModel @Inject constructor(
     private val authRepository: AuthRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(AuthState())
-    val uiState: StateFlow<AuthState> = _uiState.asStateFlow()
+    val uiState: StateFlow<AuthState>
+        field = MutableStateFlow(AuthState())
 
     fun onEmailChange(email: String) {
-        _uiState.update { it.copy(email = email) }
+        uiState.update { it.copy(email = email) }
     }
 
     fun onPasswordChange(password: String) {
-        _uiState.update { it.copy(password = password) }
+        uiState.update { it.copy(password = password) }
     }
     
     fun toggleIsLogin() {
-        _uiState.update { it.copy(isLogin = !it.isLogin) }
+        uiState.update { it.copy(isLogin = !it.isLogin) }
     }
 
     fun submitEmailAuth() {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, error = null) }
-            val state = _uiState.value
+            uiState.update { it.copy(isLoading = true, error = null) }
+            val state = uiState.value
             val result = if (state.isLogin) {
                 authRepository.signInWithEmail(state.email, state.password)
             } else {
@@ -48,16 +48,16 @@ class AuthViewModel @Inject constructor(
             }
             
             result.onSuccess {
-                _uiState.update { it.copy(isLoading = false, isSuccess = true) }
+                uiState.update { it.copy(isLoading = false, isSuccess = true) }
             }.onFailure { e ->
-                _uiState.update { it.copy(isLoading = false, error = e.message) }
+                uiState.update { it.copy(isLoading = false, error = e.message) }
             }
         }
     }
 
     fun signInWithGoogle(context: Context, serverClientId: String) {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, error = null) }
+            uiState.update { it.copy(isLoading = true, error = null) }
             try {
                 val credentialManager = CredentialManager.create(context)
                 val googleIdOption = GetGoogleIdOption.Builder()
@@ -77,17 +77,17 @@ class AuthViewModel @Inject constructor(
                     val idToken = credential.idToken
                     val authResult = authRepository.signInWithGoogle(idToken)
                     authResult.onSuccess {
-                        _uiState.update { it.copy(isLoading = false, isSuccess = true) }
+                        uiState.update { it.copy(isLoading = false, isSuccess = true) }
                     }.onFailure { e ->
-                        _uiState.update { it.copy(isLoading = false, error = e.message) }
+                        uiState.update { it.copy(isLoading = false, error = e.message) }
                     }
                 } else {
-                    _uiState.update { it.copy(isLoading = false, error = "Unexpected credential type") }
+                    uiState.update { it.copy(isLoading = false, error = "Unexpected credential type") }
                 }
             } catch (e: GetCredentialException) {
-                _uiState.update { it.copy(isLoading = false, error = e.message) }
+                uiState.update { it.copy(isLoading = false, error = e.message) }
             } catch (e: Exception) {
-                _uiState.update { it.copy(isLoading = false, error = e.message) }
+                uiState.update { it.copy(isLoading = false, error = e.message) }
             }
         }
     }
