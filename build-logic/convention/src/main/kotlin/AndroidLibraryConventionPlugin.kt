@@ -31,6 +31,7 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
             tasks.withType<KotlinCompile>().configureEach {
                 compilerOptions {
                     jvmTarget.set(JvmTarget.JVM_17)
+                    freeCompilerArgs.add("-Xexplicit-backing-fields")
                 }
             }
         }
