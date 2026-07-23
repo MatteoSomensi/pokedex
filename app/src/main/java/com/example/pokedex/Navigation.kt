@@ -18,11 +18,15 @@ import com.example.pokedex.feature.pokemondetail.PokemonDetailScreen
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Alignment
+import com.example.pokedex.feature.auth.AuthRoute
+import com.example.pokedex.feature.auth.profile.ProfileScreen
+import com.google.firebase.auth.FirebaseAuth
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun MainNavigation() {
-  val backStack = rememberNavBackStack(PokemonList)
+  val startDestination = if (FirebaseAuth.getInstance().currentUser != null) PokemonList else Auth
+  val backStack = rememberNavBackStack(startDestination)
   val listDetailStrategy = rememberListDetailSceneStrategy<androidx.navigation3.runtime.NavKey>()
 
   NavDisplay(
@@ -41,7 +45,8 @@ fun MainNavigation() {
             )
         ) {
           PokemonListScreen(
-              onNavigateToDetail = { pokemonId -> backStack.add(PokemonDetail(pokemonId)) }
+              onNavigateToDetail = { pokemonId -> backStack.add(PokemonDetail(pokemonId)) },
+              onNavigateToProfile = { backStack.add(Profile) }
           )
         }
         entry<PokemonDetail>(
@@ -50,6 +55,23 @@ fun MainNavigation() {
             com.example.pokedex.feature.pokemondetail.PokemonDetailScreen(
                 pokemonId = it.id,
                 onBackClick = { backStack.removeLastOrNull() }
+            )
+        }
+        entry<Auth> {
+            AuthRoute(
+                onAuthSuccess = {
+                    backStack.clear()
+                    backStack.add(PokemonList)
+                }
+            )
+        }
+        entry<Profile> {
+            ProfileScreen(
+                onNavigateBack = { backStack.removeLastOrNull() },
+                onNavigateToAuth = {
+                    backStack.clear()
+                    backStack.add(Auth)
+                }
             )
         }
       },

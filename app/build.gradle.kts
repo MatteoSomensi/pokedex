@@ -2,6 +2,7 @@ plugins {
     id("pokedex.android.application")
     id("pokedex.android.compose")
     id("pokedex.android.hilt")
+    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.google.services)
 }
 
@@ -22,6 +23,8 @@ dependencies {
     implementation(project(":data"))
     implementation(project(":feature_pokemon_list"))
     implementation(project(":feature_pokemon_detail"))
+    implementation(project(":feature_auth"))
+    implementation(libs.kotlinx.serialization.json)
 
     implementation(platform(libs.firebase.bom))
     implementation(libs.bundles.firebase)

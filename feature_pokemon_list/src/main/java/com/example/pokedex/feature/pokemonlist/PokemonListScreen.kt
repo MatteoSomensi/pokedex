@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -24,16 +25,18 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.example.pokedex.domain.model.Pokemon
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import com.example.pokedex.core.ui.DevicePreviews
 import com.example.pokedex.core.R
 import com.example.pokedex.theme.LocalDimensions
+import com.example.pokedex.theme.PokedexTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PokemonListScreen(
     onNavigateToDetail: (Int) -> Unit,
+    onNavigateToProfile: () -> Unit,
     viewModel: PokemonListViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -48,7 +51,8 @@ fun PokemonListScreen(
 
     PokemonListScreenContent(
         state = state,
-        onEvent = viewModel::setEvent
+        onEvent = viewModel::setEvent,
+        onNavigateToProfile = onNavigateToProfile
     )
 }
 
@@ -56,15 +60,22 @@ fun PokemonListScreen(
 @Composable
 fun PokemonListScreenContent(
     state: PokemonListState,
-    onEvent: (PokemonListEvent) -> Unit
+    onEvent: (PokemonListEvent) -> Unit,
+    onNavigateToProfile: () -> Unit
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.app_name)) },
+                actions = {
+                    IconButton(onClick = onNavigateToProfile) {
+                        Icon(Icons.Default.Person, contentDescription = "Profile")
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    actionIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             )
         }
@@ -245,21 +256,17 @@ class PokemonPreviewProvider : PreviewParameterProvider<Pokemon> {
     )
 }
 
-@Preview(name = "Light Mode", showBackground = true)
-@Preview(name = "Dark Mode", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES, showBackground = true)
+@DevicePreviews
 @Composable
 fun PokemonCardPreview(@PreviewParameter(PokemonPreviewProvider::class) pokemon: Pokemon) {
-    MaterialTheme {
+    PokedexTheme {
         Surface {
             PokemonCard(pokemon = pokemon, onClick = {})
         }
     }
 }
 
-@Preview(name = "Phone - Light", device = "spec:width=411dp,height=891dp", showBackground = true)
-@Preview(name = "Phone - Dark", device = "spec:width=411dp,height=891dp", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES, showBackground = true)
-@Preview(name = "Tablet - Light", device = "spec:width=1280dp,height=800dp,dpi=240", showBackground = true)
-@Preview(name = "Foldable - Light", device = "spec:width=673dp,height=841dp", showBackground = true)
+@DevicePreviews
 @Composable
 fun PokemonListScreenPreview() {
     val mockState = PokemonListState(
@@ -270,9 +277,9 @@ fun PokemonListScreenPreview() {
             Pokemon(7, "Squirtle", "", listOf("Water"))
         )
     )
-    MaterialTheme {
+    PokedexTheme {
         Surface {
-            PokemonListScreenContent(state = mockState, onEvent = {})
+            PokemonListScreenContent(state = mockState, onEvent = {}, onNavigateToProfile = {})
         }
     }
 }

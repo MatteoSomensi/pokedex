@@ -27,8 +27,9 @@ import coil.compose.AsyncImage
 import com.example.pokedex.core.R
 import com.example.pokedex.domain.model.Pokemon
 import com.example.pokedex.theme.LocalDimensions
-import androidx.compose.ui.tooling.preview.Preview
+import com.example.pokedex.core.ui.DevicePreviews
 import androidx.compose.ui.res.stringResource
+import com.example.pokedex.theme.PokedexTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -235,10 +236,7 @@ fun StatRow(statName: String, statValue: Int) {
 }
 
 
-@Preview(name = "Phone - Light", device = "spec:width=411dp,height=891dp", showBackground = true)
-@Preview(name = "Phone - Dark", device = "spec:width=411dp,height=891dp", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES, showBackground = true)
-@Preview(name = "Tablet - Light", device = "spec:width=1280dp,height=800dp,dpi=240", showBackground = true)
-@Preview(name = "Foldable - Light", device = "spec:width=673dp,height=841dp", showBackground = true)
+@DevicePreviews
 @Composable
 fun PokemonDetailScreenPreview() {
     val mockPokemon = Pokemon(
@@ -250,7 +248,7 @@ fun PokemonDetailScreenPreview() {
         weight = 69,
         stats = mapOf("hp" to 45, "attack" to 49, "defense" to 49, "speed" to 45)
     )
-    MaterialTheme {
+    PokedexTheme {
         Surface {
             PokemonDetailContent(pokemon = mockPokemon)
         }

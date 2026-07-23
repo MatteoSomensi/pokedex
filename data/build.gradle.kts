@@ -13,4 +13,10 @@ dependencies {
     implementation(libs.bundles.retrofit)
     implementation(libs.okhttp.logging)
     implementation(libs.kotlinx.serialization.json)
+
+    // Auth Dependencies
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth)
+    implementation(libs.bundles.credentials)
+    implementation(libs.kotlinx.coroutines.play.services)
 }
