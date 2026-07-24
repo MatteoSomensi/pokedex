@@ -1,13 +1,13 @@
 plugins {
-    id("pokedex.android.library")
-    id("pokedex.android.hilt")
+    id("java-library")
+    id("org.jetbrains.kotlin.jvm")
 }
 
-android {
-    namespace = "com.example.pokedex.domain"
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 dependencies {
-    implementation(project(":core"))
-    implementation(libs.kotlinx.coroutines.test)
+    // Pure Kotlin dependencies here
 }

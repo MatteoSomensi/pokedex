@@ -10,8 +10,14 @@ android {
     namespace = "com.example.pokedex"
     defaultConfig {
         applicationId = "com.example.pokedex"
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = (project.findProperty("VERSION_CODE") as? String)?.toIntOrNull() ?: 1
+        versionName = (project.findProperty("VERSION_NAME") as? String) ?: "1.0"
+        
+        buildConfigField("String", "WEB_CLIENT_ID", "\"${project.findProperty("WEB_CLIENT_ID") ?: ""}\"")
+    }
+    
+    buildFeatures {
+        buildConfig = true
     }
 }
 
@@ -31,6 +37,7 @@ dependencies {
 
     val composeBom = platform(libs.androidx.compose.bom)
     implementation(composeBom)
+    androidTestImplementation(composeBom)
     implementation(libs.bundles.compose)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

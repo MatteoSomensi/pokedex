@@ -11,3 +11,10 @@ plugins {
     alias(libs.plugins.ktlint) apply true
     alias(libs.plugins.android.library) apply false
 }
+
+subprojects {
+    pluginManager.withPlugin("org.jetbrains.kotlin.android") {
+        apply(plugin = "io.gitlab.arturbosch.detekt")
+        apply(plugin = "org.jlleitschuh.gradle.ktlint")
+    }
+}

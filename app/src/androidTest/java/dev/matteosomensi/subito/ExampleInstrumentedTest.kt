@@ -18,6 +18,6 @@ class ExampleInstrumentedTest {
     @Test
     fun useAppContext() {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("dev.matteosomensi.pokedex", appContext.packageName)
+        assertEquals("com.example.pokedex", appContext.packageName)
     }
 }

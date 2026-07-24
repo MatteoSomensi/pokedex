@@ -25,8 +25,7 @@ data class PokemonDetailState(
 
 @HiltViewModel
 class PokemonDetailViewModel @Inject constructor(
-    private val repository: PokemonRepository,
-    savedStateHandle: SavedStateHandle
+    private val repository: PokemonRepository
 ) : ViewModel() {
 
     val uiState: StateFlow<PokemonDetailState>

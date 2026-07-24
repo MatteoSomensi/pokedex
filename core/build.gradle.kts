@@ -1,7 +1,6 @@
 plugins {
     id("pokedex.android.library")
     id("pokedex.android.compose")
-    id("pokedex.android.hilt")
 }
 
 android {

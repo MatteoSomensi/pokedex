@@ -6,8 +6,8 @@
     <string name="base_stats">Statistiche Base</string>
     <string name="height">Altezza</string>
     <string name="weight">Peso</string>
-    <string name="height_format">%1$s m</string>
-    <string name="weight_format">%1$s kg</string>
+    <string name="height_format">%1$.1f m</string>
+    <string name="weight_format">%1$.1f kg</string>
     <string name="search_hint">Cerca Pokémon...</string>
     <string name="cd_back">Indietro</string>
     <string name="cd_pokemon_image">Immagine di %1$s</string>

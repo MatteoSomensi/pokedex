@@ -15,15 +15,13 @@ import com.example.pokedex.theme.PokedexTheme
 
 @Composable
 fun AuthRoute(
+    webClientId: String,
     onAuthSuccess: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: AuthViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
-    
-    val webClientIdRes = context.resources.getIdentifier("default_web_client_id", "string", context.packageName)
-    val webClientId = if (webClientIdRes != 0) context.getString(webClientIdRes) else ""
 
     LaunchedEffect(uiState.isSuccess) {
         if (uiState.isSuccess) {
@@ -55,7 +53,8 @@ internal fun AuthScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(24.dp),
+            .padding(24.dp)
+            .verticalScroll(androidx.compose.foundation.rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {

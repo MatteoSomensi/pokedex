@@ -59,6 +59,7 @@ fun MainNavigation() {
         }
         entry<Auth> {
             AuthRoute(
+                webClientId = com.example.pokedex.BuildConfig.WEB_CLIENT_ID,
                 onAuthSuccess = {
                     backStack.clear()
                     backStack.add(PokemonList)

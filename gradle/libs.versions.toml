@@ -107,8 +107,6 @@ lifecycle = [
     "androidx-lifecycle-runtime-compose"
 ]
 firebase = [
-    "firebase-analytics",
-    "firebase-messaging",
     "firebase-auth"
 ]
 retrofit = [

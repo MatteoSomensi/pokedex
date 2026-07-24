@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 abstract class BaseViewModel<S : UiState, E : UiEvent, F : UiEffect> : ViewModel() {
@@ -30,8 +31,8 @@ abstract class BaseViewModel<S : UiState, E : UiEvent, F : UiEffect> : ViewModel
     abstract fun handleEvent(event: E)
 
     protected fun setState(reduce: S.() -> S) {
-        val newState = uiState.value.reduce()
-        uiState.value = newState
+        val mutableState = uiState as MutableStateFlow<S>
+        mutableState.update { it.reduce() }
     }
 
     protected fun setEffect(builder: () -> F) {

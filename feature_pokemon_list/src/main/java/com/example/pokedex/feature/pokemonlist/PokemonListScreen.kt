@@ -99,7 +99,7 @@ fun PokemonListScreenContent(
                 shape = MaterialTheme.shapes.medium
             )
 
-            val types = listOf("Grass", "Fire", "Water", "Bug", "Normal", "Poison", "Electric", "Ground", "Fairy", "Fighting", "Psychic", "Rock", "Ghost", "Ice", "Dragon", "Flying")
+            val types = listOf("Grass", "Fire", "Water", "Bug", "Normal", "Poison", "Electric", "Ground", "Fairy", "Fighting", "Psychic", "Rock", "Ghost", "Ice", "Dragon", "Flying", "Dark", "Steel")
             
             androidx.compose.foundation.lazy.LazyRow(
                 contentPadding = PaddingValues(horizontal = dimensions.paddingMedium),

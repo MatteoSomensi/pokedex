@@ -47,8 +47,22 @@ fun PokedexTheme(
       else -> LightColorScheme
     }
 
+  val configuration = androidx.compose.ui.platform.LocalConfiguration.current
+  val dimensions = if (configuration.screenWidthDp < 600) {
+      Dimensions()
+  } else {
+      Dimensions(
+          paddingSmall = 12.androidx.compose.ui.unit.dp,
+          paddingMedium = 24.androidx.compose.ui.unit.dp,
+          paddingLarge = 36.androidx.compose.ui.unit.dp,
+          paddingExtraLarge = 48.androidx.compose.ui.unit.dp,
+          imageSizeList = 140.androidx.compose.ui.unit.dp,
+          imageSizeDetail = 300.androidx.compose.ui.unit.dp
+      )
+  }
+
   androidx.compose.runtime.CompositionLocalProvider(
-      LocalDimensions provides Dimensions()
+      LocalDimensions provides dimensions
   ) {
       MaterialTheme(colorScheme = colorScheme, typography = Typography, content = content)
   }

@@ -19,7 +19,7 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
 
                 defaultConfig {
                     minSdk = 24
-                    targetSdk = 34
+                    targetSdk = 36
                     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
                 }
 
@@ -32,7 +32,6 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
             tasks.withType<KotlinCompile>().configureEach {
                 compilerOptions {
                     jvmTarget.set(JvmTarget.JVM_17)
-                    freeCompilerArgs.add("-Xexplicit-backing-fields")
                 }
             }
         }

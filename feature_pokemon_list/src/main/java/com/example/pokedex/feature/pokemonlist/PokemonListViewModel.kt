@@ -88,8 +88,13 @@ class PokemonListViewModel @Inject constructor(
                     }
                     applyFilters()
                 },
-                onFailure = {
-                    setState { copy(isFetchingNextPage = false) }
+                onFailure = { error ->
+                    setState { 
+                        copy(
+                            isFetchingNextPage = false,
+                            errorMessage = error.message ?: "Errore durante il caricamento"
+                        ) 
+                    }
                 }
             )
         }
