@@ -58,8 +58,14 @@ fun MainNavigation() {
             )
         }
         entry<Auth> {
+            val context = androidx.compose.ui.platform.LocalContext.current
+            val webClientId = androidx.compose.runtime.remember(context) {
+                val resId = context.resources.getIdentifier("default_web_client_id", "string", context.packageName)
+                val fromRes = if (resId != 0) context.getString(resId) else ""
+                fromRes.ifBlank { com.example.pokedex.BuildConfig.WEB_CLIENT_ID }
+            }
             AuthRoute(
-                webClientId = com.example.pokedex.BuildConfig.WEB_CLIENT_ID,
+                webClientId = webClientId,
                 onAuthSuccess = {
                     backStack.clear()
                     backStack.add(PokemonList)
