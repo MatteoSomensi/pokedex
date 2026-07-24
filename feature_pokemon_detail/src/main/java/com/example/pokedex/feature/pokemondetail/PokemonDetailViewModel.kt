@@ -20,7 +20,7 @@ import javax.inject.Inject
 data class PokemonDetailState(
     val isLoading: Boolean = false,
     val pokemon: Pokemon? = null,
-    val errorMessage: String? = null
+    val errorMessage: Int? = null
 )
 
 @HiltViewModel
@@ -46,7 +46,7 @@ class PokemonDetailViewModel @Inject constructor(
                 uiState.update {
                     it.copy(
                         isLoading = false,
-                        errorMessage = result.exceptionOrNull()?.message ?: "Errore sconosciuto"
+                        errorMessage = com.example.pokedex.core.R.string.error_default
                     )
                 }
             }

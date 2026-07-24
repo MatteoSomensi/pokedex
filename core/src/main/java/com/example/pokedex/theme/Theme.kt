@@ -10,6 +10,7 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.unit.dp
 
 private val DarkColorScheme = darkColorScheme(primary = Purple80, secondary = PurpleGrey80, tertiary = Pink80)
 
@@ -52,12 +53,12 @@ fun PokedexTheme(
       Dimensions()
   } else {
       Dimensions(
-          paddingSmall = 12.androidx.compose.ui.unit.dp,
-          paddingMedium = 24.androidx.compose.ui.unit.dp,
-          paddingLarge = 36.androidx.compose.ui.unit.dp,
-          paddingExtraLarge = 48.androidx.compose.ui.unit.dp,
-          imageSizeList = 140.androidx.compose.ui.unit.dp,
-          imageSizeDetail = 300.androidx.compose.ui.unit.dp
+          paddingSmall = 12.dp,
+          paddingMedium = 24.dp,
+          paddingLarge = 36.dp,
+          paddingExtraLarge = 48.dp,
+          imageSizeList = 140.dp,
+          imageSizeDetail = 300.dp
       )
   }
 

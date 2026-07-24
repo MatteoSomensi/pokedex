@@ -50,7 +50,7 @@ class AuthViewModel @Inject constructor(
             result.onSuccess {
                 uiState.update { it.copy(isLoading = false, isSuccess = true) }
             }.onFailure { e ->
-                uiState.update { it.copy(isLoading = false, error = e.message) }
+                uiState.update { it.copy(isLoading = false, error = com.example.pokedex.core.R.string.error_auth_failed) }
             }
         }
     }
@@ -79,15 +79,15 @@ class AuthViewModel @Inject constructor(
                     authResult.onSuccess {
                         uiState.update { it.copy(isLoading = false, isSuccess = true) }
                     }.onFailure { e ->
-                        uiState.update { it.copy(isLoading = false, error = e.message) }
+                        uiState.update { it.copy(isLoading = false, error = com.example.pokedex.core.R.string.error_auth_failed) }
                     }
                 } else {
-                    uiState.update { it.copy(isLoading = false, error = "Unexpected credential type") }
+                    uiState.update { it.copy(isLoading = false, error = com.example.pokedex.core.R.string.error_auth_failed) }
                 }
             } catch (e: GetCredentialException) {
-                uiState.update { it.copy(isLoading = false, error = e.message) }
+                uiState.update { it.copy(isLoading = false, error = com.example.pokedex.core.R.string.error_auth_failed) }
             } catch (e: Exception) {
-                uiState.update { it.copy(isLoading = false, error = e.message) }
+                uiState.update { it.copy(isLoading = false, error = com.example.pokedex.core.R.string.error_auth_failed) }
             }
         }
     }

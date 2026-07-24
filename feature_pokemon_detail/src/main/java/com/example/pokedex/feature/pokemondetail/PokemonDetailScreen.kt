@@ -71,7 +71,7 @@ fun PokemonDetailScreen(
                 }
                 state.errorMessage != null -> {
                     Text(
-                        text = state.errorMessage ?: stringResource(R.string.error_default),
+                        text = stringResource(id = state.errorMessage!!),
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }

@@ -109,7 +109,7 @@ fun PokemonListScreenContent(
                     FilterChip(
                         selected = state.selectedType == null,
                         onClick = { onEvent(PokemonListEvent.OnTypeFilterSelected(null)) },
-                        label = { Text("All") }
+                        label = { Text(stringResource(R.string.filter_all)) }
                     )
                 }
                 items(types.size) { index ->
@@ -133,7 +133,7 @@ fun PokemonListScreenContent(
                 }
                 state.errorMessage != null -> {
                     Text(
-                        text = state.errorMessage ?: stringResource(R.string.error_default),
+                        text = stringResource(id = state.errorMessage!!),
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }

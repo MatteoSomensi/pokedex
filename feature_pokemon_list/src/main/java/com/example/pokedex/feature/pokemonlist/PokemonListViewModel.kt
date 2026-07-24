@@ -61,7 +61,7 @@ class PokemonListViewModel @Inject constructor(
                     applyFilters()
                 },
                 onFailure = { error ->
-                    setState { copy(isLoading = false, errorMessage = error.message ?: "Errore di rete") }
+                    setState { copy(isLoading = false, errorMessage = com.example.pokedex.core.R.string.error_default) }
                 }
             )
         }
@@ -92,7 +92,7 @@ class PokemonListViewModel @Inject constructor(
                     setState { 
                         copy(
                             isFetchingNextPage = false,
-                            errorMessage = error.message ?: "Errore durante il caricamento"
+                            errorMessage = com.example.pokedex.core.R.string.error_default
                         ) 
                     }
                 }

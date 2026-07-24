@@ -9,6 +9,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material3.*
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.pokedex.core.ui.DevicePreviews
 import com.example.pokedex.theme.PokedexTheme
@@ -50,6 +54,9 @@ internal fun AuthScreen(
     onGoogleSignInClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var passwordVisible by remember { mutableStateOf(false) }
+    val isFormValid = uiState.email.isNotBlank() && android.util.Patterns.EMAIL_ADDRESS.matcher(uiState.email).matches() && uiState.password.isNotBlank()
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -59,7 +66,7 @@ internal fun AuthScreen(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = if (uiState.isLogin) "Sign In" else "Sign Up",
+            text = if (uiState.isLogin) stringResource(com.example.pokedex.core.R.string.auth_sign_in) else stringResource(com.example.pokedex.core.R.string.auth_sign_up),
             style = MaterialTheme.typography.headlineMedium
         )
 
@@ -68,9 +75,13 @@ internal fun AuthScreen(
         OutlinedTextField(
             value = uiState.email,
             onValueChange = onEmailChange,
-            label = { Text("Email") },
+            label = { Text(stringResource(com.example.pokedex.core.R.string.auth_email)) },
             modifier = Modifier.fillMaxWidth(),
-            singleLine = true
+            singleLine = true,
+            keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                keyboardType = androidx.compose.ui.text.input.KeyboardType.Email,
+                imeAction = androidx.compose.ui.text.input.ImeAction.Next
+            )
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -78,10 +89,32 @@ internal fun AuthScreen(
         OutlinedTextField(
             value = uiState.password,
             onValueChange = onPasswordChange,
-            label = { Text("Password") },
+            label = { Text(stringResource(com.example.pokedex.core.R.string.auth_password)) },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
-            visualTransformation = PasswordVisualTransformation()
+            visualTransformation = if (passwordVisible) androidx.compose.ui.text.input.VisualTransformation.None else PasswordVisualTransformation(),
+            keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                keyboardType = androidx.compose.ui.text.input.KeyboardType.Password,
+                imeAction = androidx.compose.ui.text.input.ImeAction.Done
+            ),
+            keyboardActions = androidx.compose.foundation.text.KeyboardActions(
+                onDone = { if (isFormValid) onSubmit() }
+            ),
+            trailingIcon = {
+                val image = if (passwordVisible) {
+                    Icons.Filled.Lock
+                } else {
+                    Icons.Filled.Lock
+                }
+                
+                // Note: using Lock icon as fallback since Visibility might need material-icons-extended
+                // The label will change regardless to assist screen readers.
+                val description = if (passwordVisible) stringResource(com.example.pokedex.core.R.string.auth_hide_password) else stringResource(com.example.pokedex.core.R.string.auth_show_password)
+
+                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                    Icon(imageVector = image, contentDescription = description)
+                }
+            }
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -91,16 +124,17 @@ internal fun AuthScreen(
         } else {
             Button(
                 onClick = onSubmit,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                enabled = isFormValid
             ) {
-                Text(if (uiState.isLogin) "Sign In" else "Sign Up")
+                Text(if (uiState.isLogin) stringResource(com.example.pokedex.core.R.string.auth_sign_in) else stringResource(com.example.pokedex.core.R.string.auth_sign_up))
             }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
         
         TextButton(onClick = onToggleLogin) {
-            Text(if (uiState.isLogin) "Don't have an account? Sign Up" else "Already have an account? Sign In")
+            Text(if (uiState.isLogin) stringResource(com.example.pokedex.core.R.string.auth_toggle_to_sign_up) else stringResource(com.example.pokedex.core.R.string.auth_toggle_to_sign_in))
         }
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -113,13 +147,13 @@ internal fun AuthScreen(
             onClick = onGoogleSignInClick,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Sign in with Google")
+            Text(stringResource(com.example.pokedex.core.R.string.auth_google_sign_in))
         }
 
         if (uiState.error != null) {
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = uiState.error,
+                text = stringResource(id = uiState.error),
                 color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.bodyMedium
             )
