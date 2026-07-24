@@ -25,6 +25,8 @@ class PokemonListViewModel @Inject constructor(
         setEvent(PokemonListEvent.LoadPokemon)
     }
 
+    private var searchJob: kotlinx.coroutines.Job? = null
+
     override fun handleEvent(event: PokemonListEvent) {
         when (event) {
             is PokemonListEvent.LoadPokemon -> loadPokemon()
@@ -34,7 +36,11 @@ class PokemonListViewModel @Inject constructor(
             }
             is PokemonListEvent.OnSearchQueryChanged -> {
                 setState { copy(searchQuery = event.query) }
-                applyFilters()
+                searchJob?.cancel()
+                searchJob = viewModelScope.launch {
+                    delay(300)
+                    loadPokemon()
+                }
             }
             is PokemonListEvent.OnTypeFilterSelected -> {
                 setState { copy(selectedType = event.type) }
@@ -44,18 +50,24 @@ class PokemonListViewModel @Inject constructor(
     }
 
     private fun loadPokemon() {
-        if (uiState.value.isLoading) return
+        val query = uiState.value.searchQuery
         viewModelScope.launch {
             setState { copy(isLoading = true, errorMessage = null, offset = 0) }
             
-            repository.getPokemonList(limit = 20, offset = 0).fold(
+            val fetcher = if (query.isNotBlank()) {
+                repository.searchPokemon(query, limit = 20, offset = 0)
+            } else {
+                repository.getPokemonList(limit = 20, offset = 0)
+            }
+            
+            fetcher.fold(
                 onSuccess = { list ->
                     setState { 
                         copy(
                             isLoading = false, 
                             pokemonList = list, 
-                            offset = 20,
-                            isEndReached = list.isEmpty()
+                            offset = list.size,
+                            isEndReached = list.isEmpty() || list.size < 20
                         ) 
                     }
                     applyFilters()
@@ -76,14 +88,21 @@ class PokemonListViewModel @Inject constructor(
         viewModelScope.launch {
             setState { copy(isFetchingNextPage = true) }
 
-            repository.getPokemonList(limit = 20, offset = currentState.offset).fold(
+            val query = currentState.searchQuery
+            val fetcher = if (query.isNotBlank()) {
+                repository.searchPokemon(query, limit = 20, offset = currentState.offset)
+            } else {
+                repository.getPokemonList(limit = 20, offset = currentState.offset)
+            }
+
+            fetcher.fold(
                 onSuccess = { list ->
                     setState {
                         copy(
                             isFetchingNextPage = false,
                             pokemonList = currentState.pokemonList + list,
                             offset = currentState.offset + list.size,
-                            isEndReached = list.isEmpty()
+                            isEndReached = list.isEmpty() || list.size < 20
                         )
                     }
                     applyFilters()
