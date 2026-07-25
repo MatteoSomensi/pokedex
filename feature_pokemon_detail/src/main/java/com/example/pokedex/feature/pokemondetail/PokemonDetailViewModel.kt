@@ -1,5 +1,8 @@
 package com.example.pokedex.feature.pokemondetail
 
+import com.example.pokedex.core.R
+import com.example.pokedex.core.util.UiText
+
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -20,7 +23,7 @@ import javax.inject.Inject
 data class PokemonDetailState(
     val isLoading: Boolean = false,
     val pokemon: Pokemon? = null,
-    val errorMessage: Int? = null
+    val errorMessage: UiText? = null
 )
 
 @HiltViewModel
@@ -46,7 +49,7 @@ class PokemonDetailViewModel @Inject constructor(
                 uiState.update {
                     it.copy(
                         isLoading = false,
-                        errorMessage = com.example.pokedex.core.R.string.error_default
+                        errorMessage = UiText.StringResource(R.string.error_default)
                     )
                 }
             }

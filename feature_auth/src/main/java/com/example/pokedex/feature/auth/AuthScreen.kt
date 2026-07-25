@@ -1,5 +1,7 @@
 package com.example.pokedex.feature.auth
 
+import com.example.pokedex.core.R
+
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -66,7 +68,7 @@ internal fun AuthScreen(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = if (uiState.isLogin) stringResource(com.example.pokedex.core.R.string.auth_sign_in) else stringResource(com.example.pokedex.core.R.string.auth_sign_up),
+            text = if (uiState.isLogin) stringResource(R.string.auth_sign_in) else stringResource(R.string.auth_sign_up),
             style = MaterialTheme.typography.headlineMedium
         )
 
@@ -75,7 +77,7 @@ internal fun AuthScreen(
         OutlinedTextField(
             value = uiState.email,
             onValueChange = onEmailChange,
-            label = { Text(stringResource(com.example.pokedex.core.R.string.auth_email)) },
+            label = { Text(stringResource(R.string.auth_email)) },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
             keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
@@ -89,7 +91,7 @@ internal fun AuthScreen(
         OutlinedTextField(
             value = uiState.password,
             onValueChange = onPasswordChange,
-            label = { Text(stringResource(com.example.pokedex.core.R.string.auth_password)) },
+            label = { Text(stringResource(R.string.auth_password)) },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
             visualTransformation = if (passwordVisible) androidx.compose.ui.text.input.VisualTransformation.None else PasswordVisualTransformation(),
@@ -109,7 +111,7 @@ internal fun AuthScreen(
                 
                 // Note: using Lock icon as fallback since Visibility might need material-icons-extended
                 // The label will change regardless to assist screen readers.
-                val description = if (passwordVisible) stringResource(com.example.pokedex.core.R.string.auth_hide_password) else stringResource(com.example.pokedex.core.R.string.auth_show_password)
+                val description = if (passwordVisible) stringResource(R.string.auth_hide_password) else stringResource(R.string.auth_show_password)
 
                 IconButton(onClick = { passwordVisible = !passwordVisible }) {
                     Icon(imageVector = image, contentDescription = description)
@@ -127,14 +129,14 @@ internal fun AuthScreen(
                 modifier = Modifier.fillMaxWidth(),
                 enabled = isFormValid
             ) {
-                Text(if (uiState.isLogin) stringResource(com.example.pokedex.core.R.string.auth_sign_in) else stringResource(com.example.pokedex.core.R.string.auth_sign_up))
+                Text(if (uiState.isLogin) stringResource(R.string.auth_sign_in) else stringResource(R.string.auth_sign_up))
             }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
         
         TextButton(onClick = onToggleLogin) {
-            Text(if (uiState.isLogin) stringResource(com.example.pokedex.core.R.string.auth_toggle_to_sign_up) else stringResource(com.example.pokedex.core.R.string.auth_toggle_to_sign_in))
+            Text(if (uiState.isLogin) stringResource(R.string.auth_toggle_to_sign_up) else stringResource(R.string.auth_toggle_to_sign_in))
         }
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -147,13 +149,13 @@ internal fun AuthScreen(
             onClick = onGoogleSignInClick,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(stringResource(com.example.pokedex.core.R.string.auth_google_sign_in))
+            Text(stringResource(R.string.auth_google_sign_in))
         }
 
         if (uiState.error != null) {
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = stringResource(id = uiState.error),
+                text = uiState.error.asString(),
                 color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.bodyMedium
             )

@@ -1,5 +1,7 @@
 package com.example.pokedex.feature.pokemonlist
 
+import com.example.pokedex.core.util.UiText
+
 import com.example.pokedex.core.mvi.UiEffect
 import com.example.pokedex.core.mvi.UiEvent
 import com.example.pokedex.core.mvi.UiState
@@ -19,7 +21,7 @@ data class PokemonListState(
     val filteredPokemonList: List<Pokemon> = emptyList(),
     val searchQuery: String = "",
     val selectedType: String? = null,
-    val errorMessage: Int? = null
+    val errorMessage: UiText? = null
 ) : UiState
 
 sealed interface PokemonListEvent : UiEvent {

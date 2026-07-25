@@ -1,5 +1,8 @@
 package com.example.pokedex.feature.auth
 
+import com.example.pokedex.core.R
+import com.example.pokedex.core.util.UiText
+
 import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.exceptions.GetCredentialException
@@ -50,7 +53,7 @@ class AuthViewModel @Inject constructor(
             result.onSuccess {
                 uiState.update { it.copy(isLoading = false, isSuccess = true) }
             }.onFailure { e ->
-                uiState.update { it.copy(isLoading = false, error = com.example.pokedex.core.R.string.error_auth_failed) }
+                uiState.update { it.copy(isLoading = false, error = UiText.StringResource(R.string.error_auth_failed)) }
             }
         }
     }
@@ -79,15 +82,15 @@ class AuthViewModel @Inject constructor(
                     authResult.onSuccess {
                         uiState.update { it.copy(isLoading = false, isSuccess = true) }
                     }.onFailure { e ->
-                        uiState.update { it.copy(isLoading = false, error = com.example.pokedex.core.R.string.error_auth_failed) }
+                        uiState.update { it.copy(isLoading = false, error = UiText.StringResource(R.string.error_auth_failed)) }
                     }
                 } else {
-                    uiState.update { it.copy(isLoading = false, error = com.example.pokedex.core.R.string.error_auth_failed) }
+                    uiState.update { it.copy(isLoading = false, error = UiText.StringResource(R.string.error_auth_failed)) }
                 }
             } catch (e: GetCredentialException) {
-                uiState.update { it.copy(isLoading = false, error = com.example.pokedex.core.R.string.error_auth_failed) }
+                uiState.update { it.copy(isLoading = false, error = UiText.StringResource(R.string.error_auth_failed)) }
             } catch (e: Exception) {
-                uiState.update { it.copy(isLoading = false, error = com.example.pokedex.core.R.string.error_auth_failed) }
+                uiState.update { it.copy(isLoading = false, error = UiText.StringResource(R.string.error_auth_failed)) }
             }
         }
     }

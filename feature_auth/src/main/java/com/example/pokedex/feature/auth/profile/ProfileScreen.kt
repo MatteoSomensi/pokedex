@@ -1,5 +1,7 @@
 package com.example.pokedex.feature.auth.profile
 
+import com.example.pokedex.core.R
+
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -48,10 +50,10 @@ fun ProfileScreenContent(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(androidx.compose.ui.res.stringResource(com.example.pokedex.core.R.string.profile_title)) },
+                title = { Text(androidx.compose.ui.res.stringResource(R.string.profile_title)) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = androidx.compose.ui.res.stringResource(com.example.pokedex.core.R.string.cd_back))
+                        Icon(Icons.Default.ArrowBack, contentDescription = androidx.compose.ui.res.stringResource(R.string.cd_back))
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -78,7 +80,7 @@ fun ProfileScreenContent(
             ) {
                 Icon(
                     imageVector = Icons.Default.Person,
-                    contentDescription = androidx.compose.ui.res.stringResource(com.example.pokedex.core.R.string.profile_title),
+                    contentDescription = androidx.compose.ui.res.stringResource(R.string.profile_title),
                     modifier = Modifier.padding(24.dp),
                     tint = MaterialTheme.colorScheme.onSecondaryContainer
                 )
@@ -104,7 +106,7 @@ fun ProfileScreenContent(
                 )
             } else {
                 Text(
-                    text = androidx.compose.ui.res.stringResource(com.example.pokedex.core.R.string.profile_not_logged_in),
+                    text = androidx.compose.ui.res.stringResource(R.string.profile_not_logged_in),
                     style = MaterialTheme.typography.headlineSmall,
                     color = MaterialTheme.colorScheme.error
                 )
@@ -123,7 +125,7 @@ fun ProfileScreenContent(
                     contentColor = MaterialTheme.colorScheme.onError
                 )
             ) {
-                Text(androidx.compose.ui.res.stringResource(com.example.pokedex.core.R.string.profile_logout), modifier = Modifier.padding(vertical = 8.dp))
+                Text(androidx.compose.ui.res.stringResource(R.string.profile_logout), modifier = Modifier.padding(vertical = 8.dp))
             }
         }
     }

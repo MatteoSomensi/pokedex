@@ -1,10 +1,12 @@
 package com.example.pokedex.feature.auth
 
+import com.example.pokedex.core.util.UiText
+
 data class AuthState(
     val email: String = "",
     val password: String = "",
     val isLogin: Boolean = true,
     val isLoading: Boolean = false,
     val isSuccess: Boolean = false,
-    val error: Int? = null
+    val error: UiText? = null
 )

@@ -1,5 +1,8 @@
 package com.example.pokedex.feature.pokemonlist
 
+import com.example.pokedex.core.R
+import com.example.pokedex.core.util.UiText
+
 import androidx.lifecycle.viewModelScope
 import com.example.pokedex.core.mvi.BaseViewModel
 import com.example.pokedex.domain.model.Pokemon
@@ -73,7 +76,7 @@ class PokemonListViewModel @Inject constructor(
                     applyFilters()
                 },
                 onFailure = { error ->
-                    setState { copy(isLoading = false, errorMessage = com.example.pokedex.core.R.string.error_default) }
+                    setState { copy(isLoading = false, errorMessage = UiText.StringResource(R.string.error_default)) }
                 }
             )
         }
@@ -111,7 +114,7 @@ class PokemonListViewModel @Inject constructor(
                     setState { 
                         copy(
                             isFetchingNextPage = false,
-                            errorMessage = com.example.pokedex.core.R.string.error_default
+                            errorMessage = UiText.StringResource(R.string.error_default)
                         ) 
                     }
                 }

@@ -133,7 +133,7 @@ fun PokemonListScreenContent(
                 }
                 state.errorMessage != null -> {
                     Text(
-                        text = stringResource(id = state.errorMessage!!),
+                        text = state.errorMessage!!.asString(),
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }
