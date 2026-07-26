@@ -6,6 +6,7 @@ import com.example.pokedex.data.local.entity.PokemonEntity
 import com.example.pokedex.data.local.entity.TypeEntity
 import com.example.pokedex.data.remote.PokeApiService
 import com.example.pokedex.data.remote.model.PokemonResultItem
+import com.example.pokedex.data.remote.model.PokemonDetailResponse
 import com.example.pokedex.domain.model.Pokemon
 import com.example.pokedex.domain.repository.PokemonRepository
 import kotlinx.coroutines.async
@@ -33,11 +34,13 @@ class PokemonRepositoryImpl @Inject constructor(
     private var cachedTypes: List<String>? = null
     private val listMutex = Mutex()
     private val typesMutex = Mutex()
-    private var isEndReached = false
+    @Volatile private var isEndReached = false
 
     override suspend fun getPokemonList(limit: Int, offset: Int): Result<List<Pokemon>> =
         runCatching {
             // 1. Try to load from local database first
+            if (offset == 0) isEndReached = false // Reset pagination on refresh
+            
             val localList = dao.getPokemonList(limit, offset)
             if (localList.size == limit || (localList.isNotEmpty() && isEndReached)) {
                 return@runCatching localList.map { it.toDomain() }
@@ -55,16 +58,7 @@ class PokemonRepositoryImpl @Inject constructor(
                 val partialResults = coroutineScope {
                     chunk.map { resultItem ->
                         async {
-                            val detail = api.getPokemonDetail(resultItem.name)
-                            Pokemon(
-                                id = detail.id,
-                                name = detail.name,
-                                imageUrl = "${Constants.POKE_IMAGE_BASE_URL}${detail.id}.png",
-                                types = detail.types.map { it.type.name.replaceFirstChar { char -> char.uppercase() } },
-                                height = detail.height,
-                                weight = detail.weight,
-                                stats = detail.stats.associate { it.stat.name to it.baseStat }
-                            )
+                            api.getPokemonDetail(resultItem.name).toDomain()
                         }
                     }.awaitAll()
                 }
@@ -84,15 +78,7 @@ class PokemonRepositoryImpl @Inject constructor(
         }
 
         val detail = api.getPokemonDetail(id.toString())
-        val pokemon = Pokemon(
-            id = detail.id,
-            name = detail.name,
-            imageUrl = "${Constants.POKE_IMAGE_BASE_URL}${detail.id}.png",
-            types = detail.types.map { it.type.name.replaceFirstChar { char -> char.uppercase() } },
-            height = detail.height,
-            weight = detail.weight,
-            stats = detail.stats.associate { it.stat.name to it.baseStat }
-        )
+        val pokemon = detail.toDomain()
         dao.insert(PokemonEntity.fromDomain(pokemon))
         pokemon
     }.onFailure { if (it is kotlinx.coroutines.CancellationException) throw it }
@@ -150,16 +136,7 @@ class PokemonRepositoryImpl @Inject constructor(
                         if (localDetail != null) {
                             localDetail.toDomain()
                         } else {
-                            val detail = api.getPokemonDetail(resultItem.name)
-                            Pokemon(
-                                id = detail.id,
-                                name = detail.name,
-                                imageUrl = "${Constants.POKE_IMAGE_BASE_URL}${detail.id}.png",
-                                types = detail.types.map { it.type.name.replaceFirstChar { char -> char.uppercase() } },
-                                height = detail.height,
-                                weight = detail.weight,
-                                stats = detail.stats.associate { it.stat.name to it.baseStat }
-                            )
+                            api.getPokemonDetail(resultItem.name).toDomain()
                         }
                     }
                 }.awaitAll()
@@ -171,7 +148,19 @@ class PokemonRepositoryImpl @Inject constructor(
         chunkResults
     }.onFailure { if (it is kotlinx.coroutines.CancellationException) throw it }
 
+    private fun PokemonDetailResponse.toDomain(): Pokemon {
+        return Pokemon(
+            id = id,
+            name = name,
+            imageUrl = "${Constants.POKE_IMAGE_BASE_URL}${id}.png",
+            types = types.map { it.type.name.replaceFirstChar { char -> char.uppercase() } },
+            height = height,
+            weight = weight,
+            stats = stats.associate { it.stat.name to it.baseStat }
+        )
+    }
+
     companion object {
-        private const val MAX_POKEMON_LIMIT = 10000
+        private const val MAX_POKEMON_LIMIT = 1500
     }
 }
