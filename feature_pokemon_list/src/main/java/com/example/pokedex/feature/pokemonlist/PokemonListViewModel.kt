@@ -62,6 +62,10 @@ class PokemonListViewModel @Inject constructor(
                 setState { copy(selectedType = event.type) }
                 applyFilters()
             }
+            is PokemonListEvent.OnFavoritesFilterToggled -> {
+                setState { copy(showFavoritesOnly = event.showFavoritesOnly) }
+                applyFilters()
+            }
         }
     }
 
@@ -167,7 +171,11 @@ class PokemonListViewModel @Inject constructor(
                     pokemon.types.any { it.equals(other = selectedType, ignoreCase = true) }
                 } else true
 
-                matchesQuery && matchesType
+                val matchesFavorites = if (showFavoritesOnly) {
+                    pokemon.isFavorite
+                } else true
+
+                matchesQuery && matchesType && matchesFavorites
             }
             copy(filteredPokemonList = filtered)
         }

@@ -147,8 +147,18 @@ fun PokemonListScreenContent(
             ) {
                 item {
                     FilterChip(
-                        selected = state.selectedType == null,
-                        onClick = { onEvent(PokemonListEvent.OnTypeFilterSelected(type = null)) },
+                        selected = state.showFavoritesOnly,
+                        onClick = { onEvent(PokemonListEvent.OnFavoritesFilterToggled(showFavoritesOnly = !state.showFavoritesOnly)) },
+                        label = { Text(text = stringResource(id = R.string.filter_favorites)) }
+                    )
+                }
+                item {
+                    FilterChip(
+                        selected = state.selectedType == null && !state.showFavoritesOnly,
+                        onClick = {
+                            if (state.showFavoritesOnly) onEvent(PokemonListEvent.OnFavoritesFilterToggled(showFavoritesOnly = false))
+                            onEvent(PokemonListEvent.OnTypeFilterSelected(type = null))
+                        },
                         label = { Text(text = stringResource(id = R.string.filter_all)) }
                     )
                 }
@@ -317,9 +327,9 @@ fun PokemonCard(pokemon: Pokemon, onClick: () -> Unit) {
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.error,
                     modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(dimensions.paddingSmall)
-                        .size(24.dp)
+                        .align(alignment = Alignment.TopEnd)
+                        .padding(all = dimensions.paddingSmall)
+                        .size(size = 24.dp)
                 )
             }
         }

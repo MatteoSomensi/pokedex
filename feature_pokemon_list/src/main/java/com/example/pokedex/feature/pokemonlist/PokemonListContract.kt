@@ -21,6 +21,7 @@ data class PokemonListState(
     val filteredPokemonList: List<Pokemon> = emptyList(),
     val searchQuery: String = "",
     val selectedType: String? = null,
+    val showFavoritesOnly: Boolean = false,
     val availableTypes: List<String> = emptyList(),
     val errorMessage: UiText? = null,
     val nextPageError: UiText? = null
@@ -33,6 +34,7 @@ sealed interface PokemonListEvent : UiEvent {
     data class OnPokemonClicked(val pokemonId: Int) : PokemonListEvent
     data class OnSearchQueryChanged(val query: String) : PokemonListEvent
     data class OnTypeFilterSelected(val type: String?) : PokemonListEvent
+    data class OnFavoritesFilterToggled(val showFavoritesOnly: Boolean) : PokemonListEvent
 }
 
 sealed interface PokemonListEffect : UiEffect {

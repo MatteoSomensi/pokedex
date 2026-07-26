@@ -37,7 +37,10 @@ class PokemonDetailViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            val result = repository.toggleFavoriteStatus(currentPokemon.id, newFavoriteStatus)
+            val result = repository.toggleFavoriteStatus(
+                id = currentPokemon.id,
+                isFavorite = newFavoriteStatus
+            )
             if (result.isFailure) {
                 setState {
                     copy(
