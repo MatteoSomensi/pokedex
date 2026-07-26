@@ -14,7 +14,7 @@ dependencies {
     implementation(libs.bundles.retrofit)
     implementation(libs.okhttp.logging)
     implementation(libs.kotlinx.serialization.json)
-    
+
     // Room
     implementation(libs.bundles.room)
     ksp(libs.room.compiler)

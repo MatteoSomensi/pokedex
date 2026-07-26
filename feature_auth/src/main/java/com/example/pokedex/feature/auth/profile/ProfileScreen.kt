@@ -31,14 +31,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.pokedex.core.R
 import com.example.pokedex.core.ui.DevicePreviews
 import com.example.pokedex.domain.model.AuthUser
-import com.example.pokedex.theme.PokedexTheme
 import com.example.pokedex.theme.LocalDimensions
+import com.example.pokedex.theme.PokedexTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -66,7 +65,7 @@ fun ProfileScreenContent(
     onLogout: () -> Unit
 ) {
     val dimensions = LocalDimensions.current
-    
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -92,7 +91,7 @@ fun ProfileScreenContent(
                 .fillMaxSize()
                 .padding(paddingValues = paddingValues)
                 .padding(all = dimensions.paddingLarge)
-                .verticalScroll(rememberScrollState()),
+                .verticalScroll(state = rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {

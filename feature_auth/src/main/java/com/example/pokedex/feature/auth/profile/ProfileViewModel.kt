@@ -19,7 +19,7 @@ class ProfileViewModel @Inject constructor(
     val currentUser: StateFlow<AuthUser?> = authRepository.currentUser
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
+            started = SharingStarted.WhileSubscribed(stopTimeoutMillis = STOP_TIMEOUT_MILLIS),
             initialValue = null
         )
 
@@ -27,5 +27,9 @@ class ProfileViewModel @Inject constructor(
         viewModelScope.launch {
             authRepository.signOut()
         }
+    }
+
+    companion object {
+        private const val STOP_TIMEOUT_MILLIS = 5000L
     }
 }

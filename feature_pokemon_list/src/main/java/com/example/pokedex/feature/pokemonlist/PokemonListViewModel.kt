@@ -66,7 +66,14 @@ class PokemonListViewModel @Inject constructor(
     private fun loadPokemon() {
         val query = uiState.value.searchQuery
         viewModelScope.launch {
-            setState { copy(isLoading = true, errorMessage = null, nextPageError = null, offset = 0) }
+            setState {
+                copy(
+                    isLoading = true,
+                    errorMessage = null,
+                    nextPageError = null,
+                    offset = 0
+                )
+            }
 
             val fetcher = if (query.isNotBlank()) {
                 repository.searchPokemon(query = query, limit = PAGE_SIZE, offset = 0)
@@ -130,11 +137,11 @@ class PokemonListViewModel @Inject constructor(
                     }
                     applyFilters()
                 },
-                onFailure = { _ ->
+                onFailure = {
                     setState {
                         copy(
                             isFetchingNextPage = false,
-                            nextPageError = UiText.StringResource(R.string.error_default)
+                            nextPageError = UiText.StringResource(id = R.string.error_default)
                         )
                     }
                 }
@@ -147,7 +154,8 @@ class PokemonListViewModel @Inject constructor(
             val query = searchQuery.trim().lowercase()
             val filtered = pokemonList.filter { pokemon ->
                 val matchesQuery = if (query.isNotEmpty()) {
-                    pokemon.name.lowercase().contains(other = query) || pokemon.id.toString() == query
+                    pokemon.name.lowercase()
+                        .contains(other = query) || pokemon.id.toString() == query
                 } else true
 
                 val matchesType = if (selectedType != null) {

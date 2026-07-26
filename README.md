@@ -15,11 +15,13 @@ modules:
   resources, and utility functions.
 * **`:domain`**: Pure Kotlin module. Contains business logic, use cases, models, and repository
   interfaces.
-* **`:data`**: Implements domain repositories, handles network calls (Retrofit), local database (if
-  any), and dependency injection (Hilt) for data sources.
+* **`:data`**: Implements domain repositories, handles network calls (Retrofit), local database (
+  Room) for offline caching, and dependency injection (Hilt) for data sources.
 * **`:feature_pokemon_list`**: The Pokemon list screen, implementing a custom infinite scroll
   pagination, search, and type filtering.
 * **`:feature_pokemon_detail`**: The Pokemon detail screen displaying stats and characteristics.
+* **`:feature_auth`**: Handles user authentication, including email/password and Google Sign-In
+  flows.
 
 ### Key Libraries & Technologies
 
@@ -28,6 +30,7 @@ modules:
 * **Hilt**: Dependency injection.
 * **Coroutines & Flow**: For asynchronous programming and reactive streams.
 * **Retrofit & Kotlinx Serialization**: For network requests and JSON parsing.
+* **Room**: For local database caching and offline-first capabilities.
 * **Coil**: For image loading.
 * **JUnit 4, MockK, Turbine, Robolectric**: For Unit and UI testing.
 * **Ktlint & Detekt**: For static code analysis and formatting.
@@ -39,7 +42,9 @@ modules:
 2. **Search & Filter**: Real-time search and filtering by Pokemon type.
 3. **Adaptive UI**: Supports both light and dark themes, leveraging `CompositionLocal` for dynamic
    dimension scaling.
-4. **Localization**: Supports English and Italian.
+4. **Offline-First Architecture**: Utilizes Room database to cache network responses, allowing the
+   app to work seamlessly without an active internet connection.
+5. **Localization**: Supports English and Italian.
 
 ## Getting Started
 

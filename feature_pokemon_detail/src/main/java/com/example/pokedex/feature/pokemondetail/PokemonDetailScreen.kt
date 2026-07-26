@@ -23,11 +23,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
 import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -55,7 +53,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
@@ -64,9 +61,9 @@ import com.example.pokedex.core.ui.DevicePreviews
 import com.example.pokedex.domain.model.Pokemon
 import com.example.pokedex.domain.model.heightInMeters
 import com.example.pokedex.domain.model.weightInKg
+import com.example.pokedex.theme.LocalAnimations
 import com.example.pokedex.theme.LocalDimensions
 import com.example.pokedex.theme.LocalWeights
-import com.example.pokedex.theme.LocalAnimations
 import com.example.pokedex.theme.PokedexTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -131,7 +128,7 @@ fun PokemonDetailScreen(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun PokemonDetailContent(pokemon: Pokemon) {
-    var isVisible by remember { mutableStateOf(false) }
+    var isVisible by remember { mutableStateOf(value = false) }
     val dimensions = LocalDimensions.current
     val animations = LocalAnimations.current
 
@@ -148,7 +145,8 @@ fun PokemonDetailContent(pokemon: Pokemon) {
     ) {
         AnimatedVisibility(
             visible = isVisible,
-            enter = fadeIn(animationSpec = tween(durationMillis = animations.durationMedium)) + slideInVertically(initialOffsetY = { -animations.slideOffsetStandard })
+            enter = fadeIn(animationSpec = tween(durationMillis = animations.durationMedium)) + slideInVertically(
+                initialOffsetY = { -animations.slideOffsetStandard })
         ) {
             AsyncImage(
                 model = pokemon.imageUrl,
@@ -167,7 +165,8 @@ fun PokemonDetailContent(pokemon: Pokemon) {
 
         AnimatedVisibility(
             visible = isVisible,
-            enter = fadeIn(animationSpec = tween(durationMillis = animations.durationSlow)) + slideInVertically(initialOffsetY = { animations.slideOffsetStandard })
+            enter = fadeIn(animationSpec = tween(durationMillis = animations.durationSlow)) + slideInVertically(
+                initialOffsetY = { animations.slideOffsetStandard })
         ) {
             Column(
                 modifier = Modifier.fillMaxWidth(),

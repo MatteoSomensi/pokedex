@@ -229,7 +229,10 @@ fun PokemonListScreenContent(
                                             .padding(all = dimensions.paddingMedium),
                                         horizontalAlignment = Alignment.CenterHorizontally
                                     ) {
-                                        Text(text = state.nextPageError.asString(), color = MaterialTheme.colorScheme.error)
+                                        Text(
+                                            text = state.nextPageError.asString(),
+                                            color = MaterialTheme.colorScheme.error
+                                        )
                                         Spacer(modifier = Modifier.height(dimensions.paddingSmall))
                                         Button(onClick = { onEvent(PokemonListEvent.LoadNextPage) }) {
                                             Text(stringResource(id = R.string.retry))

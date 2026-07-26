@@ -6,9 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.credentials.CredentialManager
-import androidx.credentials.GetCredentialRequest
-import androidx.credentials.exceptions.GetCredentialException
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -34,6 +31,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,16 +41,17 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.unit.dp
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.credentials.CredentialManager
+import androidx.credentials.GetCredentialRequest
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.example.pokedex.core.R
+import com.example.pokedex.core.ui.DevicePreviews
+import com.example.pokedex.theme.LocalDimensions
+import com.example.pokedex.theme.PokedexTheme
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import kotlinx.coroutines.launch
-import com.example.pokedex.core.R
-import com.example.pokedex.core.ui.DevicePreviews
-import com.example.pokedex.theme.PokedexTheme
-import com.example.pokedex.theme.LocalDimensions
+import kotlin.coroutines.cancellation.CancellationException
 
 @Composable
 fun AuthRoute(
@@ -79,33 +78,39 @@ fun AuthRoute(
         onToggleLogin = viewModel::toggleIsLogin,
         onGoogleSignInClick = {
             coroutineScope.launch {
-                viewModel.setLoading(true)
+                viewModel.setLoading(isLoading = true)
                 try {
-                    val credentialManager = CredentialManager.create(context)
+                    val credentialManager = CredentialManager.create(context = context)
                     val googleIdOption = GetGoogleIdOption.Builder()
-                        .setFilterByAuthorizedAccounts(false)
-                        .setServerClientId(webClientId)
-                        .setAutoSelectEnabled(true)
+                        .setFilterByAuthorizedAccounts(filterByAuthorizedAccounts = false)
+                        .setServerClientId(serverClientId = webClientId)
+                        .setAutoSelectEnabled(autoSelectEnabled = true)
                         .build()
 
                     val request = GetCredentialRequest.Builder()
-                        .addCredentialOption(googleIdOption)
+                        .addCredentialOption(credentialOption = googleIdOption)
                         .build()
 
-                    val result = credentialManager.getCredential(context, request)
+                    val result = credentialManager.getCredential(
+                        context = context,
+                        request = request
+                    )
                     val credential = result.credential
 
                     if (credential is androidx.credentials.CustomCredential && credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
-                        val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
+                        val googleIdTokenCredential =
+                            GoogleIdTokenCredential.createFrom(data = credential.data)
                         val idToken = googleIdTokenCredential.idToken
-                        viewModel.signInWithGoogleToken(idToken)
+                        viewModel.signInWithGoogleToken(idToken = idToken)
                     } else {
-                        viewModel.setAuthError(R.string.error_auth_failed)
+                        viewModel.setAuthError(errorRes = R.string.error_auth_failed)
                     }
-                } catch (e: kotlinx.coroutines.CancellationException) {
+                } catch (
+                    e: CancellationException
+                ) {
                     throw e
-                } catch (e: Exception) {
-                    viewModel.setAuthError(R.string.error_auth_failed)
+                } catch (_: Exception) {
+                    viewModel.setAuthError(errorRes = R.string.error_auth_failed)
                 }
             }
         },
@@ -123,7 +128,7 @@ internal fun AuthScreen(
     onGoogleSignInClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var passwordVisible by remember { mutableStateOf(false) }
+    var passwordVisible by remember { mutableStateOf(value = false) }
     val isFormValid = uiState.email.isNotBlank() && Patterns.EMAIL_ADDRESS.matcher(uiState.email)
         .matches() && uiState.password.isNotBlank()
     val dimensions = LocalDimensions.current
@@ -132,7 +137,7 @@ internal fun AuthScreen(
         modifier = modifier
             .fillMaxSize()
             .padding(all = dimensions.paddingLarge)
-            .verticalScroll(rememberScrollState()),
+            .verticalScroll(state = rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {

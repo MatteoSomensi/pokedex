@@ -7,6 +7,10 @@ import androidx.room.Query
 import com.example.pokedex.data.local.entity.PokemonEntity
 import com.example.pokedex.data.local.entity.TypeEntity
 
+/**
+ * Data Access Object (DAO) for interacting with the local SQLite database via Room.
+ * Handles caching and retrieving Pokemon entities and their types to support the offline-first architecture.
+ */
 @Dao
 @JvmSuppressWildcards
 interface PokemonDao {
@@ -21,7 +25,12 @@ interface PokemonDao {
     suspend fun getPokemonByName(name: String): PokemonEntity?
 
     @Query("SELECT * FROM pokemon WHERE name LIKE '%' || :query || '%' OR id = :queryId LIMIT :limit OFFSET :offset")
-    suspend fun searchPokemon(query: String, queryId: Int?, limit: Int, offset: Int): List<PokemonEntity>
+    suspend fun searchPokemon(
+        query: String,
+        queryId: Int?,
+        limit: Int,
+        offset: Int
+    ): List<PokemonEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(pokemonList: List<PokemonEntity>): List<Long>
@@ -33,5 +42,5 @@ interface PokemonDao {
     suspend fun getTypes(): List<TypeEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertTypes(types: List<TypeEntity>)
+    suspend fun insertTypes(types: List<TypeEntity>): List<Long>
 }
