@@ -103,7 +103,9 @@ fun PokemonDetailScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues = paddingValues)
+                // Top bar is transparent, so we don't necessarily need top padding, 
+                // but we apply bottom padding inside the content scroll.
+                .padding(top = paddingValues.calculateTopPadding())
         ) {
             when {
                 state.isLoading -> {
@@ -118,7 +120,7 @@ fun PokemonDetailScreen(
                 }
 
                 state.pokemon != null -> {
-                    PokemonDetailContent(pokemon = state.pokemon!!)
+                    PokemonDetailContent(pokemon = state.pokemon!!, paddingValues = paddingValues)
                 }
             }
         }
@@ -127,7 +129,7 @@ fun PokemonDetailScreen(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun PokemonDetailContent(pokemon: Pokemon) {
+fun PokemonDetailContent(pokemon: Pokemon, paddingValues: androidx.compose.foundation.layout.PaddingValues = androidx.compose.foundation.layout.PaddingValues()) {
     var isVisible by remember { mutableStateOf(value = false) }
     val dimensions = LocalDimensions.current
     val animations = LocalAnimations.current
@@ -140,7 +142,12 @@ fun PokemonDetailContent(pokemon: Pokemon) {
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(state = rememberScrollState())
-            .padding(all = dimensions.paddingLarge),
+            .padding(
+                start = dimensions.paddingLarge,
+                end = dimensions.paddingLarge,
+                top = dimensions.paddingLarge,
+                bottom = dimensions.paddingLarge + paddingValues.calculateBottomPadding()
+            ),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         AnimatedVisibility(

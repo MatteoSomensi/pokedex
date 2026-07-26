@@ -112,7 +112,6 @@ fun PokemonListScreenContent(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues = paddingValues)
         ) {
             val dimensions = LocalDimensions.current
             val weights = LocalWeights.current
@@ -122,6 +121,7 @@ fun PokemonListScreenContent(
                 onValueChange = { onEvent(PokemonListEvent.OnSearchQueryChanged(query = it)) },
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(top = paddingValues.calculateTopPadding())
                     .padding(
                         horizontal = dimensions.paddingMedium,
                         vertical = dimensions.paddingSmall
@@ -200,7 +200,12 @@ fun PokemonListScreenContent(
                         LazyVerticalGrid(
                             state = gridState,
                             columns = GridCells.Adaptive(minSize = dimensions.gridCellMinSize),
-                            contentPadding = PaddingValues(all = dimensions.paddingMedium),
+                            contentPadding = PaddingValues(
+                                start = dimensions.paddingMedium,
+                                top = dimensions.paddingMedium,
+                                end = dimensions.paddingMedium,
+                                bottom = dimensions.paddingMedium + paddingValues.calculateBottomPadding()
+                            ),
                             horizontalArrangement = Arrangement.spacedBy(space = dimensions.paddingMedium),
                             verticalArrangement = Arrangement.spacedBy(space = dimensions.paddingMedium),
                             modifier = Modifier.fillMaxSize()
