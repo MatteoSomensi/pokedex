@@ -1,16 +1,6 @@
 package com.example.pokedex.feature.auth
 
-import android.content.Context
-import androidx.credentials.CredentialManager
-import androidx.credentials.GetCredentialRequest
-import androidx.credentials.exceptions.GetCredentialException
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.example.pokedex.core.R
-import com.example.pokedex.core.util.UiText
 import com.example.pokedex.domain.repository.AuthRepository
-import com.google.android.libraries.identity.googleid.GetGoogleIdOption
-import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -61,54 +51,26 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    fun signInWithGoogle(context: Context, serverClientId: String) {
+    fun setLoading(isLoading: Boolean) {
+        uiState.update { it.copy(isLoading = isLoading, error = null) }
+    }
+
+    fun setAuthError(errorRes: Int) {
+        uiState.update {
+            it.copy(
+                isLoading = false,
+                error = UiText.StringResource(errorRes)
+            )
+        }
+    }
+
+    fun signInWithGoogleToken(idToken: String) {
         viewModelScope.launch {
             uiState.update { it.copy(isLoading = true, error = null) }
-            try {
-                val credentialManager = CredentialManager.create(context)
-                val googleIdOption = GetGoogleIdOption.Builder()
-                    .setFilterByAuthorizedAccounts(false)
-                    .setServerClientId(serverClientId)
-                    .setAutoSelectEnabled(true)
-                    .build()
-
-                val request = GetCredentialRequest.Builder()
-                    .addCredentialOption(googleIdOption)
-                    .build()
-
-                val result = credentialManager.getCredential(context, request)
-                val credential = result.credential
-
-                if (credential is androidx.credentials.CustomCredential && credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
-                    val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
-                    val idToken = googleIdTokenCredential.idToken
-                    val authResult = authRepository.signInWithGoogle(idToken)
-                    authResult.onSuccess {
-                        uiState.update { it.copy(isLoading = false, isSuccess = true) }
-                    }.onFailure { e ->
-                        uiState.update {
-                            it.copy(
-                                isLoading = false,
-                                error = UiText.StringResource(R.string.error_auth_failed)
-                            )
-                        }
-                    }
-                } else {
-                    uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            error = UiText.StringResource(R.string.error_auth_failed)
-                        )
-                    }
-                }
-            } catch (e: GetCredentialException) {
-                uiState.update {
-                    it.copy(
-                        isLoading = false,
-                        error = UiText.StringResource(R.string.error_auth_failed)
-                    )
-                }
-            } catch (e: Exception) {
+            val authResult = authRepository.signInWithGoogle(idToken)
+            authResult.onSuccess {
+                uiState.update { it.copy(isLoading = false, isSuccess = true) }
+            }.onFailure { e ->
                 uiState.update {
                     it.copy(
                         isLoading = false,

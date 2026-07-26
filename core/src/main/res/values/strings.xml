@@ -26,6 +26,7 @@
     <string name="profile_logout">Logout</string>
     <string name="profile_not_logged_in">Not logged in</string>
     <string name="error_auth_failed">Authentication failed</string>
+    <string name="retry">Retry</string>
     <string name="filter_all">All</string>
 
 </resources>

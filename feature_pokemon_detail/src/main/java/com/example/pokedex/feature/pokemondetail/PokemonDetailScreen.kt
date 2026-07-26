@@ -78,7 +78,7 @@ fun PokemonDetailScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(pokemonId) {
+    LaunchedEffect(key1 = pokemonId) {
         viewModel.setEvent(event = PokemonDetailEvent.LoadPokemon(id = pokemonId))
     }
 
@@ -135,7 +135,7 @@ fun PokemonDetailContent(pokemon: Pokemon) {
     val dimensions = LocalDimensions.current
     val animations = LocalAnimations.current
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(key1 = Unit) {
         isVisible = true
     }
 

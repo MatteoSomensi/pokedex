@@ -6,6 +6,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.credentials.CredentialManager
+import androidx.credentials.GetCredentialRequest
+import androidx.credentials.exceptions.GetCredentialException
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -41,7 +44,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import kotlinx.coroutines.launch
 import com.example.pokedex.core.R
 import com.example.pokedex.core.ui.DevicePreviews
 import com.example.pokedex.theme.PokedexTheme
@@ -56,6 +63,7 @@ fun AuthRoute(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(uiState.isSuccess) {
         if (uiState.isSuccess) {
@@ -69,7 +77,36 @@ fun AuthRoute(
         onPasswordChange = viewModel::onPasswordChange,
         onSubmit = viewModel::submitEmailAuth,
         onToggleLogin = viewModel::toggleIsLogin,
-        onGoogleSignInClick = { viewModel.signInWithGoogle(context, webClientId) },
+        onGoogleSignInClick = {
+            coroutineScope.launch {
+                viewModel.setLoading(true)
+                try {
+                    val credentialManager = CredentialManager.create(context)
+                    val googleIdOption = GetGoogleIdOption.Builder()
+                        .setFilterByAuthorizedAccounts(false)
+                        .setServerClientId(webClientId)
+                        .setAutoSelectEnabled(true)
+                        .build()
+
+                    val request = GetCredentialRequest.Builder()
+                        .addCredentialOption(googleIdOption)
+                        .build()
+
+                    val result = credentialManager.getCredential(context, request)
+                    val credential = result.credential
+
+                    if (credential is androidx.credentials.CustomCredential && credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
+                        val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
+                        val idToken = googleIdTokenCredential.idToken
+                        viewModel.signInWithGoogleToken(idToken)
+                    } else {
+                        viewModel.setAuthError(R.string.error_auth_failed)
+                    }
+                } catch (e: Exception) {
+                    viewModel.setAuthError(R.string.error_auth_failed)
+                }
+            }
+        },
         modifier = modifier
     )
 }

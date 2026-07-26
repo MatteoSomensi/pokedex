@@ -21,7 +21,8 @@ data class PokemonListState(
     val searchQuery: String = "",
     val selectedType: String? = null,
     val availableTypes: List<String> = emptyList(),
-    val errorMessage: UiText? = null
+    val errorMessage: UiText? = null,
+    val nextPageError: UiText? = null
 ) : UiState
 
 sealed interface PokemonListEvent : UiEvent {

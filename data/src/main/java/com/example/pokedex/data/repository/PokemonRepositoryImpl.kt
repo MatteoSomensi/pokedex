@@ -10,6 +10,8 @@ import com.example.pokedex.data.local.entity.PokemonEntity
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 
@@ -24,6 +26,7 @@ class PokemonRepositoryImpl @Inject constructor(
 
     private var globalListCache: List<PokemonResultItem>? = null
     private var cachedTypes: List<String>? = null
+    private val mutex = Mutex()
 
     override suspend fun getPokemonList(limit: Int, offset: Int): Result<List<Pokemon>> = runCatching {
         // 1. Try to load from local database first
@@ -80,12 +83,14 @@ class PokemonRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getPokemonTypes(): Result<List<String>> = runCatching {
-        cachedTypes?.let { return@runCatching it }
-        val response = api.getPokemonTypes()
-        val types = response.results.map { it.name.replaceFirstChar { char -> char.uppercase() } }
-            .filter { it != "Unknown" && it != "Shadow" }
-        cachedTypes = types
-        types
+        mutex.withLock {
+            cachedTypes?.let { return@withLock it }
+            val response = api.getPokemonTypes()
+            val types = response.results.map { it.name.replaceFirstChar { char -> char.uppercase() } }
+                .filter { it != "Unknown" && it != "Shadow" }
+            cachedTypes = types
+            types
+        }
     }
 
     override suspend fun searchPokemon(
@@ -106,9 +111,11 @@ class PokemonRepositoryImpl @Inject constructor(
              return@runCatching localResults.map { it.toDomain() }
         }
 
-        if (globalListCache == null) {
-            val fullList = api.getPokemonList(limit = MAX_POKEMON_LIMIT, offset = 0)
-            globalListCache = fullList.results
+        mutex.withLock {
+            if (globalListCache == null) {
+                val fullList = api.getPokemonList(limit = MAX_POKEMON_LIMIT, offset = 0)
+                globalListCache = fullList.results
+            }
         }
         
         val filtered = globalListCache!!.filter {

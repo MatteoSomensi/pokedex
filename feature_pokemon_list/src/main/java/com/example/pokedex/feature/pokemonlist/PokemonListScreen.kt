@@ -22,6 +22,7 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -218,6 +219,21 @@ fun PokemonListScreenContent(
                                         contentAlignment = Alignment.Center
                                     ) {
                                         CircularProgressIndicator()
+                                    }
+                                }
+                            } else if (state.nextPageError != null) {
+                                item(span = { GridItemSpan(currentLineSpan = maxLineSpan) }) {
+                                    Column(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(all = dimensions.paddingMedium),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Text(text = state.nextPageError.asString(), color = MaterialTheme.colorScheme.error)
+                                        Spacer(modifier = Modifier.height(dimensions.paddingSmall))
+                                        Button(onClick = { onEvent(PokemonListEvent.LoadNextPage) }) {
+                                            Text(stringResource(id = R.string.retry))
+                                        }
                                     }
                                 }
                             }

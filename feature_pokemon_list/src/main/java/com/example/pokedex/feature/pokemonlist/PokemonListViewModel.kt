@@ -66,7 +66,7 @@ class PokemonListViewModel @Inject constructor(
     private fun loadPokemon() {
         val query = uiState.value.searchQuery
         viewModelScope.launch {
-            setState { copy(isLoading = true, errorMessage = null, offset = 0) }
+            setState { copy(isLoading = true, errorMessage = null, nextPageError = null, offset = 0) }
 
             val fetcher = if (query.isNotBlank()) {
                 repository.searchPokemon(query = query, limit = PAGE_SIZE, offset = 0)
@@ -105,7 +105,7 @@ class PokemonListViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            setState { copy(isFetchingNextPage = true) }
+            setState { copy(isFetchingNextPage = true, nextPageError = null) }
 
             val query = currentState.searchQuery
             val fetcher = if (query.isNotBlank()) {
@@ -134,7 +134,7 @@ class PokemonListViewModel @Inject constructor(
                     setState {
                         copy(
                             isFetchingNextPage = false,
-                            errorMessage = UiText.StringResource(R.string.error_default)
+                            nextPageError = UiText.StringResource(R.string.error_default)
                         )
                     }
                 }
