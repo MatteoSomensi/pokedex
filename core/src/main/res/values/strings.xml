@@ -11,6 +11,8 @@
     <string name="cd_back">Back</string>
     <string name="cd_pokemon_image">Image of %1$s</string>
     <string name="search_hint">Search Pokémon...</string>
+    <string name="cd_add_favorite">Add to favorites</string>
+    <string name="cd_remove_favorite">Remove from favorites</string>
 
     <!-- Auth & Profile -->
     <string name="auth_sign_in">Sign In</string>

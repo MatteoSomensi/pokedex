@@ -13,4 +13,6 @@ interface PokemonRepository {
     suspend fun getPokemonDetail(id: Int): Result<Pokemon>
     suspend fun searchPokemon(query: String, limit: Int, offset: Int): Result<List<Pokemon>>
     suspend fun getPokemonTypes(): Result<List<String>>
+    suspend fun toggleFavoriteStatus(id: Int, isFavorite: Boolean): Result<Unit>
+    suspend fun getFavoritePokemonList(): Result<List<Pokemon>>
 }

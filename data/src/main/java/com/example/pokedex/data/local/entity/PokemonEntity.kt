@@ -12,7 +12,8 @@ data class PokemonEntity(
     val types: String,
     val height: Int,
     val weight: Int,
-    val stats: String
+    val stats: String,
+    val isFavorite: Boolean = false
 ) {
     fun toDomain(): Pokemon {
         return Pokemon(
@@ -22,7 +23,8 @@ data class PokemonEntity(
             types = types.split(",").filter { it.isNotBlank() },
             height = height,
             weight = weight,
-            stats = parseStats(stats)
+            stats = parseStats(stats),
+            isFavorite = isFavorite
         )
     }
 
@@ -35,7 +37,8 @@ data class PokemonEntity(
                 types = pokemon.types.joinToString(","),
                 height = pokemon.height,
                 weight = pokemon.weight,
-                stats = formatStats(pokemon.stats)
+                stats = formatStats(pokemon.stats),
+                isFavorite = pokemon.isFavorite
             )
         }
 

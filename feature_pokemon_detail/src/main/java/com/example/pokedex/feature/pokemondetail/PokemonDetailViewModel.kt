@@ -24,6 +24,30 @@ class PokemonDetailViewModel @Inject constructor(
     override fun handleEvent(event: PokemonDetailEvent) {
         when (event) {
             is PokemonDetailEvent.LoadPokemon -> loadPokemon(id = event.id)
+            is PokemonDetailEvent.ToggleFavorite -> toggleFavorite()
+        }
+    }
+
+    private fun toggleFavorite() {
+        val currentPokemon = uiState.value.pokemon ?: return
+        val newFavoriteStatus = !currentPokemon.isFavorite
+
+        // Optistic UI update
+        setState {
+            copy(pokemon = currentPokemon.copy(isFavorite = newFavoriteStatus))
+        }
+
+        viewModelScope.launch {
+            val result = repository.toggleFavoriteStatus(currentPokemon.id, newFavoriteStatus)
+            if (result.isFailure) {
+                // Revert on failure
+                setState {
+                    copy(
+                        pokemon = currentPokemon,
+                        errorMessage = UiText.StringResource(id = R.string.error_default) // Ideally a specific error message
+                    )
+                }
+            }
         }
     }
 

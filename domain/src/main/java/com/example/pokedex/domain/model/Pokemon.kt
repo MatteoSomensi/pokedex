@@ -12,7 +12,8 @@ data class Pokemon(
     val types: List<String>,
     val height: Int = 0,
     val weight: Int = 0,
-    val stats: Map<String, Int> = emptyMap()
+    val stats: Map<String, Int> = emptyMap(),
+    val isFavorite: Boolean = false
 )
 
 val Pokemon.heightInMeters: Float

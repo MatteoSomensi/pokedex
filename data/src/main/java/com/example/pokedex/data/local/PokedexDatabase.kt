@@ -6,7 +6,7 @@ import com.example.pokedex.data.local.dao.PokemonDao
 import com.example.pokedex.data.local.entity.PokemonEntity
 import com.example.pokedex.data.local.entity.TypeEntity
 
-@Database(entities = [PokemonEntity::class, TypeEntity::class], version = 2, exportSchema = false)
+@Database(entities = [PokemonEntity::class, TypeEntity::class], version = 3, exportSchema = false)
 abstract class PokedexDatabase : RoomDatabase() {
     abstract fun pokemonDao(): PokemonDao
 

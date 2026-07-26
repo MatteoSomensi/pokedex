@@ -160,6 +160,15 @@ class PokemonRepositoryImpl @Inject constructor(
         )
     }
 
+    override suspend fun toggleFavoriteStatus(id: Int, isFavorite: Boolean): Result<Unit> = runCatching {
+        dao.updateFavoriteStatus(id, isFavorite)
+        Unit
+    }.onFailure { if (it is kotlinx.coroutines.CancellationException) throw it }
+
+    override suspend fun getFavoritePokemonList(): Result<List<Pokemon>> = runCatching {
+        dao.getFavoritePokemonList().map { it.toDomain() }
+    }.onFailure { if (it is kotlinx.coroutines.CancellationException) throw it }
+
     companion object {
         private const val MAX_POKEMON_LIMIT = 1500
     }

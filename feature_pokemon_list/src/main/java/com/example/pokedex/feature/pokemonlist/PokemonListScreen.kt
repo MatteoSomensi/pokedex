@@ -14,12 +14,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
@@ -265,46 +267,60 @@ fun PokemonCard(pokemon: Pokemon, onClick: () -> Unit) {
             .clickable { onClick() },
         elevation = CardDefaults.cardElevation(defaultElevation = dimensions.elevationDefault)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(all = dimensions.paddingSmall),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            AsyncImage(
-                model = pokemon.imageUrl,
-                contentDescription = stringResource(id = R.string.cd_pokemon_image, pokemon.name),
-                modifier = Modifier.size(size = dimensions.imageSizeList),
-                placeholder = if (LocalInspectionMode.current) painterResource(id = android.R.drawable.ic_menu_gallery) else null,
-                error = if (LocalInspectionMode.current) painterResource(id = android.R.drawable.ic_menu_gallery) else null
-            )
-            Spacer(modifier = Modifier.height(height = dimensions.paddingSmall))
-            Text(
-                text = pokemon.name.replaceFirstChar { it.uppercase() },
-                style = MaterialTheme.typography.titleMedium,
-                textAlign = TextAlign.Center
-            )
-            Spacer(modifier = Modifier.height(height = dimensions.paddingSmall))
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(space = dimensions.cornerRadiusSmall),
-                verticalArrangement = Arrangement.spacedBy(space = dimensions.cornerRadiusSmall)
+        Box(modifier = Modifier.fillMaxWidth()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(all = dimensions.paddingSmall),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                pokemon.types.forEach { type ->
-                    Surface(
-                        color = MaterialTheme.colorScheme.secondaryContainer,
-                        shape = MaterialTheme.shapes.small
-                    ) {
-                        Text(
-                            text = type,
-                            style = MaterialTheme.typography.labelSmall,
-                            modifier = Modifier.padding(
-                                horizontal = dimensions.paddingSmall,
-                                vertical = dimensions.cornerRadiusSmall
-                            ),
-                            color = MaterialTheme.colorScheme.onSecondaryContainer
-                        )
+                AsyncImage(
+                    model = pokemon.imageUrl,
+                    contentDescription = stringResource(id = R.string.cd_pokemon_image, pokemon.name),
+                    modifier = Modifier.size(size = dimensions.imageSizeList),
+                    placeholder = if (LocalInspectionMode.current) painterResource(id = android.R.drawable.ic_menu_gallery) else null,
+                    error = if (LocalInspectionMode.current) painterResource(id = android.R.drawable.ic_menu_gallery) else null
+                )
+                Spacer(modifier = Modifier.height(height = dimensions.paddingSmall))
+                Text(
+                    text = pokemon.name.replaceFirstChar { it.uppercase() },
+                    style = MaterialTheme.typography.titleMedium,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(height = dimensions.paddingSmall))
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(space = dimensions.cornerRadiusSmall),
+                    verticalArrangement = Arrangement.spacedBy(space = dimensions.cornerRadiusSmall)
+                ) {
+                    pokemon.types.forEach { type ->
+                        Surface(
+                            color = MaterialTheme.colorScheme.secondaryContainer,
+                            shape = MaterialTheme.shapes.small
+                        ) {
+                            Text(
+                                text = type,
+                                style = MaterialTheme.typography.labelSmall,
+                                modifier = Modifier.padding(
+                                    horizontal = dimensions.paddingSmall,
+                                    vertical = dimensions.cornerRadiusSmall
+                                ),
+                                color = MaterialTheme.colorScheme.onSecondaryContainer
+                            )
+                        }
                     }
                 }
+            }
+
+            if (pokemon.isFavorite) {
+                Icon(
+                    imageVector = Icons.Default.Favorite,
+                    contentDescription = null, // decorative here
+                    tint = MaterialTheme.colorScheme.error,
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(dimensions.paddingSmall)
+                        .size(24.dp)
+                )
             }
         }
     }
