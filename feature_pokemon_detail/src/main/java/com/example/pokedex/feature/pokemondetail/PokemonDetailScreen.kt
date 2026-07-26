@@ -73,7 +73,7 @@ fun PokemonDetailScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(pokemonId) {
-        viewModel.loadPokemon(pokemonId)
+        viewModel.setEvent(PokemonDetailEvent.LoadPokemon(pokemonId))
     }
 
     Scaffold(

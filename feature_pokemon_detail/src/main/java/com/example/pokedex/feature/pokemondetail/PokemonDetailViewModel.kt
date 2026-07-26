@@ -18,34 +18,35 @@ import javax.inject.Inject
  * This class is responsible for PokemonDetailViewModel logic.
  * Part of the Clean Architecture structure.
  */
-data class PokemonDetailState(
-    val isLoading: Boolean = false,
-    val pokemon: Pokemon? = null,
-    val errorMessage: UiText? = null
-)
+import com.example.pokedex.core.mvi.BaseViewModel
 
 @HiltViewModel
 class PokemonDetailViewModel @Inject constructor(
     private val repository: PokemonRepository
-) : ViewModel() {
+) : BaseViewModel<PokemonDetailState, PokemonDetailEvent, PokemonDetailEffect>() {
 
-    val uiState: StateFlow<PokemonDetailState>
-        field = MutableStateFlow(PokemonDetailState())
+    override fun createInitialState(): PokemonDetailState = PokemonDetailState()
 
-    fun loadPokemon(id: Int) {
+    override fun handleEvent(event: PokemonDetailEvent) {
+        when (event) {
+            is PokemonDetailEvent.LoadPokemon -> loadPokemon(event.id)
+        }
+    }
+
+    private fun loadPokemon(id: Int) {
         viewModelScope.launch {
-            uiState.update { it.copy(isLoading = true, errorMessage = null) }
+            setState { copy(isLoading = true, errorMessage = null) }
             val result = repository.getPokemonDetail(id)
             if (result.isSuccess) {
-                uiState.update {
-                    it.copy(
+                setState {
+                    copy(
                         isLoading = false,
                         pokemon = result.getOrNull()
                     )
                 }
             } else {
-                uiState.update {
-                    it.copy(
+                setState {
+                    copy(
                         isLoading = false,
                         errorMessage = UiText.StringResource(R.string.error_default)
                     )
