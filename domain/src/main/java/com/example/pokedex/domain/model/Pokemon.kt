@@ -9,6 +9,7 @@ data class Pokemon(
     val id: Int,
     val name: String,
     val imageUrl: String,
+    val cryUrl: String,
     val types: List<String>,
     val height: Int = 0,
     val weight: Int = 0,

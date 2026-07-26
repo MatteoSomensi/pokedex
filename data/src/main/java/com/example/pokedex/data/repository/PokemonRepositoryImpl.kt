@@ -172,6 +172,7 @@ class PokemonRepositoryImpl @Inject constructor(
             id = id,
             name = name,
             imageUrl = "${Constants.POKE_IMAGE_BASE_URL}${id}.png",
+            cryUrl = "https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/${id}.ogg",
             types = types.map { it.type.name.replaceFirstChar { char -> char.uppercase() } },
             height = height,
             weight = weight,

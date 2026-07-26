@@ -24,6 +24,7 @@ data class PokemonEntity(
             height = height,
             weight = weight,
             stats = parseStats(stats),
+            cryUrl = "https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/${id}.ogg",
             isFavorite = isFavorite
         )
     }

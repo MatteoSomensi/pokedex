@@ -15,6 +15,9 @@ data class PokemonDetailState(
 sealed interface PokemonDetailEvent : UiEvent {
     data class LoadPokemon(val id: Int) : PokemonDetailEvent
     object ToggleFavorite : PokemonDetailEvent
+    object PlayCry : PokemonDetailEvent
 }
 
-sealed interface PokemonDetailEffect : UiEffect
+sealed interface PokemonDetailEffect : UiEffect {
+    data class PlayAudio(val url: String) : PokemonDetailEffect
+}

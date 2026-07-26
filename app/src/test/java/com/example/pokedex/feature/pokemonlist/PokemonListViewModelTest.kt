@@ -42,7 +42,7 @@ class PokemonListViewModelTest {
     fun `quando LoadPokemon ha successo lo stato viene aggiornato con la lista`() =
         runTest(testDispatcher) {
             val fakeList = listOf(
-                Pokemon(1, "Bulbasaur", "url", listOf("Grass"))
+                Pokemon(1, "Bulbasaur", "url", "cryUrl", listOf("Grass"))
             )
             coEvery { repository.getPokemonList(any(), any(), any()) } returns Result.success(fakeList)
             coEvery { repository.getPokemonTypes() } returns Result.success(emptyList())

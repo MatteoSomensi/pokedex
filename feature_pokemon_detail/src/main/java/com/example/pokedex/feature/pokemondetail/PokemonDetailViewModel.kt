@@ -25,7 +25,13 @@ class PokemonDetailViewModel @Inject constructor(
         when (event) {
             is PokemonDetailEvent.LoadPokemon -> loadPokemon(id = event.id)
             is PokemonDetailEvent.ToggleFavorite -> toggleFavorite()
+            is PokemonDetailEvent.PlayCry -> playCry()
         }
+    }
+
+    private fun playCry() {
+        val currentPokemon = uiState.value.pokemon ?: return
+        setEffect { PokemonDetailEffect.PlayAudio(url = currentPokemon.cryUrl) }
     }
 
     private fun toggleFavorite() {

@@ -347,6 +347,7 @@ class PokemonPreviewProvider : PreviewParameterProvider<Pokemon> {
             id = 1,
             name = "Bulbasaur",
             imageUrl = "${Constants.POKE_IMAGE_BASE_URL}1.png",
+            cryUrl = "",
             types = listOf("Grass", "Poison")
         )
     )
@@ -368,9 +369,9 @@ fun PokemonListScreenPreview() {
     val mockState = PokemonListState(
         isLoading = false,
         pokemonList = listOf(
-            Pokemon(1, "Bulbasaur", "", listOf("Grass", "Poison")),
-            Pokemon(4, "Charmander", "", listOf("Fire")),
-            Pokemon(7, "Squirtle", "", listOf("Water"))
+            Pokemon(1, "Bulbasaur", "", "", listOf("Grass", "Poison")),
+            Pokemon(4, "Charmander", "", "", listOf("Fire")),
+            Pokemon(7, "Squirtle", "", "", listOf("Water"))
         )
     )
     PokedexTheme {

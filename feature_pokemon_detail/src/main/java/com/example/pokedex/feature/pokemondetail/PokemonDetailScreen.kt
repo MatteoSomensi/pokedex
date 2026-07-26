@@ -25,6 +25,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -50,11 +51,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
+import android.media.AudioAttributes
+import android.media.MediaPlayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
@@ -79,6 +84,27 @@ fun PokemonDetailScreen(
 
     LaunchedEffect(key1 = pokemonId) {
         viewModel.setEvent(event = PokemonDetailEvent.LoadPokemon(id = pokemonId))
+    }
+
+    LaunchedEffect(key1 = Unit) {
+        viewModel.uiEffect.collect { effect ->
+            when (effect) {
+                is PokemonDetailEffect.PlayAudio -> {
+                    MediaPlayer().apply {
+                        setAudioAttributes(
+                            AudioAttributes.Builder()
+                                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                                .setUsage(AudioAttributes.USAGE_MEDIA)
+                                .build()
+                        )
+                        setDataSource(effect.url)
+                        prepareAsync()
+                        setOnPreparedListener { it.start() }
+                        setOnCompletionListener { it.release() }
+                    }
+                }
+            }
+        }
     }
 
     Scaffold(
@@ -130,7 +156,11 @@ fun PokemonDetailScreen(
                 }
 
                 state.pokemon != null -> {
-                    PokemonDetailContent(pokemon = state.pokemon!!, paddingValues = paddingValues)
+                    PokemonDetailContent(
+                        pokemon = state.pokemon!!, 
+                        paddingValues = paddingValues,
+                        onPlayCryClick = { viewModel.setEvent(PokemonDetailEvent.PlayCry) }
+                    )
                 }
             }
         }
@@ -139,7 +169,11 @@ fun PokemonDetailScreen(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun PokemonDetailContent(pokemon: Pokemon, paddingValues: androidx.compose.foundation.layout.PaddingValues = androidx.compose.foundation.layout.PaddingValues()) {
+fun PokemonDetailContent(
+    pokemon: Pokemon, 
+    paddingValues: androidx.compose.foundation.layout.PaddingValues = androidx.compose.foundation.layout.PaddingValues(),
+    onPlayCryClick: () -> Unit = {}
+) {
     var isVisible by remember { mutableStateOf(value = false) }
     val dimensions = LocalDimensions.current
     val animations = LocalAnimations.current
@@ -189,12 +223,26 @@ fun PokemonDetailContent(pokemon: Pokemon, paddingValues: androidx.compose.found
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = pokemon.name.replaceFirstChar { it.uppercase() },
-                    style = MaterialTheme.typography.displaySmall,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = pokemon.name.replaceFirstChar { it.uppercase() },
+                        style = MaterialTheme.typography.displaySmall,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(modifier = Modifier.width(width = dimensions.paddingSmall))
+                    IconButton(onClick = onPlayCryClick) {
+                        Icon(
+                            imageVector = Icons.Default.PlayArrow,
+                            contentDescription = stringResource(id = R.string.cd_play_cry),
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(48.dp)
+                        )
+                    }
+                }
 
                 Spacer(modifier = Modifier.height(height = dimensions.paddingMedium))
 
@@ -337,6 +385,7 @@ fun PokemonDetailScreenPreview() {
         id = 1,
         name = "Bulbasaur",
         imageUrl = "",
+        cryUrl = "",
         types = listOf("Grass", "Poison"),
         height = 7,
         weight = 69,
