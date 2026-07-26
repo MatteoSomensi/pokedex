@@ -79,8 +79,9 @@ class AuthViewModel @Inject constructor(
                 val result = credentialManager.getCredential(context, request)
                 val credential = result.credential
 
-                if (credential is GoogleIdTokenCredential) {
-                    val idToken = credential.idToken
+                if (credential is androidx.credentials.CustomCredential && credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
+                    val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
+                    val idToken = googleIdTokenCredential.idToken
                     val authResult = authRepository.signInWithGoogle(idToken)
                     authResult.onSuccess {
                         uiState.update { it.copy(isLoading = false, isSuccess = true) }
