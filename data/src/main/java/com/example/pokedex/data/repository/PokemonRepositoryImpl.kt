@@ -110,11 +110,22 @@ class PokemonRepositoryImpl @Inject constructor(
         val q = query.trim().lowercase()
         val queryId = q.toIntOrNull()
 
+        var useLocalOnly = false
         listMutex.withLock {
             if (globalListCache == null) {
-                val fullList = api.getPokemonList(limit = MAX_POKEMON_LIMIT, offset = 0)
-                globalListCache = fullList.results
+                try {
+                    val fullList = api.getPokemonList(limit = MAX_POKEMON_LIMIT, offset = 0)
+                    globalListCache = fullList.results
+                } catch (e: Exception) {
+                    if (e is kotlinx.coroutines.CancellationException) throw e
+                    useLocalOnly = true
+                }
             }
+        }
+
+        if (useLocalOnly) {
+            val localResults = dao.searchPokemon(q, queryId, limit, offset)
+            return@runCatching localResults.map { it.toDomain() }
         }
 
         val filtered = globalListCache!!.filter {
@@ -125,7 +136,7 @@ class PokemonRepositoryImpl @Inject constructor(
         val chunkResults = mutableListOf<Pokemon>()
         chunk.chunked(10).forEach { batch ->
             val partialResults = coroutineScope {
-                batch.map { resultItem ->
+                batch.mapNotNull { resultItem ->
                     async {
                         val pokemonId =
                             resultItem.url.trimEnd('/').substringAfterLast('/').toIntOrNull() ?: -1
@@ -133,10 +144,15 @@ class PokemonRepositoryImpl @Inject constructor(
                         if (localDetail != null) {
                             localDetail.toDomain()
                         } else {
-                            api.getPokemonDetail(resultItem.name).toDomain()
+                            try {
+                                api.getPokemonDetail(resultItem.name).toDomain()
+                            } catch (e: Exception) {
+                                if (e is kotlinx.coroutines.CancellationException) throw e
+                                null // Skip network failures if offline
+                            }
                         }
                     }
-                }.awaitAll()
+                }.awaitAll().filterNotNull()
             }
             chunkResults.addAll(partialResults)
         }
