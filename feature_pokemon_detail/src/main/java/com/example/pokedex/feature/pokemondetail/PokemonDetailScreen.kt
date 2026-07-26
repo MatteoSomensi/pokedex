@@ -42,6 +42,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -86,21 +87,43 @@ fun PokemonDetailScreen(
         viewModel.setEvent(event = PokemonDetailEvent.LoadPokemon(id = pokemonId))
     }
 
+    var mediaPlayer by remember { mutableStateOf<MediaPlayer?>(null) }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            mediaPlayer?.release()
+            mediaPlayer = null
+        }
+    }
+
     LaunchedEffect(key1 = Unit) {
         viewModel.uiEffect.collect { effect ->
             when (effect) {
                 is PokemonDetailEffect.PlayAudio -> {
-                    MediaPlayer().apply {
-                        setAudioAttributes(
-                            AudioAttributes.Builder()
-                                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                                .setUsage(AudioAttributes.USAGE_MEDIA)
-                                .build()
-                        )
-                        setDataSource(effect.url)
-                        prepareAsync()
-                        setOnPreparedListener { it.start() }
-                        setOnCompletionListener { it.release() }
+                    try {
+                        mediaPlayer?.release()
+                        mediaPlayer = MediaPlayer().apply {
+                            setAudioAttributes(
+                                AudioAttributes.Builder()
+                                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                                    .setUsage(AudioAttributes.USAGE_MEDIA)
+                                    .build()
+                            )
+                            setDataSource(effect.url)
+                            setOnPreparedListener { it.start() }
+                            setOnCompletionListener { 
+                                it.release()
+                                mediaPlayer = null
+                            }
+                            setOnErrorListener { mp, _, _ ->
+                                mp.release()
+                                mediaPlayer = null
+                                true
+                            }
+                            prepareAsync()
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
                     }
                 }
             }
