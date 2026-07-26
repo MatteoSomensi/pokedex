@@ -116,7 +116,7 @@ class PokemonListViewModel @Inject constructor(
 
     private fun loadNextPage() {
         val currentState = uiState.value
-        if (currentState.isLoading || currentState.isFetchingNextPage || currentState.isEndReached) {
+        if (currentState.isLoading || currentState.isFetchingNextPage || currentState.isEndReached || currentState.showFavoritesOnly) {
             return
         }
 
@@ -158,26 +158,37 @@ class PokemonListViewModel @Inject constructor(
         }
     }
 
+    private var filterJob: Job? = null
+
     private fun applyFilters() {
-        setState {
-            val query = searchQuery.trim().lowercase()
-            val filtered = pokemonList.filter { pokemon ->
+        filterJob?.cancel()
+        filterJob = viewModelScope.launch {
+            val state = uiState.value
+            
+            val baseList = if (state.showFavoritesOnly) {
+                repository.getFavoritePokemonList().getOrDefault(emptyList())
+            } else {
+                state.pokemonList
+            }
+
+            val query = state.searchQuery.trim().lowercase()
+            val filtered = baseList.filter { pokemon ->
                 val matchesQuery = if (query.isNotEmpty()) {
                     pokemon.name.lowercase()
                         .contains(other = query) || pokemon.id.toString() == query
                 } else true
 
-                val matchesType = if (selectedType != null) {
-                    pokemon.types.any { it.equals(other = selectedType, ignoreCase = true) }
+                val matchesType = if (state.selectedType != null) {
+                    pokemon.types.any { it.equals(other = state.selectedType, ignoreCase = true) }
                 } else true
 
-                val matchesFavorites = if (showFavoritesOnly) {
+                val matchesFavorites = if (state.showFavoritesOnly) {
                     pokemon.isFavorite
                 } else true
 
                 matchesQuery && matchesType && matchesFavorites
             }
-            copy(filteredPokemonList = filtered)
+            setState { copy(filteredPokemonList = filtered) }
         }
     }
 
