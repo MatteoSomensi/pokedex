@@ -38,21 +38,18 @@ class PokemonRepositoryImpl @Inject constructor(
 
     override suspend fun getPokemonList(limit: Int, offset: Int): Result<List<Pokemon>> =
         runCatching {
-            // 1. Try to load from local database first
-            if (offset == 0) isEndReached = false // Reset pagination on refresh
+            if (offset == 0) isEndReached = false
             
             val localList = dao.getPokemonList(limit, offset)
             if (localList.size == limit || (localList.isNotEmpty() && isEndReached)) {
                 return@runCatching localList.map { it.toDomain() }
             }
 
-            // 2. If not enough data locally, fetch from network
             val listResponse = api.getPokemonList(limit = limit, offset = offset)
             if (listResponse.results.size < limit) {
                 isEndReached = true
             }
 
-            // Chunk requests to avoid rate limits and timeouts
             val chunkResults = mutableListOf<Pokemon>()
             listResponse.results.chunked(10).forEach { chunk ->
                 val partialResults = coroutineScope {
@@ -65,7 +62,6 @@ class PokemonRepositoryImpl @Inject constructor(
                 chunkResults.addAll(partialResults)
             }
 
-            // 3. Save to local database
             dao.insertAll(chunkResults.map { PokemonEntity.fromDomain(it) })
 
             chunkResults

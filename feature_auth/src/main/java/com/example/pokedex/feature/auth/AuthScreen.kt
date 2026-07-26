@@ -186,8 +186,6 @@ internal fun AuthScreen(
                     Icons.Filled.Lock
                 }
 
-                // Note: using Lock icon as fallback since Visibility might need material-icons-extended
-                // The label will change regardless to assist screen readers.
                 val description =
                     if (passwordVisible) stringResource(id = R.string.auth_hide_password) else stringResource(
                         id = R.string.auth_show_password

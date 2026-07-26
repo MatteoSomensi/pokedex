@@ -32,7 +32,6 @@ class PokemonDetailViewModel @Inject constructor(
         val currentPokemon = uiState.value.pokemon ?: return
         val newFavoriteStatus = !currentPokemon.isFavorite
 
-        // Optistic UI update
         setState {
             copy(pokemon = currentPokemon.copy(isFavorite = newFavoriteStatus))
         }
@@ -40,11 +39,10 @@ class PokemonDetailViewModel @Inject constructor(
         viewModelScope.launch {
             val result = repository.toggleFavoriteStatus(currentPokemon.id, newFavoriteStatus)
             if (result.isFailure) {
-                // Revert on failure
                 setState {
                     copy(
                         pokemon = currentPokemon,
-                        errorMessage = UiText.StringResource(id = R.string.error_default) // Ideally a specific error message
+                        errorMessage = UiText.StringResource(id = R.string.error_default)
                     )
                 }
             }

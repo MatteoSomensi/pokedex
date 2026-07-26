@@ -10,8 +10,7 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
             pluginManager.apply("pokedex.android.compose")
 
             dependencies {
-                // Here we would typically add common feature dependencies
-                // like ViewModel, Navigation, etc. if we can resolve the catalog here.
+                // Dependencies should be added in build.gradle.kts instead of here
             }
         }
     }

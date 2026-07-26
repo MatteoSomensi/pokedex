@@ -314,7 +314,7 @@ fun PokemonCard(pokemon: Pokemon, onClick: () -> Unit) {
             if (pokemon.isFavorite) {
                 Icon(
                     imageVector = Icons.Default.Favorite,
-                    contentDescription = null, // decorative here
+                    contentDescription = null,
                     tint = MaterialTheme.colorScheme.error,
                     modifier = Modifier
                         .align(Alignment.TopEnd)

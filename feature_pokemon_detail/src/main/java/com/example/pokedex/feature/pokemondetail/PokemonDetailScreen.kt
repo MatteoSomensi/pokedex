@@ -115,8 +115,6 @@ fun PokemonDetailScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                // Top bar is transparent, so we don't necessarily need top padding, 
-                // but we apply bottom padding inside the content scroll.
                 .padding(top = paddingValues.calculateTopPadding())
         ) {
             when {
