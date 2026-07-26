@@ -62,6 +62,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.example.pokedex.core.R
@@ -96,34 +97,40 @@ fun PokemonDetailScreen(
         }
     }
 
-    LaunchedEffect(key1 = Unit) {
-        viewModel.uiEffect.collect { effect ->
-            when (effect) {
-                is PokemonDetailEffect.PlayAudio -> {
-                    try {
+    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
+    LaunchedEffect(viewModel, lifecycleOwner) {
+        lifecycleOwner.lifecycle.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
+            viewModel.uiEffect.collect { effect ->
+                when (effect) {
+                    is PokemonDetailEffect.PlayAudio -> {
                         mediaPlayer?.release()
-                        mediaPlayer = MediaPlayer().apply {
-                            setAudioAttributes(
-                                AudioAttributes.Builder()
-                                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                                    .setUsage(AudioAttributes.USAGE_MEDIA)
-                                    .build()
-                            )
-                            setDataSource(effect.url)
-                            setOnPreparedListener { it.start() }
-                            setOnCompletionListener { 
-                                it.release()
-                                mediaPlayer = null
+                        val player = MediaPlayer()
+                        try {
+                            player.apply {
+                                setAudioAttributes(
+                                    AudioAttributes.Builder()
+                                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                                        .setUsage(AudioAttributes.USAGE_MEDIA)
+                                        .build()
+                                )
+                                setDataSource(effect.url)
+                                setOnPreparedListener { it.start() }
+                                setOnCompletionListener { 
+                                    it.release()
+                                    if (mediaPlayer == it) mediaPlayer = null
+                                }
+                                setOnErrorListener { mp, _, _ ->
+                                    mp.release()
+                                    if (mediaPlayer == mp) mediaPlayer = null
+                                    true
+                                }
+                                prepareAsync()
                             }
-                            setOnErrorListener { mp, _, _ ->
-                                mp.release()
-                                mediaPlayer = null
-                                true
-                            }
-                            prepareAsync()
+                            mediaPlayer = player
+                        } catch (e: Exception) {
+                            player.release()
+                            e.printStackTrace()
                         }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
                     }
                 }
             }
