@@ -60,6 +60,8 @@ import coil.compose.AsyncImage
 import com.example.pokedex.core.R
 import com.example.pokedex.core.ui.DevicePreviews
 import com.example.pokedex.domain.model.Pokemon
+import com.example.pokedex.domain.model.heightInMeters
+import com.example.pokedex.domain.model.weightInKg
 import com.example.pokedex.theme.LocalDimensions
 import com.example.pokedex.theme.LocalWeights
 import com.example.pokedex.theme.LocalAnimations
@@ -242,7 +244,7 @@ fun PokemonDetailContent(pokemon: Pokemon) {
                                 Text(
                                     text = stringResource(
                                         id = R.string.height_format,
-                                        pokemon.height / 10f
+                                        pokemon.heightInMeters
                                     ),
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold
@@ -257,7 +259,7 @@ fun PokemonDetailContent(pokemon: Pokemon) {
                                 Text(
                                     text = stringResource(
                                         id = R.string.weight_format,
-                                        pokemon.weight / 10f
+                                        pokemon.weightInKg
                                     ),
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold

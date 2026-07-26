@@ -14,3 +14,9 @@ data class Pokemon(
     val weight: Int = 0,
     val stats: Map<String, Int> = emptyMap()
 )
+
+val Pokemon.heightInMeters: Float
+    get() = height / 10f
+
+val Pokemon.weightInKg: Float
+    get() = weight / 10f
