@@ -59,13 +59,13 @@ fun AuthRoute(
     webClientId: String,
     onAuthSuccess: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: AuthViewModel = hiltViewModel()
+    viewModel: AuthViewModel = hiltViewModel<AuthViewModel>()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
-    LaunchedEffect(uiState.isSuccess) {
+    LaunchedEffect(key1 = uiState.isSuccess) {
         if (uiState.isSuccess) {
             onAuthSuccess()
         }

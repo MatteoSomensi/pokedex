@@ -66,11 +66,11 @@ import com.example.pokedex.theme.PokedexTheme
 fun PokemonListScreen(
     onNavigateToDetail: (Int) -> Unit,
     onNavigateToProfile: () -> Unit,
-    viewModel: PokemonListViewModel = hiltViewModel()
+    viewModel: PokemonListViewModel = hiltViewModel<PokemonListViewModel>()
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(viewModel.uiEffect) {
+    LaunchedEffect(key1 = viewModel.uiEffect) {
         viewModel.uiEffect.collect { effect ->
             when (effect) {
                 is PokemonListEffect.NavigateToDetail -> onNavigateToDetail(effect.pokemonId)
@@ -189,7 +189,7 @@ fun PokemonListScreenContent(
                             }
                         }
 
-                        LaunchedEffect(shouldLoadMore) {
+                        LaunchedEffect(key1 = shouldLoadMore) {
                             if (shouldLoadMore && !state.isFetchingNextPage && !state.isEndReached) {
                                 onEvent(PokemonListEvent.LoadNextPage)
                             }

@@ -74,7 +74,7 @@ import com.example.pokedex.theme.PokedexTheme
 fun PokemonDetailScreen(
     pokemonId: Int,
     onBackClick: () -> Unit,
-    viewModel: PokemonDetailViewModel = hiltViewModel()
+    viewModel: PokemonDetailViewModel = hiltViewModel<PokemonDetailViewModel>()
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 

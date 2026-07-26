@@ -45,7 +45,7 @@ import com.example.pokedex.theme.LocalDimensions
 fun ProfileScreen(
     onNavigateBack: () -> Unit,
     onNavigateToAuth: () -> Unit,
-    viewModel: ProfileViewModel = hiltViewModel()
+    viewModel: ProfileViewModel = hiltViewModel<ProfileViewModel>()
 ) {
     val currentUser by viewModel.currentUser.collectAsStateWithLifecycle()
 
