@@ -11,6 +11,11 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * ViewModel managing the state and logic for the User Profile screen.
+ * Exposes the currently authenticated user's data and handles user session actions
+ * such as logging out via [AuthRepository].
+ */
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val authRepository: AuthRepository
