@@ -67,7 +67,8 @@ fun PokedexTheme(
     }
 
     CompositionLocalProvider(
-        LocalDimensions provides dimensions
+        LocalDimensions provides dimensions,
+        LocalWeights provides Weights()
     ) {
         MaterialTheme(colorScheme = colorScheme, typography = Typography, content = content)
     }

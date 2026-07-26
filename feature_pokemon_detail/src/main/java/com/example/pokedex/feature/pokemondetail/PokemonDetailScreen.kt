@@ -73,7 +73,7 @@ fun PokemonDetailScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(pokemonId) {
-        viewModel.setEvent(PokemonDetailEvent.LoadPokemon(pokemonId))
+        viewModel.setEvent(event = PokemonDetailEvent.LoadPokemon(id = pokemonId))
     }
 
     Scaffold(
@@ -141,24 +141,24 @@ fun PokemonDetailContent(pokemon: Pokemon) {
     ) {
         AnimatedVisibility(
             visible = isVisible,
-            enter = fadeIn(animationSpec = tween(500)) + slideInVertically(initialOffsetY = { -50 })
+            enter = fadeIn(animationSpec = tween(durationMillis = 500)) + slideInVertically(initialOffsetY = { -50 })
         ) {
             AsyncImage(
                 model = pokemon.imageUrl,
                 contentDescription = stringResource(id = R.string.cd_pokemon_image, pokemon.name),
                 modifier = Modifier
-                    .size(dimensions.imageSizeDetail)
-                    .clip(RoundedCornerShape(dimensions.cornerRadiusLarge))
-                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                    .size(size = dimensions.imageSizeDetail)
+                    .clip(shape = RoundedCornerShape(size = dimensions.cornerRadiusLarge))
+                    .background(color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
                     .padding(all = dimensions.paddingMedium)
             )
         }
 
-        Spacer(modifier = Modifier.height(dimensions.paddingLarge))
+        Spacer(modifier = Modifier.height(height = dimensions.paddingLarge))
 
         AnimatedVisibility(
             visible = isVisible,
-            enter = fadeIn(animationSpec = tween(700)) + slideInVertically(initialOffsetY = { 50 })
+            enter = fadeIn(animationSpec = tween(durationMillis = 700)) + slideInVertically(initialOffsetY = { 50 })
         ) {
             Column(
                 modifier = Modifier.fillMaxWidth(),
@@ -171,16 +171,16 @@ fun PokemonDetailContent(pokemon: Pokemon) {
                     color = MaterialTheme.colorScheme.primary
                 )
 
-                Spacer(modifier = Modifier.height(dimensions.paddingMedium))
+                Spacer(modifier = Modifier.height(height = dimensions.paddingMedium))
 
                 FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(dimensions.paddingSmall),
-                    verticalArrangement = Arrangement.spacedBy(dimensions.paddingSmall)
+                    horizontalArrangement = Arrangement.spacedBy(space = dimensions.paddingSmall),
+                    verticalArrangement = Arrangement.spacedBy(space = dimensions.paddingSmall)
                 ) {
                     pokemon.types.forEach { type ->
                         Surface(
                             color = MaterialTheme.colorScheme.primaryContainer,
-                            shape = RoundedCornerShape(dimensions.cornerRadiusExtraLarge)
+                            shape = RoundedCornerShape(size = dimensions.cornerRadiusExtraLarge)
                         ) {
                             Text(
                                 text = type,
@@ -195,11 +195,11 @@ fun PokemonDetailContent(pokemon: Pokemon) {
                     }
                 }
 
-                Spacer(modifier = Modifier.height(dimensions.paddingExtraLarge))
+                Spacer(modifier = Modifier.height(height = dimensions.paddingExtraLarge))
 
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(dimensions.cornerRadiusExtraLarge),
+                    shape = RoundedCornerShape(size = dimensions.cornerRadiusExtraLarge),
                     elevation = CardDefaults.cardElevation(defaultElevation = dimensions.elevationLarge),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surface
@@ -272,7 +272,8 @@ fun PokemonDetailContent(pokemon: Pokemon) {
 fun StatRow(statName: String, statValue: Int) {
     val formattedName = statName.replaceFirstChar { it.uppercase() }
     val progress = statValue / 255f
-    val dimensions = LocalDimensions.current
+    val dimensions = com.example.pokedex.theme.LocalDimensions.current
+    val weights = com.example.pokedex.theme.LocalWeights.current
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -281,7 +282,7 @@ fun StatRow(statName: String, statValue: Int) {
         Text(
             text = formattedName,
             style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.weight(0.3f)
+            modifier = Modifier.weight(weights.statNameWeight)
         )
         Text(
             text = statValue.toString(),
@@ -294,7 +295,7 @@ fun StatRow(statName: String, statValue: Int) {
         LinearProgressIndicator(
             progress = { progress },
             modifier = Modifier
-                .weight(0.7f)
+                .weight(weights.statProgressBarWeight)
                 .height(dimensions.statProgressBarHeight)
                 .clip(RoundedCornerShape(dimensions.cornerRadiusSmall)),
             color = if (progress > 0.5f) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
