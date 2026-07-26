@@ -105,6 +105,8 @@ fun AuthRoute(
                     } else {
                         viewModel.setAuthError(errorRes = R.string.error_auth_failed)
                     }
+                } catch (_: androidx.credentials.exceptions.GetCredentialCancellationException) {
+                    viewModel.setLoading(isLoading = false)
                 } catch (
                     e: CancellationException
                 ) {

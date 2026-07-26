@@ -33,17 +33,21 @@ class PokemonRepositoryImpl @Inject constructor(
     private var cachedTypes: List<String>? = null
     private val listMutex = Mutex()
     private val typesMutex = Mutex()
+    private var isEndReached = false
 
     override suspend fun getPokemonList(limit: Int, offset: Int): Result<List<Pokemon>> =
         runCatching {
             // 1. Try to load from local database first
             val localList = dao.getPokemonList(limit, offset)
-            if (localList.isNotEmpty() && localList.size == limit) {
+            if (localList.size == limit || (localList.isNotEmpty() && isEndReached)) {
                 return@runCatching localList.map { it.toDomain() }
             }
 
             // 2. If not enough data locally, fetch from network
             val listResponse = api.getPokemonList(limit = limit, offset = offset)
+            if (listResponse.results.size < limit) {
+                isEndReached = true
+            }
 
             // Chunk requests to avoid rate limits and timeouts
             val chunkResults = mutableListOf<Pokemon>()
@@ -122,16 +126,6 @@ class PokemonRepositoryImpl @Inject constructor(
     ): Result<List<Pokemon>> = runCatching {
         val q = query.trim().lowercase()
         val queryId = q.toIntOrNull()
-
-        // Local search first
-        val localResults = dao.searchPokemon(q, queryId, limit, offset)
-        if (localResults.isNotEmpty()) {
-            // For search we might not have all results locally, but offline-first means
-            // we rely on local DB. If we want full search, we might need a network sync of the full index.
-            // To keep it simple, we just return local results if we have them.
-            // Ideally we'd fetch from network if empty, but search pagination is tricky with partial caches.
-            return@runCatching localResults.map { it.toDomain() }
-        }
 
         listMutex.withLock {
             if (globalListCache == null) {
