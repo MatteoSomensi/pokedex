@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.pokedex.data.local.entity.PokemonEntity
+import com.example.pokedex.data.local.entity.TypeEntity
 
 @Dao
 @JvmSuppressWildcards
@@ -27,4 +28,10 @@ interface PokemonDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(pokemon: PokemonEntity): Long
+
+    @Query("SELECT * FROM types")
+    suspend fun getTypes(): List<TypeEntity>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertTypes(types: List<TypeEntity>)
 }

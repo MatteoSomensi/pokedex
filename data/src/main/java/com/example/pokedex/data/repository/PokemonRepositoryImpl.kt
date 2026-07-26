@@ -7,6 +7,7 @@ import com.example.pokedex.domain.model.Pokemon
 import com.example.pokedex.domain.repository.PokemonRepository
 import com.example.pokedex.data.local.dao.PokemonDao
 import com.example.pokedex.data.local.entity.PokemonEntity
+import com.example.pokedex.data.local.entity.TypeEntity
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -32,7 +33,7 @@ class PokemonRepositoryImpl @Inject constructor(
     override suspend fun getPokemonList(limit: Int, offset: Int): Result<List<Pokemon>> = runCatching {
         // 1. Try to load from local database first
         val localList = dao.getPokemonList(limit, offset)
-        if (localList.isNotEmpty()) {
+        if (localList.isNotEmpty() && localList.size == limit) {
             return@runCatching localList.map { it.toDomain() }
         }
 
@@ -65,7 +66,7 @@ class PokemonRepositoryImpl @Inject constructor(
         dao.insertAll(chunkResults.map { PokemonEntity.fromDomain(it) })
 
         chunkResults
-    }
+    }.onFailure { if (it is kotlinx.coroutines.CancellationException) throw it }
 
     override suspend fun getPokemonDetail(id: Int): Result<Pokemon> = runCatching {
         val local = dao.getPokemonById(id)
@@ -85,18 +86,28 @@ class PokemonRepositoryImpl @Inject constructor(
         )
         dao.insert(PokemonEntity.fromDomain(pokemon))
         pokemon
-    }
+    }.onFailure { if (it is kotlinx.coroutines.CancellationException) throw it }
 
     override suspend fun getPokemonTypes(): Result<List<String>> = runCatching {
         typesMutex.withLock {
             cachedTypes?.let { return@withLock it }
+            
+            val localTypes = dao.getTypes()
+            if (localTypes.isNotEmpty()) {
+                val types = localTypes.map { it.name }
+                cachedTypes = types
+                return@withLock types
+            }
+
             val response = api.getPokemonTypes()
             val types = response.results.map { it.name.replaceFirstChar { char -> char.uppercase() } }
                 .filter { it != "Unknown" && it != "Shadow" }
+            
+            dao.insertTypes(types.map { TypeEntity(it) })
             cachedTypes = types
             types
         }
-    }
+    }.onFailure { if (it is kotlinx.coroutines.CancellationException) throw it }
 
     override suspend fun searchPokemon(
         query: String,
@@ -133,7 +144,8 @@ class PokemonRepositoryImpl @Inject constructor(
             val partialResults = coroutineScope {
                 batch.map { resultItem ->
                     async {
-                        val localDetail = dao.getPokemonById(resultItem.name.toIntOrNull() ?: -1)
+                        val pokemonId = resultItem.url.trimEnd('/').substringAfterLast('/').toIntOrNull() ?: -1
+                        val localDetail = dao.getPokemonById(pokemonId)
                         if (localDetail != null) {
                             localDetail.toDomain()
                         } else {
@@ -156,7 +168,7 @@ class PokemonRepositoryImpl @Inject constructor(
         
         dao.insertAll(chunkResults.map { PokemonEntity.fromDomain(it) })
         chunkResults
-    }
+    }.onFailure { if (it is kotlinx.coroutines.CancellationException) throw it }
 
     companion object {
         private const val MAX_POKEMON_LIMIT = 10000
