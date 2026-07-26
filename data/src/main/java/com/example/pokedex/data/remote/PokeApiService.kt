@@ -2,6 +2,7 @@ package com.example.pokedex.data.remote
 
 import com.example.pokedex.data.remote.model.PokemonDetailResponse
 import com.example.pokedex.data.remote.model.PokemonListResponse
+import com.example.pokedex.data.remote.model.TypeListResponse
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -24,5 +25,5 @@ interface PokeApiService {
     ): PokemonDetailResponse
 
     @GET("type")
-    suspend fun getPokemonTypes(): com.example.pokedex.data.remote.model.TypeListResponse
+    suspend fun getPokemonTypes(): TypeListResponse
 }

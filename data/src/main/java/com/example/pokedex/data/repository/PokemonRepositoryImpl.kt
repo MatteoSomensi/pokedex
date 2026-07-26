@@ -5,6 +5,8 @@ import com.example.pokedex.data.remote.PokeApiService
 import com.example.pokedex.data.remote.model.PokemonResultItem
 import com.example.pokedex.domain.model.Pokemon
 import com.example.pokedex.domain.repository.PokemonRepository
+import com.example.pokedex.data.local.dao.PokemonDao
+import com.example.pokedex.data.local.entity.PokemonEntity
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -17,7 +19,7 @@ import javax.inject.Inject
  */
 class PokemonRepositoryImpl @Inject constructor(
     private val api: PokeApiService,
-    private val dao: com.example.pokedex.data.local.dao.PokemonDao
+    private val dao: PokemonDao
 ) : PokemonRepository {
 
     private var globalListCache: List<PokemonResultItem>? = null
@@ -52,7 +54,7 @@ class PokemonRepositoryImpl @Inject constructor(
         }
 
         // 3. Save to local database
-        dao.insertAll(chunkResults.map { com.example.pokedex.data.local.entity.PokemonEntity.fromDomain(it) })
+        dao.insertAll(chunkResults.map { PokemonEntity.fromDomain(it) })
 
         chunkResults
     }
@@ -73,7 +75,7 @@ class PokemonRepositoryImpl @Inject constructor(
             weight = detail.weight,
             stats = detail.stats.associate { it.stat.name to it.baseStat }
         )
-        dao.insert(com.example.pokedex.data.local.entity.PokemonEntity.fromDomain(pokemon))
+        dao.insert(PokemonEntity.fromDomain(pokemon))
         pokemon
     }
 
@@ -131,7 +133,7 @@ class PokemonRepositoryImpl @Inject constructor(
             }.awaitAll()
         }
         
-        dao.insertAll(chunkResults.map { com.example.pokedex.data.local.entity.PokemonEntity.fromDomain(it) })
+        dao.insertAll(chunkResults.map { PokemonEntity.fromDomain(it) })
         chunkResults
     }
 

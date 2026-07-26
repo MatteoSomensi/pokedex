@@ -61,6 +61,7 @@ import com.example.pokedex.core.R
 import com.example.pokedex.core.ui.DevicePreviews
 import com.example.pokedex.domain.model.Pokemon
 import com.example.pokedex.theme.LocalDimensions
+import com.example.pokedex.theme.LocalWeights
 import com.example.pokedex.theme.PokedexTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -272,8 +273,8 @@ fun PokemonDetailContent(pokemon: Pokemon) {
 fun StatRow(statName: String, statValue: Int) {
     val formattedName = statName.replaceFirstChar { it.uppercase() }
     val progress = statValue / 255f
-    val dimensions = com.example.pokedex.theme.LocalDimensions.current
-    val weights = com.example.pokedex.theme.LocalWeights.current
+    val dimensions = LocalDimensions.current
+    val weights = LocalWeights.current
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -282,22 +283,22 @@ fun StatRow(statName: String, statValue: Int) {
         Text(
             text = formattedName,
             style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.weight(weights.statNameWeight)
+            modifier = Modifier.weight(weight = weights.statNameWeight)
         )
         Text(
             text = statValue.toString(),
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.width(dimensions.statValueWidth),
+            modifier = Modifier.width(width = dimensions.statValueWidth),
             textAlign = TextAlign.End
         )
-        Spacer(modifier = Modifier.width(dimensions.paddingSmall))
+        Spacer(modifier = Modifier.width(width = dimensions.paddingSmall))
         LinearProgressIndicator(
             progress = { progress },
             modifier = Modifier
-                .weight(weights.statProgressBarWeight)
-                .height(dimensions.statProgressBarHeight)
-                .clip(RoundedCornerShape(dimensions.cornerRadiusSmall)),
+                .weight(weight = weights.statProgressBarWeight)
+                .height(height = dimensions.statProgressBarHeight)
+                .clip(shape = RoundedCornerShape(size = dimensions.cornerRadiusSmall)),
             color = if (progress > 0.5f) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
             trackColor = MaterialTheme.colorScheme.surfaceVariant
         )
