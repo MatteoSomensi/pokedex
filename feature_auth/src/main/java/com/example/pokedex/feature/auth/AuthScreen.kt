@@ -102,6 +102,8 @@ fun AuthRoute(
                     } else {
                         viewModel.setAuthError(R.string.error_auth_failed)
                     }
+                } catch (e: kotlinx.coroutines.CancellationException) {
+                    throw e
                 } catch (e: Exception) {
                     viewModel.setAuthError(R.string.error_auth_failed)
                 }

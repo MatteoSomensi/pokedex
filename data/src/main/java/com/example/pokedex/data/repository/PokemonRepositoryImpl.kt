@@ -26,34 +26,39 @@ class PokemonRepositoryImpl @Inject constructor(
 
     private var globalListCache: List<PokemonResultItem>? = null
     private var cachedTypes: List<String>? = null
-    private val mutex = Mutex()
+    private val listMutex = Mutex()
+    private val typesMutex = Mutex()
 
     override suspend fun getPokemonList(limit: Int, offset: Int): Result<List<Pokemon>> = runCatching {
         // 1. Try to load from local database first
         val localList = dao.getPokemonList(limit, offset)
-        if (localList.isNotEmpty() && localList.size == limit) {
+        if (localList.isNotEmpty()) {
             return@runCatching localList.map { it.toDomain() }
         }
 
         // 2. If not enough data locally, fetch from network
         val listResponse = api.getPokemonList(limit = limit, offset = offset)
         
-        val chunkResults = coroutineScope {
-            listResponse.results.map { resultItem ->
-                async {
-                    val detail = api.getPokemonDetail(resultItem.name)
-                    val pokemon = Pokemon(
-                        id = detail.id,
-                        name = detail.name,
-                        imageUrl = "${Constants.POKE_IMAGE_BASE_URL}${detail.id}.png",
-                        types = detail.types.map { it.type.name.replaceFirstChar { char -> char.uppercase() } },
-                        height = detail.height,
-                        weight = detail.weight,
-                        stats = detail.stats.associate { it.stat.name to it.baseStat }
-                    )
-                    pokemon
-                }
-            }.awaitAll()
+        // Chunk requests to avoid rate limits and timeouts
+        val chunkResults = mutableListOf<Pokemon>()
+        listResponse.results.chunked(10).forEach { chunk ->
+            val partialResults = coroutineScope {
+                chunk.map { resultItem ->
+                    async {
+                        val detail = api.getPokemonDetail(resultItem.name)
+                        Pokemon(
+                            id = detail.id,
+                            name = detail.name,
+                            imageUrl = "${Constants.POKE_IMAGE_BASE_URL}${detail.id}.png",
+                            types = detail.types.map { it.type.name.replaceFirstChar { char -> char.uppercase() } },
+                            height = detail.height,
+                            weight = detail.weight,
+                            stats = detail.stats.associate { it.stat.name to it.baseStat }
+                        )
+                    }
+                }.awaitAll()
+            }
+            chunkResults.addAll(partialResults)
         }
 
         // 3. Save to local database
@@ -83,7 +88,7 @@ class PokemonRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getPokemonTypes(): Result<List<String>> = runCatching {
-        mutex.withLock {
+        typesMutex.withLock {
             cachedTypes?.let { return@withLock it }
             val response = api.getPokemonTypes()
             val types = response.results.map { it.name.replaceFirstChar { char -> char.uppercase() } }
@@ -111,7 +116,7 @@ class PokemonRepositoryImpl @Inject constructor(
              return@runCatching localResults.map { it.toDomain() }
         }
 
-        mutex.withLock {
+        listMutex.withLock {
             if (globalListCache == null) {
                 val fullList = api.getPokemonList(limit = MAX_POKEMON_LIMIT, offset = 0)
                 globalListCache = fullList.results
@@ -123,21 +128,30 @@ class PokemonRepositoryImpl @Inject constructor(
         }
         val chunk = filtered.drop(offset).take(limit)
 
-        val chunkResults = coroutineScope {
-            chunk.map { resultItem ->
-                async {
-                    val detail = api.getPokemonDetail(resultItem.name)
-                    Pokemon(
-                        id = detail.id,
-                        name = detail.name,
-                        imageUrl = "${Constants.POKE_IMAGE_BASE_URL}${detail.id}.png",
-                        types = detail.types.map { it.type.name.replaceFirstChar { char -> char.uppercase() } },
-                        height = detail.height,
-                        weight = detail.weight,
-                        stats = detail.stats.associate { it.stat.name to it.baseStat }
-                    )
-                }
-            }.awaitAll()
+        val chunkResults = mutableListOf<Pokemon>()
+        chunk.chunked(10).forEach { batch ->
+            val partialResults = coroutineScope {
+                batch.map { resultItem ->
+                    async {
+                        val localDetail = dao.getPokemonById(resultItem.name.toIntOrNull() ?: -1)
+                        if (localDetail != null) {
+                            localDetail.toDomain()
+                        } else {
+                            val detail = api.getPokemonDetail(resultItem.name)
+                            Pokemon(
+                                id = detail.id,
+                                name = detail.name,
+                                imageUrl = "${Constants.POKE_IMAGE_BASE_URL}${detail.id}.png",
+                                types = detail.types.map { it.type.name.replaceFirstChar { char -> char.uppercase() } },
+                                height = detail.height,
+                                weight = detail.weight,
+                                stats = detail.stats.associate { it.stat.name to it.baseStat }
+                            )
+                        }
+                    }
+                }.awaitAll()
+            }
+            chunkResults.addAll(partialResults)
         }
         
         dao.insertAll(chunkResults.map { PokemonEntity.fromDomain(it) })
