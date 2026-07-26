@@ -19,7 +19,8 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class AuthViewModel @Inject constructor(
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    @javax.inject.Named("web_client_id") val webClientId: String
 ) : ViewModel() {
 
     val uiState: StateFlow<AuthState>

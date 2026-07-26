@@ -62,19 +62,7 @@ fun MainNavigation() {
                     )
                 }
                 entry<Auth> {
-                    val context = LocalContext.current
-                    val webClientId = remember(context) {
-                        @android.annotation.SuppressLint("DiscouragedApi")
-                        val resId = context.resources.getIdentifier(
-                            "default_web_client_id",
-                            "string",
-                            context.packageName
-                        )
-                        val fromRes = if (resId != 0) context.getString(resId) else ""
-                        fromRes.ifBlank { BuildConfig.WEB_CLIENT_ID }
-                    }
                     AuthRoute(
-                        webClientId = webClientId,
                         onAuthSuccess = {
                             backStack.clear()
                             backStack.add(PokemonList)

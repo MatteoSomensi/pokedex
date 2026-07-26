@@ -55,7 +55,6 @@ import kotlin.coroutines.cancellation.CancellationException
 
 @Composable
 fun AuthRoute(
-    webClientId: String,
     onAuthSuccess: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: AuthViewModel = hiltViewModel<AuthViewModel>()
@@ -83,7 +82,7 @@ fun AuthRoute(
                     val credentialManager = CredentialManager.create(context = context)
                     val googleIdOption = GetGoogleIdOption.Builder()
                         .setFilterByAuthorizedAccounts(filterByAuthorizedAccounts = false)
-                        .setServerClientId(serverClientId = webClientId)
+                        .setServerClientId(serverClientId = viewModel.webClientId)
                         .setAutoSelectEnabled(autoSelectEnabled = true)
                         .build()
 
