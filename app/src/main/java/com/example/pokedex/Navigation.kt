@@ -65,7 +65,7 @@ fun MainNavigation() {
                     AuthRoute(
                         onAuthSuccess = {
                             backStack.clear()
-                            backStack.add(PokemonList)
+                            backStack.add(element = PokemonList)
                         }
                     )
                 }
@@ -74,7 +74,7 @@ fun MainNavigation() {
                         onNavigateBack = { backStack.removeLastOrNull() },
                         onNavigateToAuth = {
                             backStack.clear()
-                            backStack.add(Auth)
+                            backStack.add(element = Auth)
                         }
                     )
                 }

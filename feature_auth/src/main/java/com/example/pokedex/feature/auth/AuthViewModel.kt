@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import javax.inject.Named
 
 /**
  * ViewModel managing the state and logic for the Authentication screen.
@@ -20,7 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private val authRepository: AuthRepository,
-    @javax.inject.Named("web_client_id") val webClientId: String
+    @Named("web_client_id") val webClientId: String
 ) : ViewModel() {
 
     val uiState: StateFlow<AuthState>
