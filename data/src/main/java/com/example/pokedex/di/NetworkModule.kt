@@ -1,5 +1,6 @@
 package com.example.pokedex.di
 
+import com.example.pokedex.core.util.Constants
 import com.example.pokedex.data.remote.PokeApiService
 import dagger.Module
 import dagger.Provides
@@ -45,7 +46,7 @@ object NetworkModule {
     fun provideRetrofit(okHttpClient: OkHttpClient, json: Json): Retrofit {
         val contentType = "application/json; charset=UTF8".toMediaType()
         return Retrofit.Builder()
-            .baseUrl("https://pokeapi.co/api/v2/")
+            .baseUrl(Constants.POKE_API_BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(json.asConverterFactory(contentType))
             .build()

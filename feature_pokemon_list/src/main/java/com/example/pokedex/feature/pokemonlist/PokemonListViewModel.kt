@@ -10,6 +10,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
 @HiltViewModel
 
@@ -24,7 +25,7 @@ class PokemonListViewModel @Inject constructor(
     override fun createInitialState(): PokemonListState = PokemonListState()
 
     init {
-        setEvent(PokemonListEvent.LoadPokemon)
+        setEvent(event = PokemonListEvent.LoadPokemon)
     }
 
     private var searchJob: Job? = null
@@ -34,14 +35,14 @@ class PokemonListViewModel @Inject constructor(
             is PokemonListEvent.LoadPokemon -> loadPokemon()
             is PokemonListEvent.LoadNextPage -> loadNextPage()
             is PokemonListEvent.OnPokemonClicked -> {
-                setEffect { PokemonListEffect.NavigateToDetail(event.pokemonId) }
+                setEffect { PokemonListEffect.NavigateToDetail(pokemonId = event.pokemonId) }
             }
 
             is PokemonListEvent.OnSearchQueryChanged -> {
                 setState { copy(searchQuery = event.query) }
                 searchJob?.cancel()
                 searchJob = viewModelScope.launch {
-                    delay(300)
+                    delay(duration = SEARCH_DEBOUNCE)
                     loadPokemon()
                 }
             }
@@ -59,9 +60,9 @@ class PokemonListViewModel @Inject constructor(
             setState { copy(isLoading = true, errorMessage = null, offset = 0) }
 
             val fetcher = if (query.isNotBlank()) {
-                repository.searchPokemon(query, limit = 20, offset = 0)
+                repository.searchPokemon(query = query, limit = PAGE_SIZE, offset = 0)
             } else {
-                repository.getPokemonList(limit = 20, offset = 0)
+                repository.getPokemonList(limit = PAGE_SIZE, offset = 0)
             }
 
             fetcher.fold(
@@ -71,7 +72,7 @@ class PokemonListViewModel @Inject constructor(
                             isLoading = false,
                             pokemonList = list,
                             offset = list.size,
-                            isEndReached = list.isEmpty() || list.size < 20
+                            isEndReached = list.isEmpty() || list.size < PAGE_SIZE
                         )
                     }
                     applyFilters()
@@ -80,7 +81,7 @@ class PokemonListViewModel @Inject constructor(
                     setState {
                         copy(
                             isLoading = false,
-                            errorMessage = UiText.StringResource(R.string.error_default)
+                            errorMessage = UiText.StringResource(id = R.string.error_default)
                         )
                     }
                 }
@@ -99,9 +100,13 @@ class PokemonListViewModel @Inject constructor(
 
             val query = currentState.searchQuery
             val fetcher = if (query.isNotBlank()) {
-                repository.searchPokemon(query, limit = 20, offset = currentState.offset)
+                repository.searchPokemon(
+                    query = query,
+                    limit = PAGE_SIZE,
+                    offset = currentState.offset
+                )
             } else {
-                repository.getPokemonList(limit = 20, offset = currentState.offset)
+                repository.getPokemonList(limit = PAGE_SIZE, offset = currentState.offset)
             }
 
             fetcher.fold(
@@ -111,12 +116,12 @@ class PokemonListViewModel @Inject constructor(
                             isFetchingNextPage = false,
                             pokemonList = currentState.pokemonList + list,
                             offset = currentState.offset + list.size,
-                            isEndReached = list.isEmpty() || list.size < 20
+                            isEndReached = list.isEmpty() || list.size < PAGE_SIZE
                         )
                     }
                     applyFilters()
                 },
-                onFailure = { error ->
+                onFailure = { _ ->
                     setState {
                         copy(
                             isFetchingNextPage = false,
@@ -133,16 +138,21 @@ class PokemonListViewModel @Inject constructor(
             val query = searchQuery.trim().lowercase()
             val filtered = pokemonList.filter { pokemon ->
                 val matchesQuery = if (query.isNotEmpty()) {
-                    pokemon.name.lowercase().contains(query) || pokemon.id.toString() == query
+                    pokemon.name.lowercase().contains(other = query) || pokemon.id.toString() == query
                 } else true
 
                 val matchesType = if (selectedType != null) {
-                    pokemon.types.any { it.equals(selectedType, ignoreCase = true) }
+                    pokemon.types.any { it.equals(other = selectedType, ignoreCase = true) }
                 } else true
 
                 matchesQuery && matchesType
             }
             copy(filteredPokemonList = filtered)
         }
+    }
+
+    companion object {
+        private const val PAGE_SIZE = 20
+        private val SEARCH_DEBOUNCE = 300.milliseconds
     }
 }

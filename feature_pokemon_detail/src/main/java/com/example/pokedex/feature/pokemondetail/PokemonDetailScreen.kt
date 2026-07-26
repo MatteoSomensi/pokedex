@@ -22,12 +22,15 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
+import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -51,7 +54,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.example.pokedex.core.R
@@ -76,12 +79,14 @@ fun PokemonDetailScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(state.pokemon?.name?.replaceFirstChar { it.uppercase() } ?: "") },
+                title = {
+                    Text(text = state.pokemon?.name?.replaceFirstChar { it.uppercase() } ?: "")
+                },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(
-                            Icons.Default.ArrowBack,
-                            contentDescription = stringResource(R.string.cd_back)
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(id = R.string.cd_back)
                         )
                     }
                 },
@@ -95,17 +100,17 @@ fun PokemonDetailScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding(paddingValues = paddingValues)
         ) {
             when {
                 state.isLoading -> {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                    CircularProgressIndicator(modifier = Modifier.align(alignment = Alignment.Center))
                 }
 
                 state.errorMessage != null -> {
                     Text(
                         text = state.errorMessage!!.asString(),
-                        modifier = Modifier.align(Alignment.Center)
+                        modifier = Modifier.align(alignment = Alignment.Center)
                     )
                 }
 
@@ -130,8 +135,8 @@ fun PokemonDetailContent(pokemon: Pokemon) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(dimensions.paddingLarge),
+            .verticalScroll(state = rememberScrollState())
+            .padding(all = dimensions.paddingLarge),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         AnimatedVisibility(
@@ -145,7 +150,7 @@ fun PokemonDetailContent(pokemon: Pokemon) {
                     .size(dimensions.imageSizeDetail)
                     .clip(RoundedCornerShape(dimensions.cornerRadiusLarge))
                     .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
-                    .padding(dimensions.paddingMedium)
+                    .padding(all = dimensions.paddingMedium)
             )
         }
 
@@ -201,10 +206,10 @@ fun PokemonDetailContent(pokemon: Pokemon) {
                     )
                 ) {
                     Column(
-                        modifier = Modifier.padding(dimensions.paddingLarge)
+                        modifier = Modifier.padding(all = dimensions.paddingLarge)
                     ) {
                         Text(
-                            text = stringResource(R.string.base_stats),
+                            text = stringResource(id = R.string.base_stats),
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.padding(bottom = dimensions.paddingMedium)
@@ -215,7 +220,11 @@ fun PokemonDetailContent(pokemon: Pokemon) {
                             Spacer(modifier = Modifier.height(12.dp))
                         }
 
-                        Divider(modifier = Modifier.padding(vertical = dimensions.paddingMedium))
+                        HorizontalDivider(
+                            modifier = Modifier.padding(vertical = dimensions.paddingMedium),
+                            thickness = DividerDefaults.Thickness,
+                            color = DividerDefaults.color
+                        )
 
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -223,24 +232,30 @@ fun PokemonDetailContent(pokemon: Pokemon) {
                         ) {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 Text(
-                                    stringResource(R.string.height),
+                                    text = stringResource(id = R.string.height),
                                     style = MaterialTheme.typography.labelMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                                 Text(
-                                    stringResource(R.string.height_format, pokemon.height / 10f),
+                                    text = stringResource(
+                                        id = R.string.height_format,
+                                        pokemon.height / 10f
+                                    ),
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold
                                 )
                             }
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 Text(
-                                    stringResource(R.string.weight),
+                                    text = stringResource(id = R.string.weight),
                                     style = MaterialTheme.typography.labelMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                                 Text(
-                                    stringResource(R.string.weight_format, pokemon.weight / 10f),
+                                    text = stringResource(
+                                        id = R.string.weight_format,
+                                        pokemon.weight / 10f
+                                    ),
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold
                                 )

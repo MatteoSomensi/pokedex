@@ -32,7 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.pokedex.core.R
 import com.example.pokedex.core.ui.DevicePreviews
@@ -67,12 +67,12 @@ fun ProfileScreenContent(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.profile_title)) },
+                title = { Text(text = stringResource(id = R.string.profile_title)) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
-                            Icons.Default.ArrowBack,
-                            contentDescription = stringResource(R.string.cd_back)
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = stringResource(id = R.string.cd_back)
                         )
                     }
                 },
@@ -87,8 +87,8 @@ fun ProfileScreenContent(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
-                .padding(24.dp)
+                .padding(paddingValues = paddingValues)
+                .padding(all = 24.dp)
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
@@ -100,8 +100,8 @@ fun ProfileScreenContent(
             ) {
                 Icon(
                     imageVector = Icons.Default.Person,
-                    contentDescription = stringResource(R.string.profile_title),
-                    modifier = Modifier.padding(24.dp),
+                    contentDescription = stringResource(id = R.string.profile_title),
+                    modifier = Modifier.padding(all = 24.dp),
                     tint = MaterialTheme.colorScheme.onSecondaryContainer
                 )
             }
@@ -109,9 +109,9 @@ fun ProfileScreenContent(
             Spacer(modifier = Modifier.height(24.dp))
 
             if (currentUser != null) {
-                if (!currentUser!!.displayName.isNullOrBlank()) {
+                if (!currentUser.displayName.isNullOrBlank()) {
                     Text(
-                        text = currentUser!!.displayName!!,
+                        text = currentUser.displayName!!,
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onBackground
@@ -120,13 +120,13 @@ fun ProfileScreenContent(
                 }
 
                 Text(
-                    text = currentUser!!.email ?: "No email provided",
+                    text = currentUser.email ?: "No email provided",
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             } else {
                 Text(
-                    text = stringResource(R.string.profile_not_logged_in),
+                    text = stringResource(id = R.string.profile_not_logged_in),
                     style = MaterialTheme.typography.headlineSmall,
                     color = MaterialTheme.colorScheme.error
                 )
@@ -146,7 +146,7 @@ fun ProfileScreenContent(
                 )
             ) {
                 Text(
-                    stringResource(R.string.profile_logout),
+                    text = stringResource(id = R.string.profile_logout),
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
             }

@@ -1,10 +1,11 @@
 package com.example.pokedex.data.remote.model
 
+import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-
+@InternalSerializationApi
 /**
  * This class is responsible for PokeApiModels logic.
  * Part of the Clean Architecture structure.
@@ -14,12 +15,14 @@ data class PokemonListResponse(
 )
 
 @Serializable
+@InternalSerializationApi
 data class PokemonResultItem(
     val name: String,
     val url: String
 )
 
 @Serializable
+@InternalSerializationApi
 data class PokemonDetailResponse(
     val id: Int,
     val name: String,
@@ -30,24 +33,28 @@ data class PokemonDetailResponse(
 )
 
 @Serializable
+@InternalSerializationApi
 data class PokemonTypeSlot(
     val slot: Int,
     val type: PokemonTypeItem
 )
 
 @Serializable
+@InternalSerializationApi
 data class PokemonTypeItem(
     val name: String,
     val url: String
 )
 
 @Serializable
+@InternalSerializationApi
 data class PokemonStatSlot(
     @SerialName("base_stat") val baseStat: Int,
     val stat: PokemonStatItem
 )
 
 @Serializable
+@InternalSerializationApi
 data class PokemonStatItem(
     val name: String
 )

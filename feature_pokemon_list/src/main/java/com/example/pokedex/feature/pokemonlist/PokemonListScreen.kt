@@ -48,11 +48,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.example.pokedex.core.R
 import com.example.pokedex.core.ui.DevicePreviews
+import com.example.pokedex.core.util.Constants
 import com.example.pokedex.domain.model.Pokemon
 import com.example.pokedex.theme.LocalDimensions
 import com.example.pokedex.theme.PokedexTheme
@@ -91,10 +92,10 @@ fun PokemonListScreenContent(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.app_name)) },
+                title = { Text(text = stringResource(id = R.string.app_name)) },
                 actions = {
                     IconButton(onClick = onNavigateToProfile) {
-                        Icon(Icons.Default.Person, contentDescription = "Profile")
+                        Icon(imageVector = Icons.Default.Person, contentDescription = "Profile")
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -108,45 +109,31 @@ fun PokemonListScreenContent(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding(paddingValues = paddingValues)
         ) {
             val dimensions = LocalDimensions.current
 
             OutlinedTextField(
                 value = state.searchQuery,
-                onValueChange = { onEvent(PokemonListEvent.OnSearchQueryChanged(it)) },
+                onValueChange = { onEvent(PokemonListEvent.OnSearchQueryChanged(query = it)) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(
                         horizontal = dimensions.paddingMedium,
                         vertical = dimensions.paddingSmall
                     ),
-                placeholder = { Text(stringResource(R.string.search_hint)) },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                placeholder = { Text(text = stringResource(id = R.string.search_hint)) },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = null
+                    )
+                },
                 singleLine = true,
                 shape = MaterialTheme.shapes.medium
             )
 
-            val types = listOf(
-                "Grass",
-                "Fire",
-                "Water",
-                "Bug",
-                "Normal",
-                "Poison",
-                "Electric",
-                "Ground",
-                "Fairy",
-                "Fighting",
-                "Psychic",
-                "Rock",
-                "Ghost",
-                "Ice",
-                "Dragon",
-                "Flying",
-                "Dark",
-                "Steel"
-            )
+            val types = Constants.POKEMON_TYPES
 
             LazyRow(
                 contentPadding = PaddingValues(horizontal = dimensions.paddingMedium),
@@ -155,16 +142,16 @@ fun PokemonListScreenContent(
                 item {
                     FilterChip(
                         selected = state.selectedType == null,
-                        onClick = { onEvent(PokemonListEvent.OnTypeFilterSelected(null)) },
-                        label = { Text(stringResource(R.string.filter_all)) }
+                        onClick = { onEvent(PokemonListEvent.OnTypeFilterSelected(type = null)) },
+                        label = { Text(text = stringResource(id = R.string.filter_all)) }
                     )
                 }
                 items(types.size) { index ->
                     val type = types[index]
                     FilterChip(
                         selected = state.selectedType == type,
-                        onClick = { onEvent(PokemonListEvent.OnTypeFilterSelected(type)) },
-                        label = { Text(type) }
+                        onClick = { onEvent(PokemonListEvent.OnTypeFilterSelected(type = type)) },
+                        label = { Text(text = type) }
                     )
                 }
             }
@@ -176,7 +163,7 @@ fun PokemonListScreenContent(
             ) {
                 when {
                     state.isLoading -> {
-                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                        CircularProgressIndicator(modifier = Modifier.align(alignment = Alignment.Center))
                     }
 
                     state.errorMessage != null -> {
@@ -224,7 +211,7 @@ fun PokemonListScreenContent(
                                     Box(
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .padding(dimensions.paddingMedium),
+                                            .padding(all = dimensions.paddingMedium),
                                         contentAlignment = Alignment.Center
                                     ) {
                                         CircularProgressIndicator()
@@ -252,7 +239,7 @@ fun PokemonCard(pokemon: Pokemon, onClick: () -> Unit) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(dimensions.paddingSmall),
+                .padding(all = dimensions.paddingSmall),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             AsyncImage(
@@ -302,7 +289,7 @@ class PokemonPreviewProvider : PreviewParameterProvider<Pokemon> {
         Pokemon(
             id = 1,
             name = "Bulbasaur",
-            imageUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png",
+            imageUrl = "${Constants.POKE_IMAGE_BASE_URL}1.png",
             types = listOf("Grass", "Poison")
         )
     )

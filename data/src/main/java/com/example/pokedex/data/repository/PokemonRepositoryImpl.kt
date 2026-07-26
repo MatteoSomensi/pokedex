@@ -1,5 +1,6 @@
 package com.example.pokedex.data.repository
 
+import com.example.pokedex.core.util.Constants
 import com.example.pokedex.data.remote.PokeApiService
 import com.example.pokedex.data.remote.model.PokemonResultItem
 import com.example.pokedex.domain.model.Pokemon
@@ -25,7 +26,7 @@ class PokemonRepositoryImpl @Inject constructor(
             val listResponse = api.getPokemonList(limit = limit, offset = offset)
 
             val result = mutableListOf<Pokemon>()
-            listResponse.results.chunked(5).forEach { chunk ->
+            listResponse.results.chunked(BATCH_SIZE).forEach { chunk ->
                 coroutineScope {
                     val chunkResults = chunk.map { resultItem ->
                         async {
@@ -34,7 +35,7 @@ class PokemonRepositoryImpl @Inject constructor(
                                 val pokemon = Pokemon(
                                     id = detail.id,
                                     name = detail.name,
-                                    imageUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${detail.id}.png",
+                                    imageUrl = "${Constants.POKE_IMAGE_BASE_URL}${detail.id}.png",
                                     types = detail.types.map { it.type.name.replaceFirstChar { char -> char.uppercase() } },
                                     height = detail.height,
                                     weight = detail.weight,
@@ -57,7 +58,7 @@ class PokemonRepositoryImpl @Inject constructor(
             val pokemon = Pokemon(
                 id = detail.id,
                 name = detail.name,
-                imageUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${detail.id}.png",
+                imageUrl = "${Constants.POKE_IMAGE_BASE_URL}${detail.id}.png",
                 types = detail.types.map { it.type.name.replaceFirstChar { char -> char.uppercase() } },
                 height = detail.height,
                 weight = detail.weight,
@@ -76,7 +77,7 @@ class PokemonRepositoryImpl @Inject constructor(
         offset: Int
     ): Result<List<Pokemon>> = runCatching {
         if (globalListCache == null) {
-            val fullList = api.getPokemonList(limit = 10000, offset = 0)
+            val fullList = api.getPokemonList(limit = MAX_POKEMON_LIMIT, offset = 0)
             globalListCache = fullList.results
         }
         val q = query.trim().lowercase()
@@ -86,7 +87,7 @@ class PokemonRepositoryImpl @Inject constructor(
         val chunk = filtered.drop(offset).take(limit)
 
         val result = mutableListOf<Pokemon>()
-        chunk.chunked(5).forEach { c ->
+        chunk.chunked(BATCH_SIZE).forEach { c ->
             coroutineScope {
                 val chunkResults = c.map { resultItem ->
                     async {
@@ -95,7 +96,7 @@ class PokemonRepositoryImpl @Inject constructor(
                             val pokemon = Pokemon(
                                 id = detail.id,
                                 name = detail.name,
-                                imageUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${detail.id}.png",
+                                imageUrl = "${Constants.POKE_IMAGE_BASE_URL}${detail.id}.png",
                                 types = detail.types.map { it.type.name.replaceFirstChar { char -> char.uppercase() } },
                                 height = detail.height,
                                 weight = detail.weight,
@@ -110,5 +111,10 @@ class PokemonRepositoryImpl @Inject constructor(
             }
         }
         result
+    }
+
+    companion object {
+        private const val MAX_POKEMON_LIMIT = 10000
+        private const val BATCH_SIZE = 5
     }
 }

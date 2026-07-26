@@ -43,7 +43,7 @@ fun MainNavigation() {
                                 modifier = Modifier.fillMaxSize(),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Text(stringResource(R.string.list_detail_placeholder))
+                                Text(text = stringResource(id = R.string.list_detail_placeholder))
                             }
                         }
                     )

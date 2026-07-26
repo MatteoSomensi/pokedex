@@ -31,7 +31,10 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
             tasks.withType<KotlinCompile>().configureEach {
                 compilerOptions {
                     jvmTarget.set(JvmTarget.JVM_17)
-                    freeCompilerArgs.add("-XXLanguage:+ExplicitBackingFields")
+                    freeCompilerArgs.addAll(
+                        "-XXLanguage:+ExplicitBackingFields",
+                        "-opt-in=kotlinx.serialization.InternalSerializationApi"
+                    )
                 }
             }
         }

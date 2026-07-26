@@ -41,7 +41,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.pokedex.core.R
 import com.example.pokedex.core.ui.DevicePreviews
 import com.example.pokedex.theme.PokedexTheme
@@ -90,13 +90,15 @@ internal fun AuthScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(24.dp)
+            .padding(all = 24.dp)
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = if (uiState.isLogin) stringResource(R.string.auth_sign_in) else stringResource(R.string.auth_sign_up),
+            text = if (uiState.isLogin) stringResource(id = R.string.auth_sign_in) else stringResource(
+                id = R.string.auth_sign_up
+            ),
             style = MaterialTheme.typography.headlineMedium
         )
 
@@ -105,7 +107,7 @@ internal fun AuthScreen(
         OutlinedTextField(
             value = uiState.email,
             onValueChange = onEmailChange,
-            label = { Text(stringResource(R.string.auth_email)) },
+            label = { Text(text = stringResource(id = R.string.auth_email)) },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
             keyboardOptions = KeyboardOptions(
@@ -119,7 +121,7 @@ internal fun AuthScreen(
         OutlinedTextField(
             value = uiState.password,
             onValueChange = onPasswordChange,
-            label = { Text(stringResource(R.string.auth_password)) },
+            label = { Text(text = stringResource(id = R.string.auth_password)) },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
@@ -140,8 +142,8 @@ internal fun AuthScreen(
                 // Note: using Lock icon as fallback since Visibility might need material-icons-extended
                 // The label will change regardless to assist screen readers.
                 val description =
-                    if (passwordVisible) stringResource(R.string.auth_hide_password) else stringResource(
-                        R.string.auth_show_password
+                    if (passwordVisible) stringResource(id = R.string.auth_hide_password) else stringResource(
+                        id = R.string.auth_show_password
                     )
 
                 IconButton(onClick = { passwordVisible = !passwordVisible }) {
@@ -161,8 +163,8 @@ internal fun AuthScreen(
                 enabled = isFormValid
             ) {
                 Text(
-                    if (uiState.isLogin) stringResource(R.string.auth_sign_in) else stringResource(
-                        R.string.auth_sign_up
+                    if (uiState.isLogin) stringResource(id = R.string.auth_sign_in) else stringResource(
+                        id = R.string.auth_sign_up
                     )
                 )
             }
@@ -172,8 +174,8 @@ internal fun AuthScreen(
 
         TextButton(onClick = onToggleLogin) {
             Text(
-                if (uiState.isLogin) stringResource(R.string.auth_toggle_to_sign_up) else stringResource(
-                    R.string.auth_toggle_to_sign_in
+                if (uiState.isLogin) stringResource(id = R.string.auth_toggle_to_sign_up) else stringResource(
+                    id = R.string.auth_toggle_to_sign_in
                 )
             )
         }
@@ -188,7 +190,7 @@ internal fun AuthScreen(
             onClick = onGoogleSignInClick,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(stringResource(R.string.auth_google_sign_in))
+            Text(text = stringResource(id = R.string.auth_google_sign_in))
         }
 
         if (uiState.error != null) {
