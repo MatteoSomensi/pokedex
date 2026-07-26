@@ -97,6 +97,7 @@ fun PokemonDetailScreen(
         }
     }
 
+    val context = LocalContext.current
     val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
     LaunchedEffect(viewModel, lifecycleOwner) {
         lifecycleOwner.lifecycle.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
@@ -113,13 +114,14 @@ fun PokemonDetailScreen(
                                         .setUsage(AudioAttributes.USAGE_MEDIA)
                                         .build()
                                 )
-                                setDataSource(effect.url)
+                                setDataSource(context, android.net.Uri.parse(effect.url))
                                 setOnPreparedListener { it.start() }
                                 setOnCompletionListener { 
                                     it.release()
                                     if (mediaPlayer == it) mediaPlayer = null
                                 }
-                                setOnErrorListener { mp, _, _ ->
+                                setOnErrorListener { mp, what, extra ->
+                                    android.widget.Toast.makeText(context, "Errore riproduzione (what:$what, extra:$extra)", android.widget.Toast.LENGTH_SHORT).show()
                                     mp.release()
                                     if (mediaPlayer == mp) mediaPlayer = null
                                     true
@@ -128,6 +130,7 @@ fun PokemonDetailScreen(
                             }
                             mediaPlayer = player
                         } catch (e: Exception) {
+                            android.widget.Toast.makeText(context, "Errore: ${e.message}", android.widget.Toast.LENGTH_SHORT).show()
                             player.release()
                             e.printStackTrace()
                         }
