@@ -34,9 +34,10 @@ class PokemonListViewModel @Inject constructor(
     private fun observeFavorites() {
         viewModelScope.launch {
             repository.observeFavoritePokemonIds().collect { favoriteIds ->
-                val currentList = uiState.value.pokemonList
-                val updatedList = currentList.map { it.copy(isFavorite = favoriteIds.contains(it.id)) }
-                setState { copy(pokemonList = updatedList) }
+                setState { 
+                    val updatedList = this.pokemonList.map { it.copy(isFavorite = favoriteIds.contains(it.id)) }
+                    copy(pokemonList = updatedList) 
+                }
                 applyFilters()
             }
         }
@@ -66,7 +67,11 @@ class PokemonListViewModel @Inject constructor(
                 searchJob?.cancel()
                 searchJob = viewModelScope.launch {
                     delay(duration = SEARCH_DEBOUNCE)
-                    loadPokemon(isRefresh = false)
+                    if (!uiState.value.showFavoritesOnly) {
+                        loadPokemon(isRefresh = false)
+                    } else {
+                        applyFilters()
+                    }
                 }
             }
 

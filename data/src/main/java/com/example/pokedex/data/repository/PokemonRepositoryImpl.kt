@@ -180,8 +180,11 @@ class PokemonRepositoryImpl @Inject constructor(
     }
 
     override suspend fun toggleFavoriteStatus(id: Int, isFavorite: Boolean): Result<Unit> = runCatching {
-        dao.updateFavoriteStatus(id, isFavorite)
-        Unit
+        val affected = dao.updateFavoriteStatus(id, isFavorite)
+        if (affected == 0) {
+            val detail = api.getPokemonDetail(id.toString()).toDomain().copy(isFavorite = isFavorite)
+            dao.insert(PokemonEntity.fromDomain(detail))
+        }
     }.onFailure { if (it is kotlinx.coroutines.CancellationException) throw it }
 
     override suspend fun getFavoritePokemonList(): Result<List<Pokemon>> = runCatching {

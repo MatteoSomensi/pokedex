@@ -18,11 +18,19 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun providePokedexDatabase(@ApplicationContext context: Context): PokedexDatabase {
+        val MIGRATION_2_3 = object : androidx.room.migration.Migration(2, 3) {
+            override fun migrate(db: androidx.sqlite.db.SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE pokemon ADD COLUMN isFavorite INTEGER NOT NULL DEFAULT 0")
+            }
+        }
         return Room.databaseBuilder(
             context,
             PokedexDatabase::class.java,
             PokedexDatabase.DATABASE_NAME
-        ).fallbackToDestructiveMigration().build()
+        )
+            .addMigrations(MIGRATION_2_3)
+            .fallbackToDestructiveMigration()
+            .build()
     }
 
     @Provides
