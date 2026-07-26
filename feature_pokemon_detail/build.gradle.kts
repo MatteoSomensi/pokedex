@@ -6,12 +6,6 @@ android {
     namespace = "com.example.pokedex.featurepokemondetail"
 }
 
-kotlin {
-    compilerOptions {
-        freeCompilerArgs.add("-XXLanguage:+ExplicitBackingFields")
-    }
-}
-
 dependencies {
     implementation(project(":domain"))
     implementation(project(":core"))
