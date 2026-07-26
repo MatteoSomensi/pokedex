@@ -19,8 +19,8 @@ import org.junit.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 
 /**
- * This class is responsible for PokemonListViewModelTest logic.
- * Part of the Clean Architecture structure.
+ * Unit tests for [PokemonListViewModel].
+ * Verifies state updates, side effects, and interaction with the [PokemonRepository].
  */
 class PokemonListViewModelTest {
 
@@ -45,6 +45,7 @@ class PokemonListViewModelTest {
                 Pokemon(1, "Bulbasaur", "url", listOf("Grass"))
             )
             coEvery { repository.getPokemonList(any(), any()) } returns Result.success(fakeList)
+            coEvery { repository.getPokemonTypes() } returns Result.success(emptyList())
 
             viewModel = PokemonListViewModel(repository)
 
@@ -61,6 +62,8 @@ class PokemonListViewModelTest {
     fun `quando OnPokemonClicked viene chiamato, viene emesso l'effetto NavigateToDetail`() =
         runTest(testDispatcher) {
             coEvery { repository.getPokemonList(any(), any()) } returns Result.success(emptyList())
+            coEvery { repository.getPokemonTypes() } returns Result.success(emptyList())
+            
             viewModel = PokemonListViewModel(repository)
 
             viewModel.uiEffect.test {
