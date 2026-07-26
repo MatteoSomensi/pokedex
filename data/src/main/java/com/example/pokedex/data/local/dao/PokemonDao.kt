@@ -49,4 +49,7 @@ interface PokemonDao {
 
     @Query("SELECT * FROM pokemon WHERE isFavorite = 1 ORDER BY id ASC")
     suspend fun getFavoritePokemonList(): List<PokemonEntity>
+
+    @Query("SELECT id FROM pokemon WHERE isFavorite = 1")
+    fun observeFavoritePokemonIds(): kotlinx.coroutines.flow.Flow<List<Int>>
 }

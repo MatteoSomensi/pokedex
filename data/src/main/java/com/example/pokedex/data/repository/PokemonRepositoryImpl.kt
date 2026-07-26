@@ -12,6 +12,7 @@ import com.example.pokedex.domain.repository.PokemonRepository
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
@@ -164,6 +165,10 @@ class PokemonRepositoryImpl @Inject constructor(
     override suspend fun getFavoritePokemonList(): Result<List<Pokemon>> = runCatching {
         dao.getFavoritePokemonList().map { it.toDomain() }
     }.onFailure { if (it is kotlinx.coroutines.CancellationException) throw it }
+
+    override fun observeFavoritePokemonIds(): kotlinx.coroutines.flow.Flow<Set<Int>> {
+        return dao.observeFavoritePokemonIds().map { it.toSet() }
+    }
 
     companion object {
         private const val MAX_POKEMON_LIMIT = 1500

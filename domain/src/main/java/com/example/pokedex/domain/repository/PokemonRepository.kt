@@ -15,4 +15,5 @@ interface PokemonRepository {
     suspend fun getPokemonTypes(): Result<List<String>>
     suspend fun toggleFavoriteStatus(id: Int, isFavorite: Boolean): Result<Unit>
     suspend fun getFavoritePokemonList(): Result<List<Pokemon>>
+    fun observeFavoritePokemonIds(): kotlinx.coroutines.flow.Flow<Set<Int>>
 }

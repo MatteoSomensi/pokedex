@@ -28,6 +28,18 @@ class PokemonListViewModel @Inject constructor(
     init {
         loadTypes()
         setEvent(event = PokemonListEvent.LoadPokemon)
+        observeFavorites()
+    }
+
+    private fun observeFavorites() {
+        viewModelScope.launch {
+            repository.observeFavoritePokemonIds().collect { favoriteIds ->
+                val currentList = uiState.value.pokemonList
+                val updatedList = currentList.map { it.copy(isFavorite = favoriteIds.contains(it.id)) }
+                setState { copy(pokemonList = updatedList) }
+                applyFilters()
+            }
+        }
     }
 
     private fun loadTypes() {
@@ -66,7 +78,6 @@ class PokemonListViewModel @Inject constructor(
                 setState { copy(showFavoritesOnly = event.showFavoritesOnly) }
                 applyFilters()
             }
-            is PokemonListEvent.OnResume -> reloadFromDatabase()
         }
     }
 
@@ -156,32 +167,6 @@ class PokemonListViewModel @Inject constructor(
                     }
                 }
             )
-        }
-    }
-
-    private fun reloadFromDatabase() {
-        val currentState = uiState.value
-        viewModelScope.launch {
-            if (currentState.showFavoritesOnly) {
-                applyFilters()
-            } else {
-                val fetcher = if (currentState.searchQuery.isNotBlank()) {
-                    repository.searchPokemon(
-                        query = currentState.searchQuery,
-                        limit = currentState.pokemonList.size.coerceAtLeast(PAGE_SIZE),
-                        offset = 0
-                    )
-                } else {
-                    repository.getPokemonList(
-                        limit = currentState.pokemonList.size.coerceAtLeast(PAGE_SIZE),
-                        offset = 0
-                    )
-                }
-                fetcher.onSuccess { list ->
-                    setState { copy(pokemonList = list) }
-                    applyFilters()
-                }
-            }
         }
     }
 

@@ -46,6 +46,7 @@ class PokemonListViewModelTest {
             )
             coEvery { repository.getPokemonList(any(), any()) } returns Result.success(fakeList)
             coEvery { repository.getPokemonTypes() } returns Result.success(emptyList())
+            coEvery { repository.observeFavoritePokemonIds() } returns kotlinx.coroutines.flow.flowOf(emptySet())
 
             viewModel = PokemonListViewModel(repository)
 
@@ -63,6 +64,7 @@ class PokemonListViewModelTest {
         runTest(testDispatcher) {
             coEvery { repository.getPokemonList(any(), any()) } returns Result.success(emptyList())
             coEvery { repository.getPokemonTypes() } returns Result.success(emptyList())
+            coEvery { repository.observeFavoritePokemonIds() } returns kotlinx.coroutines.flow.flowOf(emptySet())
 
             viewModel = PokemonListViewModel(repository)
 
