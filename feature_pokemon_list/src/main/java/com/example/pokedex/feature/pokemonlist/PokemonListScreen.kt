@@ -55,6 +55,7 @@ import com.example.pokedex.core.ui.DevicePreviews
 import com.example.pokedex.core.util.Constants
 import com.example.pokedex.domain.model.Pokemon
 import com.example.pokedex.theme.LocalDimensions
+import com.example.pokedex.theme.LocalWeights
 import com.example.pokedex.theme.PokedexTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -111,6 +112,7 @@ fun PokemonListScreenContent(
                 .padding(paddingValues = paddingValues)
         ) {
             val dimensions = LocalDimensions.current
+            val weights = LocalWeights.current
 
             OutlinedTextField(
                 value = state.searchQuery,
@@ -158,7 +160,7 @@ fun PokemonListScreenContent(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .weight(weight = 1f)
+                    .weight(weight = weights.listContentWeight)
             ) {
                 when {
                     state.isLoading -> {
