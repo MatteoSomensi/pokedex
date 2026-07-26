@@ -37,12 +37,12 @@ class PokemonRepositoryImpl @Inject constructor(
     private val typesMutex = Mutex()
     @Volatile private var isEndReached = false
 
-    override suspend fun getPokemonList(limit: Int, offset: Int): Result<List<Pokemon>> =
+    override suspend fun getPokemonList(limit: Int, offset: Int, forceRefresh: Boolean): Result<List<Pokemon>> =
         runCatching {
             if (offset == 0) isEndReached = false
             
             val localList = dao.getPokemonList(limit, offset)
-            if (localList.size == limit || (localList.isNotEmpty() && isEndReached)) {
+            if (!forceRefresh && (localList.size == limit || (localList.isNotEmpty() && isEndReached))) {
                 return@runCatching localList.map { it.toDomain() }
             }
 
@@ -56,7 +56,13 @@ class PokemonRepositoryImpl @Inject constructor(
                 val partialResults = coroutineScope {
                     chunk.map { resultItem ->
                         async {
-                            api.getPokemonDetail(resultItem.name).toDomain()
+                            val networkDomain = api.getPokemonDetail(resultItem.name).toDomain()
+                            val localEntity = dao.getPokemonById(networkDomain.id)
+                            if (localEntity != null) {
+                                networkDomain.copy(isFavorite = localEntity.isFavorite)
+                            } else {
+                                networkDomain
+                            }
                         }
                     }.awaitAll()
                 }

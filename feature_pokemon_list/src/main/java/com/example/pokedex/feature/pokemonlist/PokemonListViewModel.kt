@@ -97,7 +97,7 @@ class PokemonListViewModel @Inject constructor(
             val fetcher = if (query.isNotBlank()) {
                 repository.searchPokemon(query = query, limit = PAGE_SIZE, offset = 0)
             } else {
-                repository.getPokemonList(limit = PAGE_SIZE, offset = 0)
+                repository.getPokemonList(limit = PAGE_SIZE, offset = 0, forceRefresh = isRefresh)
             }
 
             fetcher.fold(

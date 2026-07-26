@@ -9,7 +9,7 @@ import com.example.pokedex.domain.model.Pokemon
  * falling back to remote fetching when necessary.
  */
 interface PokemonRepository {
-    suspend fun getPokemonList(limit: Int, offset: Int): Result<List<Pokemon>>
+    suspend fun getPokemonList(limit: Int, offset: Int, forceRefresh: Boolean = false): Result<List<Pokemon>>
     suspend fun getPokemonDetail(id: Int): Result<Pokemon>
     suspend fun searchPokemon(query: String, limit: Int, offset: Int): Result<List<Pokemon>>
     suspend fun getPokemonTypes(): Result<List<String>>

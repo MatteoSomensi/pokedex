@@ -44,9 +44,9 @@ class PokemonListViewModelTest {
             val fakeList = listOf(
                 Pokemon(1, "Bulbasaur", "url", listOf("Grass"))
             )
-            coEvery { repository.getPokemonList(any(), any()) } returns Result.success(fakeList)
+            coEvery { repository.getPokemonList(any(), any(), any()) } returns Result.success(fakeList)
             coEvery { repository.getPokemonTypes() } returns Result.success(emptyList())
-            coEvery { repository.observeFavoritePokemonIds() } returns kotlinx.coroutines.flow.flowOf(emptySet())
+            io.mockk.every { repository.observeFavoritePokemonIds() } returns kotlinx.coroutines.flow.flowOf(emptySet())
 
             viewModel = PokemonListViewModel(repository)
 
@@ -62,9 +62,9 @@ class PokemonListViewModelTest {
     @Test
     fun `quando OnPokemonClicked viene chiamato, viene emesso l'effetto NavigateToDetail`() =
         runTest(testDispatcher) {
-            coEvery { repository.getPokemonList(any(), any()) } returns Result.success(emptyList())
+            coEvery { repository.getPokemonList(any(), any(), any()) } returns Result.success(emptyList())
             coEvery { repository.getPokemonTypes() } returns Result.success(emptyList())
-            coEvery { repository.observeFavoritePokemonIds() } returns kotlinx.coroutines.flow.flowOf(emptySet())
+            io.mockk.every { repository.observeFavoritePokemonIds() } returns kotlinx.coroutines.flow.flowOf(emptySet())
 
             viewModel = PokemonListViewModel(repository)
 
