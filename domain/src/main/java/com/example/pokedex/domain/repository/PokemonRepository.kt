@@ -4,8 +4,9 @@ import com.example.pokedex.domain.model.Pokemon
 
 
 /**
- * This interface is responsible for PokemonRepository logic.
- * Part of the Clean Architecture structure.
+ * Repository interface defining operations for accessing Pokemon data.
+ * Implements an offline-first strategy where local data is prioritized, 
+ * falling back to remote fetching when necessary.
  */
 interface PokemonRepository {
     suspend fun getPokemonList(limit: Int, offset: Int): Result<List<Pokemon>>

@@ -2,8 +2,8 @@ package com.example.pokedex.feature.pokemondetail
 
 
 /**
- * This class is responsible for PokemonDetailViewModel logic.
- * Part of the Clean Architecture structure.
+ * ViewModel managing the state and logic for the Pokemon Detail screen.
+ * Fetches and exposes detailed information about a specific Pokemon, including its stats, weight, and height.
  */
 import androidx.lifecycle.viewModelScope
 import com.example.pokedex.core.R

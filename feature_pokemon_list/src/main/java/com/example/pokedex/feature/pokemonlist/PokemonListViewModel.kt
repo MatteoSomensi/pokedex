@@ -15,8 +15,9 @@ import kotlin.time.Duration.Companion.milliseconds
 @HiltViewModel
 
 /**
- * This class is responsible for PokemonListViewModel logic.
- * Part of the Clean Architecture structure.
+ * ViewModel managing the state and logic for the Pokemon List screen.
+ * Handles loading paginated lists of Pokemon, filtering by type, and searching by name or ID.
+ * Manages UI events and triggers corresponding effects such as navigation.
  */
 class PokemonListViewModel @Inject constructor(
     private val repository: PokemonRepository

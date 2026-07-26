@@ -11,6 +11,10 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
+/**
+ * Concrete implementation of [AuthRepository] utilizing Firebase Authentication.
+ * Manages Firebase sessions and converts Firebase users to the domain [AuthUser] model.
+ */
 class AuthRepositoryImpl @Inject constructor(
     private val auth: FirebaseAuth
 ) : AuthRepository {
