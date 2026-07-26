@@ -11,12 +11,12 @@ import androidx.compose.ui.Modifier
 import com.example.pokedex.theme.PokedexTheme
 import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
-
 /**
- * This class is responsible for MainActivity logic.
- * Part of the Clean Architecture structure.
+ * The main entry point of the application.
+ * Sets up the edge-to-edge display, applies the [PokedexTheme], and
+ * initializes the Compose navigation graph via [MainNavigation].
  */
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
