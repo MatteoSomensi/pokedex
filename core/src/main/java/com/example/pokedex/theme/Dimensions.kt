@@ -23,7 +23,9 @@ data class Dimensions(
     val imageSizeList: Dp = 100.dp,
     val imageSizeDetail: Dp = 200.dp,
     val statProgressBarHeight: Dp = 8.dp,
-    val statValueWidth: Dp = 36.dp
+    val statValueWidth: Dp = 36.dp,
+    val gridCellMinSize: Dp = 150.dp,
+    val imageSizeProfile: Dp = 100.dp
 )
 
 val LocalDimensions = staticCompositionLocalOf { Dimensions() }

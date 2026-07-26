@@ -62,7 +62,9 @@ fun PokedexTheme(
             paddingLarge = 36.dp,
             paddingExtraLarge = 48.dp,
             imageSizeList = 140.dp,
-            imageSizeDetail = 300.dp
+            imageSizeDetail = 300.dp,
+            gridCellMinSize = 200.dp,
+            imageSizeProfile = 140.dp
         )
     }
 

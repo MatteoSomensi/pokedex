@@ -38,6 +38,7 @@ import com.example.pokedex.core.R
 import com.example.pokedex.core.ui.DevicePreviews
 import com.example.pokedex.domain.model.AuthUser
 import com.example.pokedex.theme.PokedexTheme
+import com.example.pokedex.theme.LocalDimensions
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -64,6 +65,8 @@ fun ProfileScreenContent(
     onNavigateToAuth: () -> Unit,
     onLogout: () -> Unit
 ) {
+    val dimensions = LocalDimensions.current
+    
     Scaffold(
         topBar = {
             TopAppBar(
@@ -88,7 +91,7 @@ fun ProfileScreenContent(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues = paddingValues)
-                .padding(all = 24.dp)
+                .padding(all = dimensions.paddingLarge)
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
@@ -96,17 +99,17 @@ fun ProfileScreenContent(
             Surface(
                 shape = CircleShape,
                 color = MaterialTheme.colorScheme.secondaryContainer,
-                modifier = Modifier.size(100.dp)
+                modifier = Modifier.size(dimensions.imageSizeProfile)
             ) {
                 Icon(
                     imageVector = Icons.Default.Person,
                     contentDescription = stringResource(id = R.string.profile_title),
-                    modifier = Modifier.padding(all = 24.dp),
+                    modifier = Modifier.padding(all = dimensions.paddingLarge),
                     tint = MaterialTheme.colorScheme.onSecondaryContainer
                 )
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(dimensions.paddingLarge))
 
             if (currentUser != null) {
                 if (!currentUser.displayName.isNullOrBlank()) {
@@ -116,7 +119,7 @@ fun ProfileScreenContent(
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onBackground
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(dimensions.paddingSmall))
                 }
 
                 Text(
@@ -132,7 +135,7 @@ fun ProfileScreenContent(
                 )
             }
 
-            Spacer(modifier = Modifier.height(48.dp))
+            Spacer(modifier = Modifier.height(dimensions.paddingExtraLarge))
 
             Button(
                 onClick = {
@@ -147,7 +150,7 @@ fun ProfileScreenContent(
             ) {
                 Text(
                     text = stringResource(id = R.string.profile_logout),
-                    modifier = Modifier.padding(vertical = 8.dp)
+                    modifier = Modifier.padding(vertical = dimensions.paddingSmall)
                 )
             }
         }

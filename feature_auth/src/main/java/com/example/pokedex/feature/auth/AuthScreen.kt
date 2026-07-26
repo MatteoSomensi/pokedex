@@ -45,6 +45,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.pokedex.core.R
 import com.example.pokedex.core.ui.DevicePreviews
 import com.example.pokedex.theme.PokedexTheme
+import com.example.pokedex.theme.LocalDimensions
 
 @Composable
 fun AuthRoute(
@@ -86,11 +87,12 @@ internal fun AuthScreen(
     var passwordVisible by remember { mutableStateOf(false) }
     val isFormValid = uiState.email.isNotBlank() && Patterns.EMAIL_ADDRESS.matcher(uiState.email)
         .matches() && uiState.password.isNotBlank()
+    val dimensions = LocalDimensions.current
 
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(all = 24.dp)
+            .padding(all = dimensions.paddingLarge)
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -102,7 +104,7 @@ internal fun AuthScreen(
             style = MaterialTheme.typography.headlineMedium
         )
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(height = dimensions.paddingExtraLarge))
 
         OutlinedTextField(
             value = uiState.email,
@@ -116,7 +118,7 @@ internal fun AuthScreen(
             )
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(height = dimensions.paddingMedium))
 
         OutlinedTextField(
             value = uiState.password,
@@ -152,7 +154,7 @@ internal fun AuthScreen(
             }
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(height = dimensions.paddingLarge))
 
         if (uiState.isLoading) {
             CircularProgressIndicator()
@@ -170,7 +172,7 @@ internal fun AuthScreen(
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(height = dimensions.paddingMedium))
 
         TextButton(onClick = onToggleLogin) {
             Text(
@@ -180,11 +182,11 @@ internal fun AuthScreen(
             )
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(height = dimensions.paddingLarge))
 
         HorizontalDivider()
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(height = dimensions.paddingLarge))
 
         OutlinedButton(
             onClick = onGoogleSignInClick,
@@ -194,7 +196,7 @@ internal fun AuthScreen(
         }
 
         if (uiState.error != null) {
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(height = dimensions.paddingMedium))
             Text(
                 text = uiState.error.asString(),
                 color = MaterialTheme.colorScheme.error,

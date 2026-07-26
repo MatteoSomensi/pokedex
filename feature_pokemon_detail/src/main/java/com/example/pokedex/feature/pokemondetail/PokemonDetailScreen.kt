@@ -218,7 +218,7 @@ fun PokemonDetailContent(pokemon: Pokemon) {
 
                         pokemon.stats.forEach { (statName, statValue) ->
                             StatRow(statName = statName, statValue = statValue)
-                            Spacer(modifier = Modifier.height(12.dp))
+                            Spacer(modifier = Modifier.height(height = dimensions.paddingMedium))
                         }
 
                         HorizontalDivider(

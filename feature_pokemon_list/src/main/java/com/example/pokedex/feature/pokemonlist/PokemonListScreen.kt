@@ -159,7 +159,7 @@ fun PokemonListScreenContent(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .weight(1f)
+                    .weight(weight = 1f)
             ) {
                 when {
                     state.isLoading -> {
@@ -193,7 +193,7 @@ fun PokemonListScreenContent(
 
                         LazyVerticalGrid(
                             state = gridState,
-                            columns = GridCells.Adaptive(minSize = 150.dp),
+                            columns = GridCells.Adaptive(minSize = dimensions.gridCellMinSize),
                             contentPadding = PaddingValues(all = dimensions.paddingMedium),
                             horizontalArrangement = Arrangement.spacedBy(space = dimensions.paddingMedium),
                             verticalArrangement = Arrangement.spacedBy(space = dimensions.paddingMedium),
