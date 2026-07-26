@@ -1,0 +1,54 @@
+package com.example.pokedex.data.local.entity
+
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import com.example.pokedex.domain.model.Pokemon
+
+@Entity(tableName = "pokemon")
+data class PokemonEntity(
+    @PrimaryKey val id: Int,
+    val name: String,
+    val imageUrl: String,
+    val types: String,
+    val height: Int,
+    val weight: Int,
+    val stats: String
+) {
+    fun toDomain(): Pokemon {
+        return Pokemon(
+            id = id,
+            name = name,
+            imageUrl = imageUrl,
+            types = types.split(",").filter { it.isNotBlank() },
+            height = height,
+            weight = weight,
+            stats = parseStats(stats)
+        )
+    }
+
+    companion object {
+        fun fromDomain(pokemon: Pokemon): PokemonEntity {
+            return PokemonEntity(
+                id = pokemon.id,
+                name = pokemon.name,
+                imageUrl = pokemon.imageUrl,
+                types = pokemon.types.joinToString(","),
+                height = pokemon.height,
+                weight = pokemon.weight,
+                stats = formatStats(pokemon.stats)
+            )
+        }
+
+        private fun formatStats(stats: Map<String, Int>): String {
+            return stats.entries.joinToString(";") { "${it.key}:${it.value}" }
+        }
+
+        private fun parseStats(stats: String): Map<String, Int> {
+            if (stats.isBlank()) return emptyMap()
+            return stats.split(";").associate {
+                val parts = it.split(":")
+                parts[0] to parts[1].toInt()
+            }
+        }
+    }
+}

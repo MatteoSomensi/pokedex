@@ -245,15 +245,15 @@ fun PokemonCard(pokemon: Pokemon, onClick: () -> Unit) {
             AsyncImage(
                 model = pokemon.imageUrl,
                 contentDescription = stringResource(id = R.string.cd_pokemon_image, pokemon.name),
-                modifier = Modifier.size(dimensions.imageSizeList)
+                modifier = Modifier.size(size = dimensions.imageSizeList)
             )
-            Spacer(modifier = Modifier.height(dimensions.paddingSmall))
+            Spacer(modifier = Modifier.height(height = dimensions.paddingSmall))
             Text(
                 text = pokemon.name.replaceFirstChar { it.uppercase() },
                 style = MaterialTheme.typography.titleMedium,
                 textAlign = TextAlign.Center
             )
-            Spacer(modifier = Modifier.height(dimensions.paddingSmall))
+            Spacer(modifier = Modifier.height(height = dimensions.paddingSmall))
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(dimensions.cornerRadiusSmall),
                 verticalArrangement = Arrangement.spacedBy(dimensions.cornerRadiusSmall)

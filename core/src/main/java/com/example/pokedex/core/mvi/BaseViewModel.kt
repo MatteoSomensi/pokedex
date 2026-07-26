@@ -31,7 +31,7 @@ abstract class BaseViewModel<S : UiState, E : UiEvent, F : UiEffect> : ViewModel
     abstract fun handleEvent(event: E)
 
     protected fun setState(reduce: S.() -> S) {
-        val mutableState = uiState as MutableStateFlow<S>
+        val mutableState = uiState
         mutableState.update { it.reduce() }
     }
 
@@ -41,8 +41,7 @@ abstract class BaseViewModel<S : UiState, E : UiEvent, F : UiEffect> : ViewModel
     }
 
     fun setEvent(event: E) {
-        val newEvent = event
-        viewModelScope.launch { _uiEvent.emit(newEvent) }
+        viewModelScope.launch { _uiEvent.emit(event) }
     }
 
     private fun subscribeToEvents() {
