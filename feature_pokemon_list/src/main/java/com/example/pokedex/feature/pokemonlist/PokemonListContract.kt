@@ -13,6 +13,7 @@ import com.example.pokedex.domain.model.Pokemon
  */
 data class PokemonListState(
     val isLoading: Boolean = false,
+    val isRefreshing: Boolean = false,
     val isFetchingNextPage: Boolean = false,
     val isEndReached: Boolean = false,
     val offset: Int = 0,
@@ -27,6 +28,7 @@ data class PokemonListState(
 
 sealed interface PokemonListEvent : UiEvent {
     data object LoadPokemon : PokemonListEvent
+    data object Refresh : PokemonListEvent
     data object LoadNextPage : PokemonListEvent
     data class OnPokemonClicked(val pokemonId: Int) : PokemonListEvent
     data class OnSearchQueryChanged(val query: String) : PokemonListEvent

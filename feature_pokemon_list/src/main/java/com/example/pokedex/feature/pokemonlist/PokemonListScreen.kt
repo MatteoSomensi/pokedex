@@ -160,7 +160,9 @@ fun PokemonListScreenContent(
                 }
             }
 
-            Box(
+            androidx.compose.material3.pulltorefresh.PullToRefreshBox(
+                isRefreshing = state.isRefreshing,
+                onRefresh = { onEvent(PokemonListEvent.Refresh) },
                 modifier = Modifier
                     .fillMaxSize()
                     .weight(weight = weights.listContentWeight)

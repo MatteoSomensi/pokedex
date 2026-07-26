@@ -42,7 +42,8 @@ class PokemonListViewModel @Inject constructor(
 
     override fun handleEvent(event: PokemonListEvent) {
         when (event) {
-            is PokemonListEvent.LoadPokemon -> loadPokemon()
+            is PokemonListEvent.LoadPokemon -> loadPokemon(isRefresh = false)
+            is PokemonListEvent.Refresh -> loadPokemon(isRefresh = true)
             is PokemonListEvent.LoadNextPage -> loadNextPage()
             is PokemonListEvent.OnPokemonClicked -> {
                 setEffect { PokemonListEffect.NavigateToDetail(pokemonId = event.pokemonId) }
@@ -53,7 +54,7 @@ class PokemonListViewModel @Inject constructor(
                 searchJob?.cancel()
                 searchJob = viewModelScope.launch {
                     delay(duration = SEARCH_DEBOUNCE)
-                    loadPokemon()
+                    loadPokemon(isRefresh = false)
                 }
             }
 
@@ -64,12 +65,13 @@ class PokemonListViewModel @Inject constructor(
         }
     }
 
-    private fun loadPokemon() {
+    private fun loadPokemon(isRefresh: Boolean = false) {
         val query = uiState.value.searchQuery
         viewModelScope.launch {
             setState {
                 copy(
-                    isLoading = true,
+                    isLoading = !isRefresh,
+                    isRefreshing = isRefresh,
                     errorMessage = null,
                     nextPageError = null,
                     offset = 0
@@ -87,6 +89,7 @@ class PokemonListViewModel @Inject constructor(
                     setState {
                         copy(
                             isLoading = false,
+                            isRefreshing = false,
                             pokemonList = list,
                             offset = list.size,
                             isEndReached = list.isEmpty() || list.size < PAGE_SIZE
@@ -98,6 +101,7 @@ class PokemonListViewModel @Inject constructor(
                     setState {
                         copy(
                             isLoading = false,
+                            isRefreshing = false,
                             errorMessage = UiText.StringResource(id = R.string.error_default)
                         )
                     }
