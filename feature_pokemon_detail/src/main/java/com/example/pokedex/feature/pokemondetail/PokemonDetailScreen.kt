@@ -50,6 +50,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -155,7 +157,9 @@ fun PokemonDetailContent(pokemon: Pokemon) {
                     .size(size = dimensions.imageSizeDetail)
                     .clip(shape = RoundedCornerShape(size = dimensions.cornerRadiusLarge))
                     .background(color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
-                    .padding(all = dimensions.paddingMedium)
+                    .padding(all = dimensions.paddingMedium),
+                placeholder = if (LocalInspectionMode.current) painterResource(id = android.R.drawable.ic_menu_gallery) else null,
+                error = if (LocalInspectionMode.current) painterResource(id = android.R.drawable.ic_menu_gallery) else null
             )
         }
 
