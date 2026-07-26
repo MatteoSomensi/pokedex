@@ -62,6 +62,7 @@ import com.example.pokedex.core.ui.DevicePreviews
 import com.example.pokedex.domain.model.Pokemon
 import com.example.pokedex.theme.LocalDimensions
 import com.example.pokedex.theme.LocalWeights
+import com.example.pokedex.theme.LocalAnimations
 import com.example.pokedex.theme.PokedexTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -128,6 +129,7 @@ fun PokemonDetailScreen(
 fun PokemonDetailContent(pokemon: Pokemon) {
     var isVisible by remember { mutableStateOf(false) }
     val dimensions = LocalDimensions.current
+    val animations = LocalAnimations.current
 
     LaunchedEffect(Unit) {
         isVisible = true
@@ -142,7 +144,7 @@ fun PokemonDetailContent(pokemon: Pokemon) {
     ) {
         AnimatedVisibility(
             visible = isVisible,
-            enter = fadeIn(animationSpec = tween(durationMillis = 500)) + slideInVertically(initialOffsetY = { -50 })
+            enter = fadeIn(animationSpec = tween(durationMillis = animations.durationMedium)) + slideInVertically(initialOffsetY = { -animations.slideOffsetStandard })
         ) {
             AsyncImage(
                 model = pokemon.imageUrl,
@@ -159,7 +161,7 @@ fun PokemonDetailContent(pokemon: Pokemon) {
 
         AnimatedVisibility(
             visible = isVisible,
-            enter = fadeIn(animationSpec = tween(durationMillis = 700)) + slideInVertically(initialOffsetY = { 50 })
+            enter = fadeIn(animationSpec = tween(durationMillis = animations.durationSlow)) + slideInVertically(initialOffsetY = { animations.slideOffsetStandard })
         ) {
             Column(
                 modifier = Modifier.fillMaxWidth(),
