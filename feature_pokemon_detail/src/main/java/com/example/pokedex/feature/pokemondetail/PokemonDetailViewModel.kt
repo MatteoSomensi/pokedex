@@ -1,11 +1,9 @@
 package com.example.pokedex.feature.pokemondetail
 
-import com.example.pokedex.core.R
-import com.example.pokedex.core.util.UiText
-
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.pokedex.core.R
+import com.example.pokedex.core.util.UiText
 import com.example.pokedex.domain.model.Pokemon
 import com.example.pokedex.domain.repository.PokemonRepository
 import dagger.hilt.android.lifecycle.HiltViewModel

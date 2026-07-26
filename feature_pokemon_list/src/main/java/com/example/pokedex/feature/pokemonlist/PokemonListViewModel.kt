@@ -1,13 +1,12 @@
 package com.example.pokedex.feature.pokemonlist
 
-import com.example.pokedex.core.R
-import com.example.pokedex.core.util.UiText
-
 import androidx.lifecycle.viewModelScope
+import com.example.pokedex.core.R
 import com.example.pokedex.core.mvi.BaseViewModel
-import com.example.pokedex.domain.model.Pokemon
+import com.example.pokedex.core.util.UiText
 import com.example.pokedex.domain.repository.PokemonRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -28,7 +27,7 @@ class PokemonListViewModel @Inject constructor(
         setEvent(PokemonListEvent.LoadPokemon)
     }
 
-    private var searchJob: kotlinx.coroutines.Job? = null
+    private var searchJob: Job? = null
 
     override fun handleEvent(event: PokemonListEvent) {
         when (event) {
@@ -37,6 +36,7 @@ class PokemonListViewModel @Inject constructor(
             is PokemonListEvent.OnPokemonClicked -> {
                 setEffect { PokemonListEffect.NavigateToDetail(event.pokemonId) }
             }
+
             is PokemonListEvent.OnSearchQueryChanged -> {
                 setState { copy(searchQuery = event.query) }
                 searchJob?.cancel()
@@ -45,6 +45,7 @@ class PokemonListViewModel @Inject constructor(
                     loadPokemon()
                 }
             }
+
             is PokemonListEvent.OnTypeFilterSelected -> {
                 setState { copy(selectedType = event.type) }
                 applyFilters()
@@ -56,27 +57,32 @@ class PokemonListViewModel @Inject constructor(
         val query = uiState.value.searchQuery
         viewModelScope.launch {
             setState { copy(isLoading = true, errorMessage = null, offset = 0) }
-            
+
             val fetcher = if (query.isNotBlank()) {
                 repository.searchPokemon(query, limit = 20, offset = 0)
             } else {
                 repository.getPokemonList(limit = 20, offset = 0)
             }
-            
+
             fetcher.fold(
                 onSuccess = { list ->
-                    setState { 
+                    setState {
                         copy(
-                            isLoading = false, 
-                            pokemonList = list, 
+                            isLoading = false,
+                            pokemonList = list,
                             offset = list.size,
                             isEndReached = list.isEmpty() || list.size < 20
-                        ) 
+                        )
                     }
                     applyFilters()
                 },
                 onFailure = { error ->
-                    setState { copy(isLoading = false, errorMessage = UiText.StringResource(R.string.error_default)) }
+                    setState {
+                        copy(
+                            isLoading = false,
+                            errorMessage = UiText.StringResource(R.string.error_default)
+                        )
+                    }
                 }
             )
         }
@@ -111,17 +117,17 @@ class PokemonListViewModel @Inject constructor(
                     applyFilters()
                 },
                 onFailure = { error ->
-                    setState { 
+                    setState {
                         copy(
                             isFetchingNextPage = false,
                             errorMessage = UiText.StringResource(R.string.error_default)
-                        ) 
+                        )
                     }
                 }
             )
         }
     }
-    
+
     private fun applyFilters() {
         setState {
             val query = searchQuery.trim().lowercase()
@@ -129,11 +135,11 @@ class PokemonListViewModel @Inject constructor(
                 val matchesQuery = if (query.isNotEmpty()) {
                     pokemon.name.lowercase().contains(query) || pokemon.id.toString() == query
                 } else true
-                
+
                 val matchesType = if (selectedType != null) {
                     pokemon.types.any { it.equals(selectedType, ignoreCase = true) }
                 } else true
-                
+
                 matchesQuery && matchesType
             }
             copy(filteredPokemonList = filtered)

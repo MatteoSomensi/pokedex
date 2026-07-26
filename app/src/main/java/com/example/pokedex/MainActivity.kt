@@ -8,8 +8,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import dagger.hilt.android.AndroidEntryPoint
 import com.example.pokedex.theme.PokedexTheme
+import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 
@@ -18,12 +18,17 @@ import com.example.pokedex.theme.PokedexTheme
  * Part of the Clean Architecture structure.
  */
 class MainActivity : ComponentActivity() {
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-    enableEdgeToEdge()
-    setContent {
-      PokedexTheme { Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) { MainNavigation() } }
+        enableEdgeToEdge()
+        setContent {
+            PokedexTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) { MainNavigation() }
+            }
+        }
     }
-  }
 }

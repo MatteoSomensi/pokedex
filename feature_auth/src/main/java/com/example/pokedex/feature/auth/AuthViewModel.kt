@@ -1,24 +1,22 @@
 package com.example.pokedex.feature.auth
 
-import com.example.pokedex.core.R
-import com.example.pokedex.core.util.UiText
-
+import android.content.Context
 import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.exceptions.GetCredentialException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.pokedex.core.R
+import com.example.pokedex.core.util.UiText
 import com.example.pokedex.domain.repository.AuthRepository
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import android.content.Context
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
@@ -35,7 +33,7 @@ class AuthViewModel @Inject constructor(
     fun onPasswordChange(password: String) {
         uiState.update { it.copy(password = password) }
     }
-    
+
     fun toggleIsLogin() {
         uiState.update { it.copy(isLogin = !it.isLogin) }
     }
@@ -49,11 +47,16 @@ class AuthViewModel @Inject constructor(
             } else {
                 authRepository.signUpWithEmail(state.email, state.password)
             }
-            
+
             result.onSuccess {
                 uiState.update { it.copy(isLoading = false, isSuccess = true) }
             }.onFailure { e ->
-                uiState.update { it.copy(isLoading = false, error = UiText.StringResource(R.string.error_auth_failed)) }
+                uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        error = UiText.StringResource(R.string.error_auth_failed)
+                    )
+                }
             }
         }
     }
@@ -75,22 +78,42 @@ class AuthViewModel @Inject constructor(
 
                 val result = credentialManager.getCredential(context, request)
                 val credential = result.credential
-                
+
                 if (credential is GoogleIdTokenCredential) {
                     val idToken = credential.idToken
                     val authResult = authRepository.signInWithGoogle(idToken)
                     authResult.onSuccess {
                         uiState.update { it.copy(isLoading = false, isSuccess = true) }
                     }.onFailure { e ->
-                        uiState.update { it.copy(isLoading = false, error = UiText.StringResource(R.string.error_auth_failed)) }
+                        uiState.update {
+                            it.copy(
+                                isLoading = false,
+                                error = UiText.StringResource(R.string.error_auth_failed)
+                            )
+                        }
                     }
                 } else {
-                    uiState.update { it.copy(isLoading = false, error = UiText.StringResource(R.string.error_auth_failed)) }
+                    uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            error = UiText.StringResource(R.string.error_auth_failed)
+                        )
+                    }
                 }
             } catch (e: GetCredentialException) {
-                uiState.update { it.copy(isLoading = false, error = UiText.StringResource(R.string.error_auth_failed)) }
+                uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        error = UiText.StringResource(R.string.error_auth_failed)
+                    )
+                }
             } catch (e: Exception) {
-                uiState.update { it.copy(isLoading = false, error = UiText.StringResource(R.string.error_auth_failed)) }
+                uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        error = UiText.StringResource(R.string.error_auth_failed)
+                    )
+                }
             }
         }
     }

@@ -1,23 +1,40 @@
 package com.example.pokedex.feature.auth.profile
 
-import com.example.pokedex.core.R
-
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.pokedex.core.R
 import com.example.pokedex.core.ui.DevicePreviews
 import com.example.pokedex.domain.model.AuthUser
 import com.example.pokedex.theme.PokedexTheme
@@ -30,7 +47,7 @@ fun ProfileScreen(
     viewModel: ProfileViewModel = hiltViewModel()
 ) {
     val currentUser by viewModel.currentUser.collectAsStateWithLifecycle()
-    
+
     ProfileScreenContent(
         currentUser = currentUser,
         onNavigateBack = onNavigateBack,
@@ -50,10 +67,13 @@ fun ProfileScreenContent(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(androidx.compose.ui.res.stringResource(R.string.profile_title)) },
+                title = { Text(stringResource(R.string.profile_title)) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = androidx.compose.ui.res.stringResource(R.string.cd_back))
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            contentDescription = stringResource(R.string.cd_back)
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -69,7 +89,7 @@ fun ProfileScreenContent(
                 .fillMaxSize()
                 .padding(paddingValues)
                 .padding(24.dp)
-                .verticalScroll(androidx.compose.foundation.rememberScrollState()),
+                .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -80,14 +100,14 @@ fun ProfileScreenContent(
             ) {
                 Icon(
                     imageVector = Icons.Default.Person,
-                    contentDescription = androidx.compose.ui.res.stringResource(R.string.profile_title),
+                    contentDescription = stringResource(R.string.profile_title),
                     modifier = Modifier.padding(24.dp),
                     tint = MaterialTheme.colorScheme.onSecondaryContainer
                 )
             }
-            
+
             Spacer(modifier = Modifier.height(24.dp))
-            
+
             if (currentUser != null) {
                 if (!currentUser!!.displayName.isNullOrBlank()) {
                     Text(
@@ -98,7 +118,7 @@ fun ProfileScreenContent(
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                 }
-                
+
                 Text(
                     text = currentUser!!.email ?: "No email provided",
                     style = MaterialTheme.typography.bodyLarge,
@@ -106,7 +126,7 @@ fun ProfileScreenContent(
                 )
             } else {
                 Text(
-                    text = androidx.compose.ui.res.stringResource(R.string.profile_not_logged_in),
+                    text = stringResource(R.string.profile_not_logged_in),
                     style = MaterialTheme.typography.headlineSmall,
                     color = MaterialTheme.colorScheme.error
                 )
@@ -115,7 +135,7 @@ fun ProfileScreenContent(
             Spacer(modifier = Modifier.height(48.dp))
 
             Button(
-                onClick = { 
+                onClick = {
                     onLogout()
                     onNavigateToAuth()
                 },
@@ -125,7 +145,10 @@ fun ProfileScreenContent(
                     contentColor = MaterialTheme.colorScheme.onError
                 )
             ) {
-                Text(androidx.compose.ui.res.stringResource(R.string.profile_logout), modifier = Modifier.padding(vertical = 8.dp))
+                Text(
+                    stringResource(R.string.profile_logout),
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
             }
         }
     }

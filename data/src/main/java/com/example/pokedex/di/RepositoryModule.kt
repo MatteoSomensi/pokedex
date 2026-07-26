@@ -1,9 +1,9 @@
 package com.example.pokedex.di
 
-import com.example.pokedex.data.repository.PokemonRepositoryImpl
-import com.example.pokedex.domain.repository.PokemonRepository
 import com.example.pokedex.data.repository.AuthRepositoryImpl
+import com.example.pokedex.data.repository.PokemonRepositoryImpl
 import com.example.pokedex.domain.repository.AuthRepository
+import com.example.pokedex.domain.repository.PokemonRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

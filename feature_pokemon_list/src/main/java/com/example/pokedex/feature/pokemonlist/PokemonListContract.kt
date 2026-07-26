@@ -1,10 +1,9 @@
 package com.example.pokedex.feature.pokemonlist
 
-import com.example.pokedex.core.util.UiText
-
 import com.example.pokedex.core.mvi.UiEffect
 import com.example.pokedex.core.mvi.UiEvent
 import com.example.pokedex.core.mvi.UiState
+import com.example.pokedex.core.util.UiText
 import com.example.pokedex.domain.model.Pokemon
 
 

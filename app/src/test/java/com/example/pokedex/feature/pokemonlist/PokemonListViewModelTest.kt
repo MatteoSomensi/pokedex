@@ -39,33 +39,35 @@ class PokemonListViewModelTest {
     }
 
     @Test
-    fun `quando LoadPokemon ha successo lo stato viene aggiornato con la lista`() = runTest(testDispatcher) {
-        val fakeList = listOf(
-            Pokemon(1, "Bulbasaur", "url", listOf("Grass"))
-        )
-        coEvery { repository.getPokemonList(any(), any()) } returns Result.success(fakeList)
+    fun `quando LoadPokemon ha successo lo stato viene aggiornato con la lista`() =
+        runTest(testDispatcher) {
+            val fakeList = listOf(
+                Pokemon(1, "Bulbasaur", "url", listOf("Grass"))
+            )
+            coEvery { repository.getPokemonList(any(), any()) } returns Result.success(fakeList)
 
-        viewModel = PokemonListViewModel(repository)
+            viewModel = PokemonListViewModel(repository)
 
-        viewModel.uiState.test {
-            val state = awaitItem()
-            
-            assertEquals(false, state.isLoading)
-            assertEquals(fakeList, state.pokemonList)
-            assertEquals(null, state.errorMessage)
+            viewModel.uiState.test {
+                val state = awaitItem()
+
+                assertEquals(false, state.isLoading)
+                assertEquals(fakeList, state.pokemonList)
+                assertEquals(null, state.errorMessage)
+            }
         }
-    }
 
     @Test
-    fun `quando OnPokemonClicked viene chiamato, viene emesso l'effetto NavigateToDetail`() = runTest(testDispatcher) {
-        coEvery { repository.getPokemonList(any(), any()) } returns Result.success(emptyList())
-        viewModel = PokemonListViewModel(repository)
+    fun `quando OnPokemonClicked viene chiamato, viene emesso l'effetto NavigateToDetail`() =
+        runTest(testDispatcher) {
+            coEvery { repository.getPokemonList(any(), any()) } returns Result.success(emptyList())
+            viewModel = PokemonListViewModel(repository)
 
-        viewModel.uiEffect.test {
-            viewModel.setEvent(PokemonListEvent.OnPokemonClicked(1))
-            
-            val effect = awaitItem()
-            assertEquals(PokemonListEffect.NavigateToDetail(1), effect)
+            viewModel.uiEffect.test {
+                viewModel.setEvent(PokemonListEvent.OnPokemonClicked(1))
+
+                val effect = awaitItem()
+                assertEquals(PokemonListEffect.NavigateToDetail(1), effect)
+            }
         }
-    }
 }

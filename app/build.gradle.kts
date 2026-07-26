@@ -12,10 +12,14 @@ android {
         applicationId = "com.example.pokedex"
         versionCode = (project.findProperty("VERSION_CODE") as? String)?.toIntOrNull() ?: 1
         versionName = (project.findProperty("VERSION_NAME") as? String) ?: "1.0"
-        
-        buildConfigField("String", "WEB_CLIENT_ID", "\"${project.findProperty("WEB_CLIENT_ID") ?: ""}\"")
+
+        buildConfigField(
+            "String",
+            "WEB_CLIENT_ID",
+            "\"${project.findProperty("WEB_CLIENT_ID") ?: ""}\""
+        )
     }
-    
+
     buildFeatures {
         buildConfig = true
     }
@@ -54,7 +58,7 @@ dependencies {
     testImplementation(libs.mockk)
     testImplementation(libs.coroutines.test)
     testImplementation(libs.turbine)
-    
+
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.espresso.core)
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
