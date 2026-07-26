@@ -35,6 +35,7 @@ sealed interface PokemonListEvent : UiEvent {
     data class OnSearchQueryChanged(val query: String) : PokemonListEvent
     data class OnTypeFilterSelected(val type: String?) : PokemonListEvent
     data class OnFavoritesFilterToggled(val showFavoritesOnly: Boolean) : PokemonListEvent
+    data object OnResume : PokemonListEvent
 }
 
 sealed interface PokemonListEffect : UiEffect {
