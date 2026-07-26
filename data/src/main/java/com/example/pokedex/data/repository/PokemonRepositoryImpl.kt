@@ -70,6 +70,17 @@ class PokemonRepositoryImpl @Inject constructor(
     }
 
     private var globalListCache: List<PokemonResultItem>? = null
+    private var cachedTypes: List<String>? = null
+
+    override suspend fun getPokemonTypes(): Result<List<String>> = runCatching {
+        cachedTypes?.let { return@runCatching it }
+        val response = api.getPokemonTypes()
+        // PokeAPI returns "unknown" and "shadow", we can filter them out or keep them.
+        val types = response.results.map { it.name.replaceFirstChar { char -> char.uppercase() } }
+            .filter { it != "Unknown" && it != "Shadow" } // Optional filter for cleaner UI
+        cachedTypes = types
+        types
+    }
 
     override suspend fun searchPokemon(
         query: String,

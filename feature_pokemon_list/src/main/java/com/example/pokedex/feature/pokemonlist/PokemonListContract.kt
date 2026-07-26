@@ -20,6 +20,7 @@ data class PokemonListState(
     val filteredPokemonList: List<Pokemon> = emptyList(),
     val searchQuery: String = "",
     val selectedType: String? = null,
+    val availableTypes: List<String> = emptyList(),
     val errorMessage: UiText? = null
 ) : UiState
 

@@ -11,4 +11,5 @@ interface PokemonRepository {
     suspend fun getPokemonList(limit: Int, offset: Int): Result<List<Pokemon>>
     suspend fun getPokemonDetail(id: Int): Result<Pokemon>
     suspend fun searchPokemon(query: String, limit: Int, offset: Int): Result<List<Pokemon>>
+    suspend fun getPokemonTypes(): Result<List<String>>
 }

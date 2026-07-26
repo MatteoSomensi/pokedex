@@ -22,4 +22,7 @@ interface PokeApiService {
     suspend fun getPokemonDetail(
         @Path("nameOrId") nameOrId: String
     ): PokemonDetailResponse
+
+    @GET("type")
+    suspend fun getPokemonTypes(): com.example.pokedex.data.remote.model.TypeListResponse
 }

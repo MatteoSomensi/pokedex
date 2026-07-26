@@ -58,3 +58,9 @@ data class PokemonStatSlot(
 data class PokemonStatItem(
     val name: String
 )
+
+@Serializable
+@InternalSerializationApi
+data class TypeListResponse(
+    val results: List<PokemonTypeItem>
+)

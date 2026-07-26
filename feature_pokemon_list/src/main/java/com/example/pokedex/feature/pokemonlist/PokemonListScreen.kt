@@ -133,7 +133,7 @@ fun PokemonListScreenContent(
                 shape = MaterialTheme.shapes.medium
             )
 
-            val types = Constants.POKEMON_TYPES
+            val types = state.availableTypes
 
             LazyRow(
                 contentPadding = PaddingValues(horizontal = dimensions.paddingMedium),
@@ -168,7 +168,7 @@ fun PokemonListScreenContent(
 
                     state.errorMessage != null -> {
                         Text(
-                            text = state.errorMessage!!.asString(),
+                            text = state.errorMessage.asString(),
                             modifier = Modifier.align(Alignment.Center)
                         )
                     }

@@ -25,7 +25,16 @@ class PokemonListViewModel @Inject constructor(
     override fun createInitialState(): PokemonListState = PokemonListState()
 
     init {
+        loadTypes()
         setEvent(event = PokemonListEvent.LoadPokemon)
+    }
+
+    private fun loadTypes() {
+        viewModelScope.launch {
+            repository.getPokemonTypes().onSuccess { types ->
+                setState { copy(availableTypes = types) }
+            }
+        }
     }
 
     private var searchJob: Job? = null
