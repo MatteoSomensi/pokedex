@@ -137,7 +137,7 @@ fun PokemonListScreenContent(
 
             LazyRow(
                 contentPadding = PaddingValues(horizontal = dimensions.paddingMedium),
-                horizontalArrangement = Arrangement.spacedBy(dimensions.paddingSmall)
+                horizontalArrangement = Arrangement.spacedBy(space = dimensions.paddingSmall)
             ) {
                 item {
                     FilterChip(
@@ -169,7 +169,7 @@ fun PokemonListScreenContent(
                     state.errorMessage != null -> {
                         Text(
                             text = state.errorMessage.asString(),
-                            modifier = Modifier.align(Alignment.Center)
+                            modifier = Modifier.align(alignment = Alignment.Center)
                         )
                     }
 
@@ -194,20 +194,20 @@ fun PokemonListScreenContent(
                         LazyVerticalGrid(
                             state = gridState,
                             columns = GridCells.Adaptive(minSize = 150.dp),
-                            contentPadding = PaddingValues(dimensions.paddingMedium),
-                            horizontalArrangement = Arrangement.spacedBy(dimensions.paddingMedium),
-                            verticalArrangement = Arrangement.spacedBy(dimensions.paddingMedium),
+                            contentPadding = PaddingValues(all = dimensions.paddingMedium),
+                            horizontalArrangement = Arrangement.spacedBy(space = dimensions.paddingMedium),
+                            verticalArrangement = Arrangement.spacedBy(space = dimensions.paddingMedium),
                             modifier = Modifier.fillMaxSize()
                         ) {
                             items(state.filteredPokemonList, key = { it.id }) { pokemon ->
                                 PokemonCard(
                                     pokemon = pokemon,
-                                    onClick = { onEvent(PokemonListEvent.OnPokemonClicked(pokemon.id)) }
+                                    onClick = { onEvent(PokemonListEvent.OnPokemonClicked(pokemonId = pokemon.id)) }
                                 )
                             }
 
                             if (state.isFetchingNextPage) {
-                                item(span = { GridItemSpan(maxLineSpan) }) {
+                                item(span = { GridItemSpan(currentLineSpan = maxLineSpan) }) {
                                     Box(
                                         modifier = Modifier
                                             .fillMaxWidth()
@@ -255,8 +255,8 @@ fun PokemonCard(pokemon: Pokemon, onClick: () -> Unit) {
             )
             Spacer(modifier = Modifier.height(height = dimensions.paddingSmall))
             FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(dimensions.cornerRadiusSmall),
-                verticalArrangement = Arrangement.spacedBy(dimensions.cornerRadiusSmall)
+                horizontalArrangement = Arrangement.spacedBy(space = dimensions.cornerRadiusSmall),
+                verticalArrangement = Arrangement.spacedBy(space = dimensions.cornerRadiusSmall)
             ) {
                 pokemon.types.forEach { type ->
                     Surface(

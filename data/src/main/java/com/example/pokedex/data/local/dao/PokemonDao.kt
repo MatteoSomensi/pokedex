@@ -7,6 +7,7 @@ import androidx.room.Query
 import com.example.pokedex.data.local.entity.PokemonEntity
 
 @Dao
+@JvmSuppressWildcards
 interface PokemonDao {
 
     @Query("SELECT * FROM pokemon ORDER BY id ASC LIMIT :limit OFFSET :offset")
@@ -22,8 +23,8 @@ interface PokemonDao {
     suspend fun searchPokemon(query: String, queryId: Int?, limit: Int, offset: Int): List<PokemonEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(pokemonList: List<PokemonEntity>)
+    suspend fun insertAll(pokemonList: List<PokemonEntity>): List<Long>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(pokemon: PokemonEntity)
+    suspend fun insert(pokemon: PokemonEntity): Long
 }
