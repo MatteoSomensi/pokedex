@@ -63,7 +63,7 @@ class PokemonListViewModelTest {
         runTest(testDispatcher) {
             coEvery { repository.getPokemonList(any(), any()) } returns Result.success(emptyList())
             coEvery { repository.getPokemonTypes() } returns Result.success(emptyList())
-            
+
             viewModel = PokemonListViewModel(repository)
 
             viewModel.uiEffect.test {
