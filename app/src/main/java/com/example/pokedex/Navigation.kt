@@ -49,8 +49,8 @@ fun MainNavigation() {
                     )
                 ) {
                     PokemonListScreen(
-                        onNavigateToDetail = { pokemonId -> backStack.add(PokemonDetail(pokemonId)) },
-                        onNavigateToProfile = { backStack.add(Profile) }
+                        onNavigateToDetail = { pokemonId -> backStack.add(PokemonDetail(id = pokemonId)) },
+                        onNavigateToProfile = { backStack.add(element = Profile) }
                     )
                 }
                 entry<PokemonDetail>(
@@ -64,6 +64,7 @@ fun MainNavigation() {
                 entry<Auth> {
                     val context = LocalContext.current
                     val webClientId = remember(context) {
+                        @android.annotation.SuppressLint("DiscouragedApi")
                         val resId = context.resources.getIdentifier(
                             "default_web_client_id",
                             "string",
