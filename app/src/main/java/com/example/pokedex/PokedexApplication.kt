@@ -25,7 +25,6 @@ class PokedexApplication : Application(), Configuration.Provider {
     override fun onCreate() {
         super.onCreate()
         
-        // Start the periodic sync job
         SyncWorker.enqueuePeriodicSync(this)
     }
 }
