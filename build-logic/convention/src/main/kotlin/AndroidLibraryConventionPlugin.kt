@@ -3,6 +3,7 @@ import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
@@ -12,6 +13,12 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
         with(target) {
             with(pluginManager) {
                 apply("com.android.library")
+            }
+
+            dependencies {
+                add("testRuntimeOnly", "org.junit.vintage:junit-vintage-engine:5.10.2")
+                add("testRuntimeOnly", "org.junit.platform:junit-platform-launcher:1.10.2")
+                add("testRuntimeOnly", "org.junit.jupiter:junit-jupiter-engine:5.10.2")
             }
 
             extensions.configure<LibraryExtension> {
@@ -36,6 +43,10 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
                         "-opt-in=kotlinx.serialization.InternalSerializationApi"
                     )
                 }
+            }
+
+            tasks.withType<org.gradle.api.tasks.testing.Test>().configureEach {
+                useJUnitPlatform()
             }
         }
     }
