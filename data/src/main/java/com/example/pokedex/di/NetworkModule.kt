@@ -13,6 +13,10 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import javax.inject.Singleton
+import com.example.pokedex.data.remote.auth.AuthInterceptor
+import com.example.pokedex.data.remote.auth.DummySessionManager
+import com.example.pokedex.data.remote.auth.SessionManager
+import com.example.pokedex.data.remote.auth.TokenAuthenticator
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -32,11 +36,22 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(): OkHttpClient {
+    fun provideSessionManager(): SessionManager {
+        return DummySessionManager()
+    }
+
+    @Provides
+    @Singleton
+    fun provideOkHttpClient(
+        authInterceptor: AuthInterceptor,
+        tokenAuthenticator: TokenAuthenticator
+    ): OkHttpClient {
         val logging = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BASIC
         }
         return OkHttpClient.Builder()
+            .addInterceptor(authInterceptor)
+            .authenticator(tokenAuthenticator)
             .addInterceptor(logging)
             .build()
     }
