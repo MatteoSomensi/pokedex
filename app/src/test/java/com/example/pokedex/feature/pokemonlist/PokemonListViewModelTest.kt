@@ -39,7 +39,7 @@ class PokemonListViewModelTest {
     }
 
     @Test
-    fun `quando LoadPokemon ha successo lo stato viene aggiornato con la lista`() =
+    fun `when LoadPokemon succeeds then state is updated with the list`() =
         runTest(testDispatcher) {
             val fakeList = listOf(
                 Pokemon(1, "Bulbasaur", "url", "cryUrl", listOf("Grass"))
@@ -60,7 +60,7 @@ class PokemonListViewModelTest {
         }
 
     @Test
-    fun `quando OnPokemonClicked viene chiamato, viene emesso l'effetto NavigateToDetail`() =
+    fun `when OnPokemonClicked is called then NavigateToDetail effect is emitted`() =
         runTest(testDispatcher) {
             coEvery { repository.getPokemonList(any(), any(), any()) } returns Result.success(emptyList())
             coEvery { repository.getPokemonTypes() } returns Result.success(emptyList())
