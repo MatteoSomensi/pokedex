@@ -1,12 +1,13 @@
 package com.example.pokedex.data.repository
 
+import com.example.pokedex.core.coroutines.DispatcherProvider
 import com.example.pokedex.core.util.Constants
 import com.example.pokedex.data.local.dao.PokemonDao
 import com.example.pokedex.data.local.entity.PokemonEntity
 import com.example.pokedex.data.local.entity.TypeEntity
 import com.example.pokedex.data.remote.PokeApiService
-import com.example.pokedex.data.remote.model.PokemonResultItem
 import com.example.pokedex.data.remote.model.PokemonDetailResponse
+import com.example.pokedex.data.remote.model.PokemonResultItem
 import com.example.pokedex.domain.model.Pokemon
 import com.example.pokedex.domain.repository.PokemonRepository
 import kotlinx.coroutines.async
@@ -15,6 +16,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 /**
@@ -28,144 +30,159 @@ import javax.inject.Inject
  */
 class PokemonRepositoryImpl @Inject constructor(
     private val api: PokeApiService,
-    private val dao: PokemonDao
+    private val dao: PokemonDao,
+    private val dispatchers: DispatcherProvider
 ) : PokemonRepository {
 
     private var globalListCache: List<PokemonResultItem>? = null
     private var cachedTypes: List<String>? = null
     private val listMutex = Mutex()
     private val typesMutex = Mutex()
-    @Volatile private var isEndReached = false
+    @Volatile
+    private var isEndReached = false
 
-    override suspend fun getPokemonList(limit: Int, offset: Int, forceRefresh: Boolean): Result<List<Pokemon>> =
-        runCatching {
-            if (offset == 0) isEndReached = false
-            
-            val localList = dao.getPokemonList(limit, offset)
-            if (!forceRefresh && (localList.size == limit || (localList.isNotEmpty() && isEndReached))) {
-                return@runCatching localList.map { it.toDomain() }
-            }
+    override suspend fun getPokemonList(
+        limit: Int,
+        offset: Int,
+        forceRefresh: Boolean
+    ): Result<List<Pokemon>> =
+        withContext(dispatchers.io) {
+            runCatching {
+                if (offset == 0) isEndReached = false
 
-            val listResponse = api.getPokemonList(limit = limit, offset = offset)
-            if (listResponse.results.size < limit) {
-                isEndReached = true
-            }
-
-            val chunkResults = mutableListOf<Pokemon>()
-            listResponse.results.chunked(10).forEach { chunk ->
-                val partialResults = coroutineScope {
-                    chunk.map { resultItem ->
-                        async {
-                            val networkDomain = api.getPokemonDetail(resultItem.name).toDomain()
-                            val localEntity = dao.getPokemonById(networkDomain.id)
-                            if (localEntity != null) {
-                                networkDomain.copy(isFavorite = localEntity.isFavorite)
-                            } else {
-                                networkDomain
-                            }
-                        }
-                    }.awaitAll()
+                val localList = dao.getPokemonList(limit, offset)
+                if (!forceRefresh && (localList.size == limit || (localList.isNotEmpty() && isEndReached))) {
+                    return@runCatching localList.map { it.toDomain() }
                 }
-                chunkResults.addAll(partialResults)
+
+                val listResponse = api.getPokemonList(limit = limit, offset = offset)
+                if (listResponse.results.size < limit) {
+                    isEndReached = true
+                }
+
+                val chunkResults = mutableListOf<Pokemon>()
+                listResponse.results.chunked(10).forEach { chunk ->
+                    val partialResults = coroutineScope {
+                        chunk.map { resultItem ->
+                            async {
+                                val networkDomain = api.getPokemonDetail(resultItem.name).toDomain()
+                                val localEntity = dao.getPokemonById(networkDomain.id)
+                                if (localEntity != null) {
+                                    networkDomain.copy(isFavorite = localEntity.isFavorite)
+                                } else {
+                                    networkDomain
+                                }
+                            }
+                        }.awaitAll()
+                    }
+                    chunkResults.addAll(partialResults)
+                }
+
+                dao.insertAll(chunkResults.map { PokemonEntity.fromDomain(it) })
+
+                chunkResults
+            }.onFailure { if (it is kotlinx.coroutines.CancellationException) throw it }
+        }
+
+    override suspend fun getPokemonDetail(id: Int): Result<Pokemon> = withContext(dispatchers.io) {
+        runCatching {
+            val local = dao.getPokemonById(id)
+            if (local != null) {
+                return@runCatching local.toDomain()
             }
 
-            dao.insertAll(chunkResults.map { PokemonEntity.fromDomain(it) })
-
-            chunkResults
+            val detail = api.getPokemonDetail(id.toString())
+            val pokemon = detail.toDomain()
+            dao.insert(PokemonEntity.fromDomain(pokemon))
+            pokemon
         }.onFailure { if (it is kotlinx.coroutines.CancellationException) throw it }
+    }
 
-    override suspend fun getPokemonDetail(id: Int): Result<Pokemon> = runCatching {
-        val local = dao.getPokemonById(id)
-        if (local != null) {
-            return@runCatching local.toDomain()
-        }
+    override suspend fun getPokemonTypes(): Result<List<String>> = withContext(dispatchers.io) {
+        runCatching {
+            typesMutex.withLock {
+                cachedTypes?.let { return@withLock it }
 
-        val detail = api.getPokemonDetail(id.toString())
-        val pokemon = detail.toDomain()
-        dao.insert(PokemonEntity.fromDomain(pokemon))
-        pokemon
-    }.onFailure { if (it is kotlinx.coroutines.CancellationException) throw it }
+                val localTypes = dao.getTypes()
+                if (localTypes.isNotEmpty()) {
+                    val types = localTypes.map { it.name }
+                    cachedTypes = types
+                    return@withLock types
+                }
 
-    override suspend fun getPokemonTypes(): Result<List<String>> = runCatching {
-        typesMutex.withLock {
-            cachedTypes?.let { return@withLock it }
+                val response = api.getPokemonTypes()
+                val types =
+                    response.results.map { it.name.replaceFirstChar { char -> char.uppercase() } }
+                        .filter { it != "Unknown" && it != "Shadow" }
 
-            val localTypes = dao.getTypes()
-            if (localTypes.isNotEmpty()) {
-                val types = localTypes.map { it.name }
+                dao.insertTypes(types.map { TypeEntity(it) })
                 cachedTypes = types
-                return@withLock types
+                types
             }
-
-            val response = api.getPokemonTypes()
-            val types =
-                response.results.map { it.name.replaceFirstChar { char -> char.uppercase() } }
-                    .filter { it != "Unknown" && it != "Shadow" }
-
-            dao.insertTypes(types.map { TypeEntity(it) })
-            cachedTypes = types
-            types
-        }
-    }.onFailure { if (it is kotlinx.coroutines.CancellationException) throw it }
+        }.onFailure { if (it is kotlinx.coroutines.CancellationException) throw it }
+    }
 
     override suspend fun searchPokemon(
         query: String,
         limit: Int,
         offset: Int
-    ): Result<List<Pokemon>> = runCatching {
-        val q = query.trim().lowercase()
-        val queryId = q.toIntOrNull()
+    ): Result<List<Pokemon>> = withContext(dispatchers.io) {
+        runCatching {
+            val q = query.trim().lowercase()
+            val queryId = q.toIntOrNull()
 
-        var useLocalOnly = false
-        listMutex.withLock {
-            if (globalListCache == null) {
-                try {
-                    val fullList = api.getPokemonList(limit = MAX_POKEMON_LIMIT, offset = 0)
-                    globalListCache = fullList.results
-                } catch (e: Exception) {
-                    if (e is kotlinx.coroutines.CancellationException) throw e
-                    useLocalOnly = true
+            var useLocalOnly = false
+            listMutex.withLock {
+                if (globalListCache == null) {
+                    try {
+                        val fullList = api.getPokemonList(limit = MAX_POKEMON_LIMIT, offset = 0)
+                        globalListCache = fullList.results
+                    } catch (e: Exception) {
+                        if (e is kotlinx.coroutines.CancellationException) throw e
+                        useLocalOnly = true
+                    }
                 }
             }
-        }
 
-        if (useLocalOnly) {
-            val localResults = dao.searchPokemon(q, queryId, limit, offset)
-            return@runCatching localResults.map { it.toDomain() }
-        }
+            if (useLocalOnly) {
+                val localResults = dao.searchPokemon(q, queryId, limit, offset)
+                return@runCatching localResults.map { it.toDomain() }
+            }
 
-        val filtered = globalListCache!!.filter {
-            it.name.lowercase().contains(q) || it.url.trimEnd('/').substringAfterLast('/') == q
-        }
-        val chunk = filtered.drop(offset).take(limit)
+            val filtered = globalListCache!!.filter {
+                it.name.lowercase().contains(q) || it.url.trimEnd('/').substringAfterLast('/') == q
+            }
+            val chunk = filtered.drop(offset).take(limit)
 
-        val chunkResults = mutableListOf<Pokemon>()
-        chunk.chunked(10).forEach { batch ->
-            val partialResults = coroutineScope {
-                batch.mapNotNull { resultItem ->
-                    async {
-                        val pokemonId =
-                            resultItem.url.trimEnd('/').substringAfterLast('/').toIntOrNull() ?: -1
-                        val localDetail = dao.getPokemonById(pokemonId)
-                        if (localDetail != null) {
-                            localDetail.toDomain()
-                        } else {
-                            try {
-                                api.getPokemonDetail(resultItem.name).toDomain()
-                            } catch (e: Exception) {
-                                if (e is kotlinx.coroutines.CancellationException) throw e
-                                null // Skip network failures if offline
+            val chunkResults = mutableListOf<Pokemon>()
+            chunk.chunked(10).forEach { batch ->
+                val partialResults = coroutineScope {
+                    batch.map { resultItem ->
+                        async {
+                            val pokemonId =
+                                resultItem.url.trimEnd('/').substringAfterLast('/').toIntOrNull()
+                                    ?: -1
+                            val localDetail = dao.getPokemonById(pokemonId)
+                            if (localDetail != null) {
+                                localDetail.toDomain()
+                            } else {
+                                try {
+                                    api.getPokemonDetail(resultItem.name).toDomain()
+                                } catch (e: Exception) {
+                                    if (e is kotlinx.coroutines.CancellationException) throw e
+                                    null
+                                }
                             }
                         }
-                    }
-                }.awaitAll().filterNotNull()
+                    }.awaitAll().filterNotNull()
+                }
+                chunkResults.addAll(partialResults)
             }
-            chunkResults.addAll(partialResults)
-        }
 
-        dao.insertAll(chunkResults.map { PokemonEntity.fromDomain(it) })
-        chunkResults
-    }.onFailure { if (it is kotlinx.coroutines.CancellationException) throw it }
+            dao.insertAll(chunkResults.map { PokemonEntity.fromDomain(it) })
+            chunkResults
+        }.onFailure { if (it is kotlinx.coroutines.CancellationException) throw it }
+    }
 
     private fun PokemonDetailResponse.toDomain(): Pokemon {
         return Pokemon(
@@ -180,17 +197,24 @@ class PokemonRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun toggleFavoriteStatus(id: Int, isFavorite: Boolean): Result<Unit> = runCatching {
-        val affected = dao.updateFavoriteStatus(id, isFavorite)
-        if (affected == 0) {
-            val detail = api.getPokemonDetail(id.toString()).toDomain().copy(isFavorite = isFavorite)
-            dao.insert(PokemonEntity.fromDomain(detail))
+    override suspend fun toggleFavoriteStatus(id: Int, isFavorite: Boolean): Result<Unit> =
+        withContext(dispatchers.io) {
+            runCatching {
+                val affected = dao.updateFavoriteStatus(id, isFavorite)
+                if (affected == 0) {
+                    val detail =
+                        api.getPokemonDetail(id.toString()).toDomain().copy(isFavorite = isFavorite)
+                    dao.insert(PokemonEntity.fromDomain(detail))
+                }
+            }.onFailure { if (it is kotlinx.coroutines.CancellationException) throw it }
         }
-    }.onFailure { if (it is kotlinx.coroutines.CancellationException) throw it }
 
-    override suspend fun getFavoritePokemonList(): Result<List<Pokemon>> = runCatching {
-        dao.getFavoritePokemonList().map { it.toDomain() }
-    }.onFailure { if (it is kotlinx.coroutines.CancellationException) throw it }
+    override suspend fun getFavoritePokemonList(): Result<List<Pokemon>> =
+        withContext(dispatchers.io) {
+            runCatching {
+                dao.getFavoritePokemonList().map { it.toDomain() }
+            }.onFailure { if (it is kotlinx.coroutines.CancellationException) throw it }
+        }
 
     override fun observeFavoritePokemonIds(): kotlinx.coroutines.flow.Flow<Set<Int>> {
         return dao.observeFavoritePokemonIds().map { it.toSet() }

@@ -15,7 +15,7 @@ import coil.request.ImageRequest
 import com.example.pokedex.domain.repository.PokemonRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.Dispatchers
+import com.example.pokedex.core.coroutines.DispatcherProvider
 import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
 
@@ -36,7 +36,8 @@ import java.util.concurrent.TimeUnit
 class SyncWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
-    private val pokemonRepository: PokemonRepository
+    private val pokemonRepository: PokemonRepository,
+    private val dispatchers: DispatcherProvider
 ) : CoroutineWorker(appContext, workerParams) {
 
     /**
@@ -45,7 +46,7 @@ class SyncWorker @AssistedInject constructor(
      * @return [Result.success] if all data and images were synced successfully,
      *         [Result.retry] if a network error occurred or the data fetch failed.
      */
-    override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
+    override suspend fun doWork(): Result = withContext(dispatchers.io) {
         try {
             Log.d(TAG, "Starting sync work...")
             
