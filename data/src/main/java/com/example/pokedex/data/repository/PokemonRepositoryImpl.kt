@@ -17,9 +17,11 @@ import com.example.pokedex.data.remote.model.PokemonResultItem
 import com.example.pokedex.data.repository.paging.PokemonRemoteMediator
 import com.example.pokedex.domain.model.Pokemon
 import com.example.pokedex.domain.repository.PokemonRepository
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -54,7 +56,7 @@ class PokemonRepositoryImpl
         private var isEndReached = false
 
         @OptIn(ExperimentalPagingApi::class)
-        override fun getPokemonPaged(query: String): kotlinx.coroutines.flow.Flow<PagingData<Pokemon>> {
+        override fun getPokemonPaged(query: String): Flow<PagingData<Pokemon>> {
             val normalizedQuery = query.trim().lowercase()
 
             return Pager(
@@ -126,7 +128,7 @@ class PokemonRepositoryImpl
                     dao.insertAll(chunkResults.map { PokemonEntity.fromDomain(it) })
 
                     chunkResults
-                }.onFailure { if (it is kotlinx.coroutines.CancellationException) throw it }
+                }.onFailure { if (it is CancellationException) throw it }
             }
 
         override suspend fun getPokemonDetail(id: Int): Result<Pokemon> =
@@ -141,7 +143,7 @@ class PokemonRepositoryImpl
                     val pokemon = detail.toDomain()
                     dao.insert(PokemonEntity.fromDomain(pokemon))
                     pokemon
-                }.onFailure { if (it is kotlinx.coroutines.CancellationException) throw it }
+                }.onFailure { if (it is CancellationException) throw it }
             }
 
         override suspend fun getPokemonTypes(): Result<List<String>> =
@@ -167,7 +169,7 @@ class PokemonRepositoryImpl
                         cachedTypes = types
                         types
                     }
-                }.onFailure { if (it is kotlinx.coroutines.CancellationException) throw it }
+                }.onFailure { if (it is CancellationException) throw it }
             }
 
         override suspend fun searchPokemon(
@@ -186,7 +188,7 @@ class PokemonRepositoryImpl
                                 val fullList = api.getPokemonList(limit = MAX_POKEMON_LIMIT, offset = 0)
                                 globalListCache = fullList.results
                             } catch (e: Exception) {
-                                if (e is kotlinx.coroutines.CancellationException) throw e
+                                if (e is CancellationException) throw e
                                 useLocalOnly = true
                             }
                         }
@@ -223,7 +225,7 @@ class PokemonRepositoryImpl
                                                 try {
                                                     api.getPokemonDetail(resultItem.name).toDomain()
                                                 } catch (e: Exception) {
-                                                    if (e is kotlinx.coroutines.CancellationException) throw e
+                                                    if (e is CancellationException) throw e
                                                     null
                                                 }
                                             }
@@ -236,7 +238,7 @@ class PokemonRepositoryImpl
 
                     dao.insertAll(chunkResults.map { PokemonEntity.fromDomain(it) })
                     chunkResults
-                }.onFailure { if (it is kotlinx.coroutines.CancellationException) throw it }
+                }.onFailure { if (it is CancellationException) throw it }
             }
 
         private fun PokemonDetailResponse.toDomain(): Pokemon =
@@ -263,18 +265,17 @@ class PokemonRepositoryImpl
                             api.getPokemonDetail(id.toString()).toDomain().copy(isFavorite = isFavorite)
                         dao.insert(PokemonEntity.fromDomain(detail))
                     }
-                }.onFailure { if (it is kotlinx.coroutines.CancellationException) throw it }
+                }.onFailure { if (it is CancellationException) throw it }
             }
 
         override suspend fun getFavoritePokemonList(): Result<List<Pokemon>> =
             withContext(dispatchers.io) {
                 runCatching {
                     dao.getFavoritePokemonList().map { it.toDomain() }
-                }.onFailure { if (it is kotlinx.coroutines.CancellationException) throw it }
+                }.onFailure { if (it is CancellationException) throw it }
             }
 
-        override fun observeFavoritePokemonIds(): kotlinx.coroutines.flow.Flow<Set<Int>> =
-            dao.observeFavoritePokemonIds().map { it.toSet() }
+        override fun observeFavoritePokemonIds(): Flow<Set<Int>> = dao.observeFavoritePokemonIds().map { it.toSet() }
 
         companion object {
             private const val MAX_POKEMON_LIMIT = 1500

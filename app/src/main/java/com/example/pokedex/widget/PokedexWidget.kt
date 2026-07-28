@@ -2,7 +2,6 @@ package com.example.pokedex.widget
 
 import android.content.Context
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.unit.dp
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
@@ -24,6 +23,7 @@ import androidx.glance.text.TextStyle
 import com.example.pokedex.R
 import com.example.pokedex.domain.model.Pokemon
 import com.example.pokedex.domain.repository.PokemonRepository
+import com.example.pokedex.theme.LocalDimensions
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
@@ -72,12 +72,13 @@ class PokedexWidget : GlanceAppWidget() {
  */
 @Composable
 fun PokedexWidgetContent(pokemon: Pokemon?) {
+    val dimensions = LocalDimensions.current
     Column(
         modifier =
             GlanceModifier
                 .fillMaxSize()
                 .background(GlanceTheme.colors.background)
-                .padding(16.dp),
+                .padding(dimensions.paddingMedium),
         verticalAlignment = Alignment.CenterVertically,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -90,7 +91,7 @@ fun PokedexWidgetContent(pokemon: Pokemon?) {
                         color = GlanceTheme.colors.primary,
                     ),
             )
-            Spacer(modifier = GlanceModifier.height(8.dp))
+            Spacer(modifier = GlanceModifier.height(dimensions.paddingSmall))
 
             // Dato che Glance non supporta nativamente Coil/Glide caricati da URL asincrono
             // direttamente tramite composable standard in modo semplice,
@@ -99,10 +100,10 @@ fun PokedexWidgetContent(pokemon: Pokemon?) {
             Image(
                 provider = ImageProvider(R.drawable.ic_launcher_foreground),
                 contentDescription = null,
-                modifier = GlanceModifier.size(48.dp),
+                modifier = GlanceModifier.size(dimensions.iconSizeLarge),
             )
 
-            Spacer(modifier = GlanceModifier.height(8.dp))
+            Spacer(modifier = GlanceModifier.height(dimensions.paddingSmall))
             Text(
                 text = pokemon.name.replaceFirstChar { it.uppercase() },
                 style =
@@ -115,9 +116,9 @@ fun PokedexWidgetContent(pokemon: Pokemon?) {
             Image(
                 provider = ImageProvider(R.drawable.ic_launcher_foreground),
                 contentDescription = null,
-                modifier = GlanceModifier.size(48.dp),
+                modifier = GlanceModifier.size(dimensions.iconSizeLarge),
             )
-            Spacer(modifier = GlanceModifier.height(8.dp))
+            Spacer(modifier = GlanceModifier.height(dimensions.paddingSmall))
             Text(
                 text = "Pokedex",
                 style =
@@ -132,7 +133,7 @@ fun PokedexWidgetContent(pokemon: Pokemon?) {
                     TextStyle(
                         color = GlanceTheme.colors.onBackground,
                     ),
-                modifier = GlanceModifier.padding(top = 4.dp),
+                modifier = GlanceModifier.padding(top = dimensions.paddingExtraSmall),
             )
         }
     }

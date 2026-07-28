@@ -5,6 +5,7 @@ import com.example.pokedex.core.R
 import com.example.pokedex.core.mvi.BaseViewModel
 import com.example.pokedex.core.util.UiText
 import com.example.pokedex.domain.repository.PokemonRepository
+import com.example.pokedex.feature.pokemondetail.audio.PokemonCryPlayer
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -13,14 +14,15 @@ import javax.inject.Inject
  * Loads one Pokémon detail and coordinates favorite and cry-playback intentions.
  *
  * Favorite changes are optimistic: state updates immediately and rolls back to the previous model
- * if persistence fails. Audio playback is emitted as a one-shot effect because it requires Android
- * platform resources owned by the screen.
+ * if persistence fails. Audio playback is delegated to [PokemonCryPlayer], keeping Android media
+ * resources outside Compose and tying their cleanup to the ViewModel lifecycle.
  */
 @HiltViewModel
 class PokemonDetailViewModel
     @Inject
     constructor(
         private val repository: PokemonRepository,
+        private val cryPlayer: PokemonCryPlayer,
     ) : BaseViewModel<PokemonDetailState, PokemonDetailEvent, PokemonDetailEffect>() {
         override fun createInitialState(): PokemonDetailState = PokemonDetailState()
 
@@ -34,7 +36,11 @@ class PokemonDetailViewModel
 
         private fun playCry() {
             val currentPokemon = uiState.value.pokemon ?: return
-            setEffect { PokemonDetailEffect.PlayAudio(url = currentPokemon.cryUrl) }
+            viewModelScope.launch {
+                cryPlayer.play(url = currentPokemon.cryUrl).onFailure {
+                    setEffect { PokemonDetailEffect.ShowPlaybackError }
+                }
+            }
         }
 
         private fun toggleFavorite() {
@@ -63,6 +69,7 @@ class PokemonDetailViewModel
         }
 
         private fun loadPokemon(id: Int) {
+            cryPlayer.release()
             viewModelScope.launch {
                 setState { copy(isLoading = true, errorMessage = null) }
                 val result = repository.getPokemonDetail(id = id)
@@ -82,5 +89,10 @@ class PokemonDetailViewModel
                     }
                 }
             }
+        }
+
+        override fun onCleared() {
+            cryPlayer.release()
+            super.onCleared()
         }
     }

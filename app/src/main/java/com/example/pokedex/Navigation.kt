@@ -78,7 +78,7 @@ fun MainNavigation(
         }
     }
 
-    LaunchedEffect(deepLinkUri) {
+    LaunchedEffect(key1 = deepLinkUri) {
         deepLinkUri?.let { uri ->
             val pokemonId = uri.toPokemonId()
             if (pokemonId == null) {

@@ -2,7 +2,10 @@ package com.example.pokedex.data.sync
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
+import androidx.work.ListenableWorker
 import androidx.work.ListenableWorker.Result
+import androidx.work.WorkerFactory
+import androidx.work.WorkerParameters
 import androidx.work.testing.TestListenableWorkerBuilder
 import com.example.pokedex.data.coroutines.TestDispatcherProvider
 import com.example.pokedex.domain.model.Pokemon
@@ -49,12 +52,12 @@ class SyncWorkerTest {
             val worker =
                 TestListenableWorkerBuilder<SyncWorker>(context)
                     .setWorkerFactory(
-                        object : androidx.work.WorkerFactory() {
+                        object : WorkerFactory() {
                             override fun createWorker(
                                 appContext: Context,
                                 workerClassName: String,
-                                workerParameters: androidx.work.WorkerParameters,
-                            ): androidx.work.ListenableWorker =
+                                workerParameters: WorkerParameters,
+                            ): ListenableWorker =
                                 SyncWorker(
                                     appContext,
                                     workerParameters,
@@ -82,12 +85,12 @@ class SyncWorkerTest {
             val worker =
                 TestListenableWorkerBuilder<SyncWorker>(context)
                     .setWorkerFactory(
-                        object : androidx.work.WorkerFactory() {
+                        object : WorkerFactory() {
                             override fun createWorker(
                                 appContext: Context,
                                 workerClassName: String,
-                                workerParameters: androidx.work.WorkerParameters,
-                            ): androidx.work.ListenableWorker =
+                                workerParameters: WorkerParameters,
+                            ): ListenableWorker =
                                 SyncWorker(
                                     appContext,
                                     workerParameters,

@@ -41,7 +41,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
@@ -194,7 +193,7 @@ fun PokemonListScreenContent(
                             horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
                             Text(text = "Errore: ${error.localizedMessage}")
-                            Spacer(modifier = Modifier.height(height = 8.dp))
+                            Spacer(modifier = Modifier.height(height = dimensions.paddingSmall))
                             Button(onClick = { pagedPokemon.retry() }) {
                                 Text("Riprova")
                             }

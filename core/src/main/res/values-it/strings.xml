@@ -32,5 +32,6 @@
     <string name="cd_add_favorite">Aggiungi ai preferiti</string>
     <string name="cd_remove_favorite">Rimuovi dai preferiti</string>
     <string name="cd_play_cry">Riproduci verso</string>
+    <string name="error_playback">Impossibile riprodurre il verso di questo Pokémon</string>
 
 </resources>

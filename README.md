@@ -93,11 +93,13 @@ flowchart LR
     VM -->|StateFlow: UiState| UI
     VM -->|Flow: UiEffect| UI
     VM --> CONTRACT[Repository interfaces]
+    VM --> PLAYER[Feature capability: PokemonCryPlayer]
     CONTRACT --> IMPL[Repository implementations]
     IMPL --> ROOM[(Room)]
     IMPL --> API[PokeAPI / Firebase]
     WORK[WorkManager] --> CONTRACT
     HILT[Hilt graph] -.provides.-> VM
+    HILT -.provides.-> PLAYER
     HILT -.provides.-> IMPL
     HILT -.provides.-> WORK
 ```
@@ -108,8 +110,9 @@ flowchart LR
 
 - render an immutable `UiState`;
 - forward user and system events to a `ViewModel`;
-- consume one-shot effects such as navigation or audio playback;
+- consume one-shot presentation effects such as navigation or user feedback;
 - never construct repositories, databases, or network clients directly.
+- forward media intentions to the ViewModel instead of owning platform players.
 
 **Domain**
 
@@ -232,6 +235,11 @@ Implementation details:
 - effects are sent through a `Channel` and exposed as `Flow`;
 - `setState` applies an atomic reducer to the current state;
 - `viewModelScope` binds asynchronous work to the ViewModel lifecycle.
+
+The detail ViewModel delegates cry playback to an injected `PokemonCryPlayer`. Its Android
+implementation owns `MediaPlayer`, replaces concurrent playback safely, and releases resources when
+the ViewModel is cleared. Compose only emits `PlayCry` and displays a playback failure through a
+snackbar; it never constructs or retains a platform media object.
 
 The authentication feature follows the same UDF principle but uses a `MutableStateFlow` directly
 instead of extending `BaseViewModel`. This is deliberate: the template shows that a pattern should

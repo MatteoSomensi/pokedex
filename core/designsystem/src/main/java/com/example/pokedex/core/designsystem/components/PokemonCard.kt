@@ -26,7 +26,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.pokedex.domain.model.Pokemon
 import com.example.pokedex.theme.LocalDimensions
@@ -112,7 +111,7 @@ fun PokemonCard(
                             imageVector = Icons.Default.Favorite,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.error,
-                            modifier = Modifier.size(size = 24.dp),
+                            modifier = Modifier.size(size = dimensions.iconSizeMedium),
                         )
                     }
                 } else {
@@ -124,7 +123,7 @@ fun PokemonCard(
                             Modifier
                                 .align(alignment = Alignment.TopEnd)
                                 .padding(all = dimensions.paddingSmall)
-                                .size(size = 24.dp),
+                                .size(size = dimensions.iconSizeMedium),
                     )
                 }
             }

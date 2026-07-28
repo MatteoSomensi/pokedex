@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
  * unrelated literals.
  */
 data class Dimensions(
+    val paddingExtraSmall: Dp = 4.dp,
     val paddingSmall: Dp = 8.dp,
     val paddingMedium: Dp = 16.dp,
     val paddingLarge: Dp = 24.dp,
@@ -22,6 +23,8 @@ data class Dimensions(
     val cornerRadiusMedium: Dp = 8.dp,
     val cornerRadiusLarge: Dp = 16.dp,
     val cornerRadiusExtraLarge: Dp = 24.dp,
+    val iconSizeMedium: Dp = 24.dp,
+    val iconSizeLarge: Dp = 48.dp,
     val imageSizeList: Dp = 100.dp,
     val imageSizeDetail: Dp = 200.dp,
     val statProgressBarHeight: Dp = 8.dp,

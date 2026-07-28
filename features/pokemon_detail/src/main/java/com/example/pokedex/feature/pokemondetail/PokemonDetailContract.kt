@@ -24,9 +24,7 @@ sealed interface PokemonDetailEvent : UiEvent {
     object PlayCry : PokemonDetailEvent
 }
 
-/** One-shot platform actions emitted by [PokemonDetailViewModel]. */
+/** One-shot presentation actions emitted by [PokemonDetailViewModel]. */
 sealed interface PokemonDetailEffect : UiEffect {
-    data class PlayAudio(
-        val url: String,
-    ) : PokemonDetailEffect
+    data object ShowPlaybackError : PokemonDetailEffect
 }

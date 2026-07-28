@@ -50,13 +50,16 @@ fun FavoriteScreen(
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = Modifier.nestedScroll(connection = scrollBehavior.nestedScrollConnection),
         topBar = {
             TopAppBar(
                 title = { Text("Preferiti") },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Indietro")
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Indietro",
+                        )
                     }
                 },
                 colors =
@@ -74,15 +77,15 @@ fun FavoriteScreen(
             modifier = Modifier.fillMaxSize(),
         ) {
             if (uiState.isLoading) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                CircularProgressIndicator(modifier = Modifier.align(alignment = Alignment.Center))
             } else if (!uiState.error.isNullOrBlank()) {
                 Text(
                     text = uiState.error!!,
-                    modifier = Modifier.align(Alignment.Center).padding(padding),
+                    modifier = Modifier.align(alignment = Alignment.Center).padding(paddingValues = padding),
                 )
             } else if (uiState.favorites.isEmpty()) {
                 Column(
-                    modifier = Modifier.align(Alignment.Center).padding(padding),
+                    modifier = Modifier.align(alignment = Alignment.Center).padding(paddingValues = padding),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Icon(
@@ -117,7 +120,7 @@ fun FavoriteScreen(
                         PokemonCard(
                             pokemon = pokemon,
                             onClick = { onNavigateToDetail(pokemon.id) },
-                            onFavoriteClick = { viewModel.toggleFavorite(pokemon) },
+                            onFavoriteClick = { viewModel.toggleFavorite(pokemon = pokemon) },
                         )
                     }
                 }

@@ -1,11 +1,13 @@
 package com.example.pokedex.data.local.dao
 
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.pokedex.data.local.entity.PokemonEntity
 import com.example.pokedex.data.local.entity.TypeEntity
+import kotlinx.coroutines.flow.Flow
 
 /**
  * Data Access Object (DAO) for interacting with the local SQLite database via Room.
@@ -23,7 +25,7 @@ interface PokemonDao {
         ORDER BY pokemon.id ASC
         """,
     )
-    fun getPokemonPagingSource(query: String): androidx.paging.PagingSource<Int, PokemonEntity>
+    fun getPokemonPagingSource(query: String): PagingSource<Int, PokemonEntity>
 
     @Query("DELETE FROM pokemon WHERE isFavorite = 0")
     suspend fun clearNonFavoritePokemon(): Int
@@ -72,5 +74,5 @@ interface PokemonDao {
     suspend fun getFavoritePokemonList(): List<PokemonEntity>
 
     @Query("SELECT id FROM pokemon WHERE isFavorite = 1")
-    fun observeFavoritePokemonIds(): kotlinx.coroutines.flow.Flow<List<Int>>
+    fun observeFavoritePokemonIds(): Flow<List<Int>>
 }

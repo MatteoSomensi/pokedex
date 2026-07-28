@@ -14,6 +14,7 @@
     <string name="cd_add_favorite">Add to favorites</string>
     <string name="cd_remove_favorite">Remove from favorites</string>
     <string name="cd_play_cry">Play cry</string>
+    <string name="error_playback">Unable to play this Pokémon cry</string>
     <string name="filter_favorites">Favorites</string>
 
     <!-- Auth & Profile -->

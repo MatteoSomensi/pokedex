@@ -3,7 +3,7 @@
   <ManuallySuppressedIssues/>
   <CurrentIssues>
     <ID>ComplexCondition:PokemonRepositoryImpl.kt$PokemonRepositoryImpl$!forceRefresh &amp;&amp; (localList.size == limit || (localList.isNotEmpty() &amp;&amp; isEndReached))</ID>
-    <ID>InstanceOfCheckForException:PokemonRepositoryImpl.kt$PokemonRepositoryImpl$e is kotlinx.coroutines.CancellationException</ID>
+    <ID>InstanceOfCheckForException:PokemonRepositoryImpl.kt$PokemonRepositoryImpl$e is CancellationException</ID>
     <ID>LongMethod:PokemonRemoteMediator.kt$PokemonRemoteMediator$override suspend fun load( loadType: LoadType, state: PagingState&lt;Int, PokemonEntity&gt;, ): MediatorResult</ID>
     <ID>MagicNumber:DatabaseModule.kt$DatabaseModule.&lt;no name provided&gt;$3</ID>
     <ID>MagicNumber:DatabaseModule.kt$DatabaseModule.&lt;no name provided&gt;$4</ID>

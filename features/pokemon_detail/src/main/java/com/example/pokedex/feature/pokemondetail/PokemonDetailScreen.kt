@@ -1,8 +1,5 @@
 package com.example.pokedex.feature.pokemondetail
 
-import android.media.AudioAttributes
-import android.media.MediaPlayer
-import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -41,12 +38,13 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -56,14 +54,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -81,10 +76,10 @@ import com.example.pokedex.theme.LocalWeights
 import com.example.pokedex.theme.PokedexTheme
 
 /**
- * Connects [PokemonDetailViewModel] to detail presentation and Android audio playback.
+ * Connects [PokemonDetailViewModel] to detail presentation.
  *
- * [pokemonId] changes trigger a new load. The screen owns and releases its [MediaPlayer], while
- * navigation remains callback-based.
+ * [pokemonId] changes trigger a new load. The screen forwards playback intentions and presents
+ * one-shot failures, while the injected audio controller owns all platform media resources.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -100,67 +95,26 @@ fun PokemonDetailScreen(
         viewModel.setEvent(event = PokemonDetailEvent.LoadPokemon(id = pokemonId))
     }
 
-    var mediaPlayer by remember { mutableStateOf<MediaPlayer?>(value = null) }
-
-    DisposableEffect(Unit) {
-        onDispose {
-            mediaPlayer?.release()
-            mediaPlayer = null
-        }
-    }
-
-    val context = LocalContext.current
+    val snackbarHostState = remember { SnackbarHostState() }
+    val playbackErrorMessage = stringResource(id = R.string.error_playback)
     val lifecycleOwner = LocalLifecycleOwner.current
-    LaunchedEffect(viewModel, lifecycleOwner) {
-        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+    LaunchedEffect(
+        key1 = viewModel,
+        key2 = lifecycleOwner,
+        key3 = playbackErrorMessage,
+    ) {
+        lifecycleOwner.lifecycle.repeatOnLifecycle(state = Lifecycle.State.STARTED) {
             viewModel.uiEffect.collect { effect ->
                 when (effect) {
-                    is PokemonDetailEffect.PlayAudio -> {
-                        mediaPlayer?.release()
-                        val player = MediaPlayer()
-                        try {
-                            player.apply {
-                                setAudioAttributes(
-                                    AudioAttributes
-                                        .Builder()
-                                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                                        .setUsage(AudioAttributes.USAGE_MEDIA)
-                                        .build(),
-                                )
-                                setDataSource(context, effect.url.toUri())
-                                setOnPreparedListener { it.start() }
-                                setOnCompletionListener {
-                                    it.release()
-                                    if (mediaPlayer == it) mediaPlayer = null
-                                }
-                                setOnErrorListener { mp, what, extra ->
-                                    Toast
-                                        .makeText(
-                                            context,
-                                            "Errore riproduzione (what:$what, extra:$extra)",
-                                            Toast.LENGTH_SHORT,
-                                        ).show()
-                                    mp.release()
-                                    if (mediaPlayer == mp) mediaPlayer = null
-                                    true
-                                }
-                                prepareAsync()
-                            }
-                            mediaPlayer = player
-                        } catch (e: Exception) {
-                            Toast
-                                .makeText(context, "Errore: ${e.message}", Toast.LENGTH_SHORT)
-                                .show()
-                            player.release()
-                            e.printStackTrace()
-                        }
-                    }
+                    PokemonDetailEffect.ShowPlaybackError ->
+                        snackbarHostState.showSnackbar(message = playbackErrorMessage)
                 }
             }
         }
     }
 
     Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = {
@@ -220,7 +174,7 @@ fun PokemonDetailScreen(
                     PokemonDetailContent(
                         pokemon = state.pokemon!!,
                         paddingValues = paddingValues,
-                        onPlayCryClick = { viewModel.setEvent(PokemonDetailEvent.PlayCry) },
+                        onPlayCryClick = { viewModel.setEvent(event = PokemonDetailEvent.PlayCry) },
                     )
                 }
             }
@@ -314,7 +268,7 @@ fun PokemonDetailContent(
                             imageVector = Icons.Default.PlayArrow,
                             contentDescription = stringResource(id = R.string.cd_play_cry),
                             tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(48.dp),
+                            modifier = Modifier.size(size = dimensions.iconSizeLarge),
                         )
                     }
                 }

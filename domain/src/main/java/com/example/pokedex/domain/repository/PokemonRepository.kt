@@ -1,6 +1,8 @@
 package com.example.pokedex.domain.repository
 
+import androidx.paging.PagingData
 import com.example.pokedex.domain.model.Pokemon
+import kotlinx.coroutines.flow.Flow
 
 /**
  * Domain boundary for paginated, cached, and user-specific Pokémon data.
@@ -10,7 +12,7 @@ import com.example.pokedex.domain.model.Pokemon
  */
 interface PokemonRepository {
     /** Streams Room-backed pages matching the normalized [query]. */
-    fun getPokemonPaged(query: String = ""): kotlinx.coroutines.flow.Flow<androidx.paging.PagingData<Pokemon>>
+    fun getPokemonPaged(query: String = ""): Flow<PagingData<Pokemon>>
 
     /**
      * Returns one offset-based page, optionally bypassing a sufficient local page.
@@ -48,5 +50,5 @@ interface PokemonRepository {
     suspend fun getFavoritePokemonList(): Result<List<Pokemon>>
 
     /** Observes the set of IDs currently marked as favorites. */
-    fun observeFavoritePokemonIds(): kotlinx.coroutines.flow.Flow<Set<Int>>
+    fun observeFavoritePokemonIds(): Flow<Set<Int>>
 }

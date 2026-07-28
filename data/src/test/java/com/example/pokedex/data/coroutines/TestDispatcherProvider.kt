@@ -2,10 +2,11 @@ package com.example.pokedex.data.coroutines
 
 import com.example.pokedex.core.coroutines.DispatcherProvider
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 
-@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class)
 class TestDispatcherProvider(
     private val testDispatcher: TestDispatcher = UnconfinedTestDispatcher(),
 ) : DispatcherProvider {
