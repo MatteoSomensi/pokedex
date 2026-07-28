@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
 @HiltViewModel
 class PokemonListViewModel
@@ -38,7 +39,7 @@ class PokemonListViewModel
                 uiState
                     .map { it.searchQuery.trim() }
                     .distinctUntilChanged()
-                    .debounce(SEARCH_DEBOUNCE_MILLIS),
+                    .debounce(timeout = SEARCH_DEBOUNCE),
                 uiState
                     .map { it.selectedType }
                     .distinctUntilChanged(),
@@ -79,6 +80,6 @@ class PokemonListViewModel
         }
 
         private companion object {
-            const val SEARCH_DEBOUNCE_MILLIS = 300L
+            val SEARCH_DEBOUNCE = 300.milliseconds
         }
     }
