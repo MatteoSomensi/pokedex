@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material.icons.Icons
+import com.example.pokedex.core.designsystem.components.PokemonCard
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
@@ -77,6 +78,8 @@ fun PokemonListScreen(
         viewModel.uiEffect.collect { effect ->
             when (effect) {
                 is PokemonListEffect.NavigateToDetail -> onNavigateToDetail(effect.pokemonId)
+                is PokemonListEffect.NavigateToProfile -> onNavigateToProfile()
+                is PokemonListEffect.NavigateToFavorites -> onNavigateToFavorites()
             }
         }
     }
@@ -106,7 +109,7 @@ fun PokemonListScreenContent(
                         Icon(imageVector = Icons.Default.Favorite, contentDescription = "Preferiti")
                     }
                     IconButton(onClick = onNavigateToProfile) {
-                        Icon(imageVector = Icons.Default.AccountCircle, contentDescription = stringResource(id = R.string.profile))
+                        Icon(imageVector = Icons.Default.AccountCircle, contentDescription = "Profile")
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -268,75 +271,6 @@ fun PokemonListScreenContent(
                         }
                     }
                 }
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-fun PokemonCard(pokemon: Pokemon, onClick: () -> Unit) {
-    val dimensions = LocalDimensions.current
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() },
-        elevation = CardDefaults.cardElevation(defaultElevation = dimensions.elevationDefault)
-    ) {
-        Box(modifier = Modifier.fillMaxWidth()) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(all = dimensions.paddingSmall),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                AsyncImage(
-                    model = pokemon.imageUrl,
-                    contentDescription = stringResource(id = R.string.cd_pokemon_image, pokemon.name),
-                    modifier = Modifier.size(size = dimensions.imageSizeList),
-                    placeholder = if (LocalInspectionMode.current) painterResource(id = android.R.drawable.ic_menu_gallery) else null,
-                    error = if (LocalInspectionMode.current) painterResource(id = android.R.drawable.ic_menu_gallery) else null
-                )
-                Spacer(modifier = Modifier.height(height = dimensions.paddingSmall))
-                Text(
-                    text = pokemon.name.replaceFirstChar { it.uppercase() },
-                    style = MaterialTheme.typography.titleMedium,
-                    textAlign = TextAlign.Center
-                )
-                Spacer(modifier = Modifier.height(height = dimensions.paddingSmall))
-                FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(space = dimensions.cornerRadiusSmall),
-                    verticalArrangement = Arrangement.spacedBy(space = dimensions.cornerRadiusSmall)
-                ) {
-                    pokemon.types.forEach { type ->
-                        Surface(
-                            color = MaterialTheme.colorScheme.secondaryContainer,
-                            shape = MaterialTheme.shapes.small
-                        ) {
-                            Text(
-                                text = type,
-                                style = MaterialTheme.typography.labelSmall,
-                                modifier = Modifier.padding(
-                                    horizontal = dimensions.paddingSmall,
-                                    vertical = dimensions.cornerRadiusSmall
-                                ),
-                                color = MaterialTheme.colorScheme.onSecondaryContainer
-                            )
-                        }
-                    }
-                }
-            }
-
-            if (pokemon.isFavorite) {
-                Icon(
-                    imageVector = Icons.Default.Favorite,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.error,
-                    modifier = Modifier
-                        .align(alignment = Alignment.TopEnd)
-                        .padding(all = dimensions.paddingSmall)
-                        .size(size = 24.dp)
-                )
             }
         }
     }
