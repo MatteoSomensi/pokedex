@@ -1,6 +1,7 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
-    id("com.github.ben-manes.versions") version "0.52.0"
+    alias(libs.plugins.version.catalog.update)
+    alias(libs.plugins.ben.manes.versions)
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.compose.compiler) apply false
     alias(libs.plugins.kotlin.serialization) apply false
