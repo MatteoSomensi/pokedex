@@ -49,7 +49,16 @@ object NetworkModule {
         val logging = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BASIC
         }
+
+        // Certificate Pinning per pokeapi.co per prevenire attacchi Man-in-the-Middle.
+        // N.B: Questi sono pin di esempio. In produzione, estrarrai i reali SHA-256 (e relativi backup) dal certificato.
+        val certificatePinner = okhttp3.CertificatePinner.Builder()
+            .add("pokeapi.co", "sha256/WoiWRyIOVNa9ihaBciRSC7XHjliYS9VwUGOIud4PB18=") // primary
+            .add("pokeapi.co", "sha256/k2v657xBsOVe1PQRwOsHsw3bsGT2VzIqz5K+59sNQws=") // backup
+            .build()
+
         return OkHttpClient.Builder()
+            .certificatePinner(certificatePinner)
             .addInterceptor(authInterceptor)
             .authenticator(tokenAuthenticator)
             .addInterceptor(logging)
