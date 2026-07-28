@@ -7,7 +7,7 @@ android {
 }
 
 dependencies {
-    implementation(project(":feature_favorite_api"))
+    implementation(project(":features:favorite:api"))
     implementation(project(":domain"))
     implementation(project(":core"))
     implementation(libs.androidx.lifecycle.runtime.compose)

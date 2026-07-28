@@ -69,8 +69,8 @@ jobs:
       - name: Compile Instrumented and Preview Screenshot Tests
         run: >
           ./gradlew
-          :feature_pokemon_list:compileDebugAndroidTestKotlin
-          :feature_pokemon_list:compileDebugScreenshotTestKotlin
+          :features:pokemon_list:compileDebugAndroidTestKotlin
+          :features:pokemon_list:compileDebugScreenshotTestKotlin
           --no-daemon
 
       - name: Build Macrobenchmark APKs
