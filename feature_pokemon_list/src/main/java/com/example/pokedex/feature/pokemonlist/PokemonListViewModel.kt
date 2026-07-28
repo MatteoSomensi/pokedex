@@ -190,11 +190,6 @@ class PokemonListViewModel @Inject constructor(
                 matchesQuery && matchesType
             }
             setState { copy(filteredPokemonList = filtered) }
-
-            // Se il filtro produce troppo pochi risultati e non siamo alla fine, carichiamo la prossima pagina
-            if (filtered.size < 10 && !state.isEndReached && !state.isFetchingNextPage && !state.isLoading) {
-                loadNextPage()
-            }
         }
     }
 

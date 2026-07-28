@@ -204,8 +204,7 @@ fun PokemonListScreenContent(
                                 val lastVisibleItem =
                                     gridState.layoutInfo.visibleItemsInfo.lastOrNull()
                                 val isNearEnd = lastVisibleItem != null && lastVisibleItem.index >= gridState.layoutInfo.totalItemsCount - 5
-                                // Carichiamo la pagina successiva se stiamo scorrendo verso il fondo OPPURE se il filtro è così restrittivo che la lista è vuota (ma ci sono ancora elementi da caricare dal server)
-                                isNearEnd || (state.filteredPokemonList.isEmpty() && !state.isEndReached)
+                                isNearEnd
                             }
                         }
 

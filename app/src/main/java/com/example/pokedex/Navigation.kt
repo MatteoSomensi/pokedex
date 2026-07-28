@@ -34,7 +34,10 @@ private data object PokedexListDetailScene
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
-fun MainNavigation(deepLinkUri: android.net.Uri? = null) {
+fun MainNavigation(
+    deepLinkUri: android.net.Uri? = null,
+    onDeepLinkConsumed: () -> Unit = {}
+) {
     val startDestination = if (FirebaseAuth.getInstance().currentUser != null) PokemonList else Auth
     val backStack = rememberNavBackStack(startDestination)
     
@@ -45,6 +48,7 @@ fun MainNavigation(deepLinkUri: android.net.Uri? = null) {
             if (pokemonId != null && backStack.lastOrNull() != PokemonDetail(id = pokemonId)) {
                 backStack.add(PokemonDetail(id = pokemonId))
             }
+            onDeepLinkConsumed()
         }
     }
     val windowAdaptiveInfo = currentWindowAdaptiveInfoV2()

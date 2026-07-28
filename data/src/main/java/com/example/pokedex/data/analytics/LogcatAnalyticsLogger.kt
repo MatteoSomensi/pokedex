@@ -15,15 +15,15 @@ class LogcatAnalyticsLogger @Inject constructor() : AnalyticsLogger {
     private val tag = "AnalyticsLogger"
 
     override fun logEvent(eventName: String, params: Map<String, Any>) {
-        Log.d(tag, "Event: \$eventName | Params: \$params")
+        Log.d(tag, "Event: $eventName | Params: $params")
     }
 
     override fun setUserId(userId: String?) {
-        Log.d(tag, "Set UserID: \$userId")
+        Log.d(tag, "Set UserID: $userId")
     }
 
     override fun setUserProperty(name: String, value: String) {
-        Log.d(tag, "Set Property: \$name = \$value")
+        Log.d(tag, "Set Property: $name = $value")
     }
 
     override fun logNonFatalException(exception: Throwable) {

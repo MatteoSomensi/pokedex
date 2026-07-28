@@ -31,7 +31,15 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
-                ) { MainNavigation(deepLinkUri = deepLinkUri.value) }
+                ) { 
+                    MainNavigation(
+                        deepLinkUri = deepLinkUri.value,
+                        onDeepLinkConsumed = {
+                            intent?.data = null
+                            deepLinkUri.value = null
+                        }
+                    ) 
+                }
             }
         }
     }

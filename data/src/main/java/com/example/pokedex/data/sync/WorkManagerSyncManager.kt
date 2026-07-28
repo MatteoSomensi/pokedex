@@ -22,7 +22,7 @@ class WorkManagerSyncManager @Inject constructor(
     override val isSyncing: Flow<Boolean> = workManager
         .getWorkInfosForUniqueWorkFlow(SyncWorker.WORK_NAME)
         .map { workInfos ->
-            workInfos.any { it.state == WorkInfo.State.RUNNING }
+            workInfos.any { it.state == WorkInfo.State.RUNNING || it.state == WorkInfo.State.ENQUEUED }
         }
 
     override fun requestSync() {
@@ -30,7 +30,7 @@ class WorkManagerSyncManager @Inject constructor(
             .build()
 
         workManager.enqueueUniqueWork(
-            SyncWorker.WORK_NAME + "_manual",
+            SyncWorker.WORK_NAME,
             ExistingWorkPolicy.KEEP,
             syncRequest
         )
