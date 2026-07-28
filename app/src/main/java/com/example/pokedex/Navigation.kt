@@ -28,13 +28,25 @@ import com.example.pokedex.feature.pokemondetail.PokemonDetailScreen
 import com.example.pokedex.feature.pokemonlist.PokemonListScreen
 import com.google.firebase.auth.FirebaseAuth
 
+import androidx.compose.runtime.LaunchedEffect
+
 private data object PokedexListDetailScene
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
-fun MainNavigation() {
+fun MainNavigation(deepLinkUri: android.net.Uri? = null) {
     val startDestination = if (FirebaseAuth.getInstance().currentUser != null) PokemonList else Auth
     val backStack = rememberNavBackStack(startDestination)
+    
+    LaunchedEffect(deepLinkUri) {
+        if (deepLinkUri != null && deepLinkUri.scheme == "pokedex" && deepLinkUri.host == "pokemon") {
+            val idString = deepLinkUri.lastPathSegment
+            val pokemonId = idString?.toIntOrNull()
+            if (pokemonId != null && backStack.lastOrNull() != PokemonDetail(id = pokemonId)) {
+                backStack.add(PokemonDetail(id = pokemonId))
+            }
+        }
+    }
     val windowAdaptiveInfo = currentWindowAdaptiveInfoV2()
     val paneScaffoldDirective = remember(windowAdaptiveInfo) {
         calculatePaneScaffoldDirective(windowAdaptiveInfo)

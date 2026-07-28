@@ -18,8 +18,12 @@ import dagger.hilt.android.AndroidEntryPoint
  */
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    private val deepLinkUri = androidx.compose.runtime.mutableStateOf<android.net.Uri?>(null)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        deepLinkUri.value = intent?.data
 
         enableEdgeToEdge()
         setContent {
@@ -27,8 +31,14 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
-                ) { MainNavigation() }
+                ) { MainNavigation(deepLinkUri = deepLinkUri.value) }
             }
         }
+    }
+
+    override fun onNewIntent(intent: android.content.Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        deepLinkUri.value = intent.data
     }
 }
