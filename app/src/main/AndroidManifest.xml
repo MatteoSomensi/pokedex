@@ -24,6 +24,17 @@
 
         <property android:name="android.app.appfunctions.app_metadata"
                   android:resource="@xml/app_metadata" />
+
+        <receiver
+            android:name=".widget.PokedexWidgetReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/pokedex_widget_info" />
+        </receiver>
     </application>
 
 </manifest>

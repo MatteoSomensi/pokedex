@@ -46,6 +46,9 @@ dependencies {
     implementation(libs.androidx.appfunctions.service)
     ksp(libs.androidx.appfunctions.compiler)
 
+    implementation(libs.androidx.glance.appwidget)
+    implementation(libs.androidx.glance.material3)
+
     implementation(project(":core"))
     implementation(project(":domain"))
     implementation(project(":data"))
