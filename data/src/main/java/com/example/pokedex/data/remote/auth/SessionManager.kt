@@ -1,5 +1,9 @@
 package com.example.pokedex.data.remote.auth
 
+import android.content.Context
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -20,11 +24,6 @@ interface SessionManager {
     /** Logs the user out locally (clears tokens). */
     fun clearSession()
 }
-
-import android.content.Context
-import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKey
-import dagger.hilt.android.qualifiers.ApplicationContext
 
 /**
  * A secure implementation of SessionManager using EncryptedSharedPreferences.
