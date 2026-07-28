@@ -13,6 +13,7 @@ class ExampleStartupBenchmark {
     @get:Rule
     val benchmarkRule = MacrobenchmarkRule()
 
+    @Suppress("MagicNumber")
     @Test
     fun startupAndScroll() =
         benchmarkRule.measureRepeated(
@@ -23,9 +24,13 @@ class ExampleStartupBenchmark {
         ) {
             pressHome()
             startActivityAndWait()
-            
+
             // Scroll the list to measure frame timing (jank)
-            val pokemonList = device.findObject(androidx.test.uiautomator.By.res("pokemon_list"))
+            val pokemonList =
+                device.findObject(
+                    androidx.test.uiautomator.By
+                        .res("pokemon_list"),
+                )
             if (pokemonList != null) {
                 pokemonList.setGestureMargin(device.displayWidth / 5)
                 pokemonList.scroll(androidx.test.uiautomator.Direction.DOWN, 1f)

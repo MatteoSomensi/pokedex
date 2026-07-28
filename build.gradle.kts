@@ -11,6 +11,7 @@ plugins {
     alias(libs.plugins.detekt) apply true
     alias(libs.plugins.ktlint) apply true
     alias(libs.plugins.android.library) apply false
+    alias(libs.plugins.androidx.baselineprofile) apply false
     alias(libs.plugins.roborazzi) apply false
     alias(libs.plugins.screenshot) apply false
 }

@@ -11,6 +11,7 @@ class BaselineProfileGenerator {
     @get:Rule
     val baselineProfileRule = BaselineProfileRule()
 
+    @Suppress("MagicNumber")
     @Test
     fun generate() {
         baselineProfileRule.collect(
@@ -21,9 +22,13 @@ class BaselineProfileGenerator {
             // optimizing for app startup and list scrolling.
             pressHome()
             startActivityAndWait()
-            
+
             // Wait for the Pokemon list to be displayed
-            val pokemonList = device.findObject(androidx.test.uiautomator.By.res("pokemon_list"))
+            val pokemonList =
+                device.findObject(
+                    androidx.test.uiautomator.By
+                        .res("pokemon_list"),
+                )
             if (pokemonList != null) {
                 pokemonList.setGestureMargin(device.displayWidth / 5)
                 pokemonList.scroll(androidx.test.uiautomator.Direction.DOWN, 1f)
