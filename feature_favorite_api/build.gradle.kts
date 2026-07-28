@@ -1,5 +1,6 @@
 plugins {
     id("pokedex.android.library")
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -7,5 +8,9 @@ android {
 }
 
 dependencies {
-    // Dipende solo da core o altri API module
+    val composeBom = platform(libs.androidx.compose.bom)
+    implementation(composeBom)
+    implementation(libs.bundles.compose)
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.kotlinx.serialization.json)
 }

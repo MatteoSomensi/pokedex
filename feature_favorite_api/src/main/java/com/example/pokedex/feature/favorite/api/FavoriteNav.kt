@@ -1,0 +1,7 @@
+package com.example.pokedex.feature.favorite.api
+
+import androidx.navigation3.runtime.NavKey
+import kotlinx.serialization.Serializable
+
+@Serializable
+data object Favorite : NavKey

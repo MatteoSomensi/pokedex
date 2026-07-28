@@ -14,6 +14,8 @@ import androidx.navigation3.ui.NavDisplay
 import com.example.pokedex.core.R
 import com.example.pokedex.feature.auth.AuthRoute
 import com.example.pokedex.feature.auth.profile.ProfileScreen
+import com.example.pokedex.feature.favorite.api.Favorite
+import com.example.pokedex.feature.favorite.impl.ui.FavoriteScreen
 import com.example.pokedex.feature.pokemondetail.PokemonDetailScreen
 import com.example.pokedex.feature.pokemonlist.PokemonListScreen
 import com.google.firebase.auth.FirebaseAuth
@@ -36,6 +38,11 @@ fun MainNavigation() {
                 entry<PokemonDetail> {
                     PokemonDetailScreen(
                         pokemonId = it.id,
+                        onBackClick = { backStack.removeLastOrNull() }
+                    )
+                }
+                entry<Favorite> {
+                    FavoriteScreen(
                         onBackClick = { backStack.removeLastOrNull() }
                     )
                 }

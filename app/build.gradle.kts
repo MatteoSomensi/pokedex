@@ -55,6 +55,8 @@ dependencies {
     implementation(project(":feature_pokemon_list"))
     implementation(project(":feature_pokemon_detail"))
     implementation(project(":feature_auth"))
+    implementation(project(":feature_favorite_api"))
+    implementation(project(":feature_favorite_impl"))
     implementation(libs.kotlinx.serialization.json)
 
     implementation(platform(libs.firebase.bom))

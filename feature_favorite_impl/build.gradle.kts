@@ -9,4 +9,10 @@ android {
 dependencies {
     implementation(project(":feature_favorite_api"))
     implementation(project(":domain"))
+    implementation(project(":core"))
+    implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.hilt.navigation.compose)
+    val composeBom = platform(libs.androidx.compose.bom)
+    implementation(composeBom)
+    implementation(libs.bundles.compose)
 }
