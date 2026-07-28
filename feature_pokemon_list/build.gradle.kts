@@ -38,7 +38,10 @@ dependencies {
     testRuntimeOnly(libs.junit.platform.launcher)
     testImplementation(libs.bundles.test)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
-    
+
+    androidTestImplementation(composeBom)
+    androidTestImplementation(libs.bundles.android.test)
+
     screenshotTestImplementation(libs.screenshot.validation.api)
     screenshotTestImplementation(libs.androidx.ui.tooling)
 }

@@ -39,9 +39,9 @@ dependencies {
     implementation(libs.coil)
     // Testing
     testImplementation(libs.bundles.test)
-    testImplementation("androidx.work:work-testing:2.9.0")
-    testImplementation("io.mockk:mockk-android:1.13.11") // To mock android classes if needed
-    testImplementation("org.robolectric:robolectric:4.11.1")
+    testImplementation(libs.androidx.work.testing)
+    testImplementation(libs.mockk.android)
+    testImplementation(libs.robolectric)
     testImplementation(libs.androidx.test.core)
     testImplementation(libs.androidx.test.ext.junit)
 }

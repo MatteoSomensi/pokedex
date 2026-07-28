@@ -2,6 +2,7 @@
 <AppFunctionAppMetadata xmlns:appfn="http://schemas.android.com/apk/androidx.appfunctions"
     appfn:description="This app manages Pokemon data.
         Operational Patterns:
-        - Use 'searchPokemon' to find Pokemon.
-        - Use 'toggleFavorite' to favorite or unfavorite a Pokemon."
+        - Use 'searchPokemon' to find Pokemon IDs before calling 'toggleFavorite'.
+        Constraints:
+        - Only toggle favorites for valid numeric IDs."
     appfn:displayDescription="@string/app_name" />
