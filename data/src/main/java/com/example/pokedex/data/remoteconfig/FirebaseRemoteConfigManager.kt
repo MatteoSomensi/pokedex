@@ -10,6 +10,15 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.tasks.await
 
+/**
+ * Real implementation of [FeatureFlagManager] that interfaces with Firebase Remote Config.
+ * 
+ * It handles the fetching of feature flags from the remote server, activates them,
+ * and exposes them via a reactive [Flow] or synchronously. This allows the app 
+ * to dynamically adjust its behavior or UI without requiring a new app release.
+ * 
+ * @property remoteConfig The [FirebaseRemoteConfig] instance used to fetch and store config values.
+ */
 @Singleton
 class FirebaseRemoteConfigManager @Inject constructor(
     private val remoteConfig: FirebaseRemoteConfig

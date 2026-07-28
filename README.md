@@ -33,6 +33,8 @@ modules:
 * **Room**: For local database caching and offline-first capabilities.
 * **Coil**: For image loading.
 * **JUnit 4, MockK, Turbine, Robolectric**: For Unit and UI testing.
+* **UI Automator & Macrobenchmark**: For performance testing (startup, jank) and generating Baseline Profiles.
+* **Firebase**: Authentication, Crashlytics, Analytics, and Remote Config.
 * **Ktlint & Detekt**: For static code analysis and formatting.
 
 ## Features
@@ -44,7 +46,9 @@ modules:
    dimension scaling.
 4. **Offline-First Architecture**: Utilizes Room database to cache network responses, allowing the
    app to work seamlessly without an active internet connection.
-5. **Localization**: Supports English and Italian.
+5. **Observability & Cloud Config**: Integrated with Firebase Crashlytics to catch non-fatal errors, Firebase Analytics for user journey tracking, and Remote Config for dynamic feature flagging without app updates.
+6. **Performance Tuned**: Baseline profiles generated via Macrobenchmark (measuring Startup and FrameTiming/Jank metrics) ensure ahead-of-time (AOT) compilation for critical user journeys (CUJ), delivering smooth 60fps scrolling.
+7. **Localization**: Supports English and Italian.
 
 ## Getting Started
 

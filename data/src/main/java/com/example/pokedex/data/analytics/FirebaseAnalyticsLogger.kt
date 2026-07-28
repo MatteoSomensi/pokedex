@@ -6,6 +6,15 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * Real implementation of [AnalyticsLogger] that logs events to Firebase Analytics and
+ * records non-fatal exceptions and user properties to Firebase Crashlytics.
+ * 
+ * This class serves as a centralized observability wrapper around Firebase SDKs.
+ * 
+ * @property firebaseAnalytics The [FirebaseAnalytics] instance for tracking app usage and behavioral data.
+ * @property firebaseCrashlytics The [FirebaseCrashlytics] instance for recording crashes and non-fatal errors.
+ */
 @Singleton
 class FirebaseAnalyticsLogger @Inject constructor(
     private val firebaseAnalytics: FirebaseAnalytics,
