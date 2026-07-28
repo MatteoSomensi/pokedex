@@ -1,7 +1,7 @@
 [versions]
 androidGradlePlugin = "9.3.1"
 googleServicesPlugin = "4.5.0"
-benManesVersions = "0.54.0"
+benManesVersions = "0.56.0"
 versionCatalogUpdate = "1.1.0"
 roborazzi = "1.70.0"
 firebaseBom = "34.16.0"
@@ -134,7 +134,7 @@ screenshot-validation-api = { group = "com.android.tools.screenshot", name = "sc
 
 [plugins]
 version-catalog-update = { id = "nl.littlerobots.version-catalog-update", version.ref = "versionCatalogUpdate" }
-ben-manes-versions = { id = "com.github.ben-manes.versions", version.ref = "benManesVersions" }
+ben-manes-versions = { id = "io.github.ben-manes.versions", version.ref = "benManesVersions" }
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
