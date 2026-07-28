@@ -103,9 +103,6 @@ fun PokemonListScreenContent(
         topBar = {
             TopAppBar(
                 title = { Text(text = stringResource(id = R.string.app_name)) },
-                actions = {
-                    // Actions (Profile e Favorites) moved to NavigationSuiteScaffold
-                },
                 colors =
                     TopAppBarDefaults.topAppBarColors(
                         containerColor = MaterialTheme.colorScheme.primaryContainer,

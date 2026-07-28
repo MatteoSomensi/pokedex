@@ -2,6 +2,11 @@ package com.example.pokedex
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
@@ -9,6 +14,9 @@ import androidx.compose.material3.adaptive.layout.calculatePaneScaffoldDirective
 import androidx.compose.material3.adaptive.navigation3.ListDetailSceneStrategy
 import androidx.compose.material3.adaptive.navigation3.LocalListDetailSceneScope
 import androidx.compose.material3.adaptive.navigation3.rememberListDetailSceneStrategy
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -86,13 +94,9 @@ fun MainNavigation(
             directive = paneScaffoldDirective,
         )
 
-    val isNavBarVisible =
-        remember(backStack) {
-            val last = backStack.lastOrNull()
-            last != null && last != Auth && last != Profile
-        }
+    val isNavigationSuiteVisible = backStack.lastOrNull() != Auth
 
-    androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold(
+    NavigationSuiteScaffold(
         navigationSuiteItems = {
             item(
                 selected = backStack.lastOrNull() is PokemonList || backStack.lastOrNull() is PokemonDetail,
@@ -102,8 +106,8 @@ fun MainNavigation(
                     }
                 },
                 icon = {
-                    androidx.compose.material3.Icon(
-                        androidx.compose.material.icons.Icons.Default.Home,
+                    Icon(
+                        Icons.Default.Home,
                         contentDescription = "Home",
                     )
                 },
@@ -117,8 +121,8 @@ fun MainNavigation(
                     }
                 },
                 icon = {
-                    androidx.compose.material3.Icon(
-                        androidx.compose.material.icons.Icons.Default.Favorite,
+                    Icon(
+                        Icons.Default.Favorite,
                         contentDescription = "Favorites",
                     )
                 },
@@ -132,8 +136,8 @@ fun MainNavigation(
                     }
                 },
                 icon = {
-                    androidx.compose.material3.Icon(
-                        androidx.compose.material.icons.Icons.Default.AccountCircle,
+                    Icon(
+                        Icons.Default.AccountCircle,
                         contentDescription = "Profile",
                     )
                 },
@@ -141,11 +145,10 @@ fun MainNavigation(
             )
         },
         layoutType =
-            if (isNavBarVisible) {
-                androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
-                    .calculateFromAdaptiveInfo(windowAdaptiveInfo)
+            if (isNavigationSuiteVisible) {
+                NavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(windowAdaptiveInfo)
             } else {
-                androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType.None
+                NavigationSuiteType.None
             },
     ) {
         NavDisplay(

@@ -37,8 +37,6 @@ class PokemonListScreenTest {
                     state = mockState,
                     pagedPokemon = pagedPokemon,
                     onEvent = {},
-                    onNavigateToProfile = {},
-                    onNavigateToFavorites = {},
                 )
             }
         }
