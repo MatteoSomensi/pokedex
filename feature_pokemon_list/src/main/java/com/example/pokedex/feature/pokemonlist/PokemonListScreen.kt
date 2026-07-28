@@ -41,6 +41,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
@@ -238,7 +239,6 @@ fun PokemonListScreenContent(
                             modifier =
                                 Modifier
                                     .fillMaxSize()
-                                    .androidx.compose.ui.platform
                                     .testTag("pokemon_list"),
                         ) {
                             items(
