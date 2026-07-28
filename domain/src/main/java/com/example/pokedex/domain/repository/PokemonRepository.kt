@@ -9,6 +9,7 @@ import com.example.pokedex.domain.model.Pokemon
  * falling back to remote fetching when necessary.
  */
 interface PokemonRepository {
+    fun getPokemonPaged(query: String = ""): kotlinx.coroutines.flow.Flow<androidx.paging.PagingData<Pokemon>>
     suspend fun getPokemonList(limit: Int, offset: Int, forceRefresh: Boolean = false): Result<List<Pokemon>>
     suspend fun getPokemonDetail(id: Int): Result<Pokemon>
     suspend fun searchPokemon(query: String, limit: Int, offset: Int): Result<List<Pokemon>>

@@ -13,24 +13,12 @@ import com.example.pokedex.domain.model.Pokemon
  */
 @androidx.compose.runtime.Immutable
 data class PokemonListState(
-    val isLoading: Boolean = false,
-    val isRefreshing: Boolean = false,
-    val isFetchingNextPage: Boolean = false,
-    val isEndReached: Boolean = false,
-    val offset: Int = 0,
-    val pokemonList: List<Pokemon> = emptyList(),
-    val filteredPokemonList: List<Pokemon> = emptyList(),
     val searchQuery: String = "",
     val selectedType: String? = null,
-    val availableTypes: List<String> = emptyList(),
-    val errorMessage: UiText? = null,
-    val nextPageError: UiText? = null
+    val availableTypes: List<String> = emptyList()
 ) : UiState
 
 sealed interface PokemonListEvent : UiEvent {
-    data object LoadPokemon : PokemonListEvent
-    data object Refresh : PokemonListEvent
-    data object LoadNextPage : PokemonListEvent
     data class OnPokemonClicked(val pokemonId: Int) : PokemonListEvent
     data class OnSearchQueryChanged(val query: String) : PokemonListEvent
     data class OnTypeFilterSelected(val type: String?) : PokemonListEvent

@@ -15,6 +15,17 @@ import com.example.pokedex.data.local.entity.TypeEntity
 @JvmSuppressWildcards
 interface PokemonDao {
 
+    @Query("SELECT * FROM pokemon ORDER BY id ASC")
+    fun getPokemonPagingSource(): androidx.paging.PagingSource<Int, PokemonEntity>
+
+    @Query("SELECT * FROM pokemon WHERE name LIKE '%' || :query || '%' OR CAST(id AS TEXT) = :query ORDER BY id ASC")
+    fun searchPokemonPagingSource(
+        query: String
+    ): androidx.paging.PagingSource<Int, PokemonEntity>
+
+    @Query("DELETE FROM pokemon WHERE isFavorite = 0")
+    suspend fun clearNonFavoritePokemon(): Int
+
     @Query("SELECT * FROM pokemon ORDER BY id ASC LIMIT :limit OFFSET :offset")
     suspend fun getPokemonList(limit: Int, offset: Int): List<PokemonEntity>
 
@@ -24,10 +35,9 @@ interface PokemonDao {
     @Query("SELECT * FROM pokemon WHERE name = :name")
     suspend fun getPokemonByName(name: String): PokemonEntity?
 
-    @Query("SELECT * FROM pokemon WHERE name LIKE '%' || :query || '%' OR id = :queryId LIMIT :limit OFFSET :offset")
+    @Query("SELECT * FROM pokemon WHERE name LIKE '%' || :query || '%' OR CAST(id AS TEXT) = :query LIMIT :limit OFFSET :offset")
     suspend fun searchPokemon(
         query: String,
-        queryId: Int?,
         limit: Int,
         offset: Int
     ): List<PokemonEntity>

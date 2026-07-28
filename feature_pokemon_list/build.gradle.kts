@@ -23,6 +23,7 @@ dependencies {
     val composeBom = platform(libs.androidx.compose.bom)
     implementation(composeBom)
     implementation(libs.bundles.compose)
+    implementation(libs.androidx.paging.compose)
 
     testImplementation(libs.androidx.compose.ui.test.junit4)
     testImplementation(libs.androidx.test.ext.junit)

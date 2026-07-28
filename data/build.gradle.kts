@@ -19,9 +19,12 @@ dependencies {
     implementation(libs.androidx.security.crypto)
     implementation(libs.kotlinx.serialization.json)
 
-    // Room
+    // Room & Paging
     implementation(libs.bundles.room)
     ksp(libs.room.compiler)
+    implementation(libs.androidx.room.paging)
+    implementation(libs.androidx.paging.runtime)
+    implementation(libs.androidx.paging.common)
 
     // Auth Dependencies
     implementation(platform(libs.firebase.bom))

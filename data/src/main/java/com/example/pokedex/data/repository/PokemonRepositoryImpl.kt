@@ -28,8 +28,17 @@ import javax.inject.Inject
  * 
  * Also handles concurrency (using Mutex) to prevent race conditions during cache updates.
  */
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.map
+import com.example.pokedex.data.local.PokedexDatabase
+import com.example.pokedex.data.repository.paging.PokemonRemoteMediator
+
 class PokemonRepositoryImpl @Inject constructor(
     private val api: PokeApiService,
+    private val db: PokedexDatabase,
     private val dao: PokemonDao,
     private val dispatchers: DispatcherProvider
 ) : PokemonRepository {
@@ -40,6 +49,34 @@ class PokemonRepositoryImpl @Inject constructor(
     private val typesMutex = Mutex()
     @Volatile
     private var isEndReached = false
+
+    @OptIn(ExperimentalPagingApi::class)
+    override fun getPokemonPaged(query: String): kotlinx.coroutines.flow.Flow<PagingData<Pokemon>> {
+        val pagingSourceFactory = if (query.isNotBlank()) {
+            val q = query.trim().lowercase()
+            val factory: () -> androidx.paging.PagingSource<Int, PokemonEntity> = { dao.searchPokemonPagingSource(q) }
+            factory
+        } else {
+            val factory: () -> androidx.paging.PagingSource<Int, PokemonEntity> = { dao.getPokemonPagingSource() }
+            factory
+        }
+
+        return Pager(
+            config = PagingConfig(
+                pageSize = 20,
+                enablePlaceholders = false,
+                initialLoadSize = 40
+            ),
+            remoteMediator = PokemonRemoteMediator(
+                api = api,
+                db = db,
+                query = query
+            ),
+            pagingSourceFactory = pagingSourceFactory
+        ).flow.map { pagingData ->
+            pagingData.map { it.toDomain() }
+        }
+    }
 
     override suspend fun getPokemonList(
         limit: Int,
@@ -129,7 +166,6 @@ class PokemonRepositoryImpl @Inject constructor(
     ): Result<List<Pokemon>> = withContext(dispatchers.io) {
         runCatching {
             val q = query.trim().lowercase()
-            val queryId = q.toIntOrNull()
 
             var useLocalOnly = false
             listMutex.withLock {
@@ -145,7 +181,7 @@ class PokemonRepositoryImpl @Inject constructor(
             }
 
             if (useLocalOnly) {
-                val localResults = dao.searchPokemon(q, queryId, limit, offset)
+                val localResults = dao.searchPokemon(q, limit, offset)
                 return@runCatching localResults.map { it.toDomain() }
             }
 
