@@ -59,7 +59,7 @@ fun MainNavigation() {
                 ) {
                     PokemonListScreen(
                         onNavigateToDetail = { pokemonId -> 
-                            if (backStack.lastOrNull() !is PokemonDetail) {
+                            if (backStack.lastOrNull() != PokemonDetail(id = pokemonId)) {
                                 backStack.add(PokemonDetail(id = pokemonId)) 
                             }
                         },
@@ -95,7 +95,7 @@ fun MainNavigation() {
                     FavoriteScreen(
                         onBackClick = { backStack.removeLastOrNull() },
                         onNavigateToDetail = { pokemonId -> 
-                            if (backStack.lastOrNull() !is PokemonDetail) {
+                            if (backStack.lastOrNull() != PokemonDetail(id = pokemonId)) {
                                 backStack.add(PokemonDetail(id = pokemonId)) 
                             }
                         }
