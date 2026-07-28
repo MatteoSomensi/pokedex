@@ -156,16 +156,8 @@ fun PokemonListScreenContent(
             ) {
                 item {
                     FilterChip(
-                        selected = state.showFavoritesOnly,
-                        onClick = { onEvent(PokemonListEvent.OnFavoritesFilterToggled(showFavoritesOnly = !state.showFavoritesOnly)) },
-                        label = { Text(text = stringResource(id = R.string.filter_favorites)) }
-                    )
-                }
-                item {
-                    FilterChip(
-                        selected = state.selectedType == null && !state.showFavoritesOnly,
+                        selected = state.selectedType == null,
                         onClick = {
-                            if (state.showFavoritesOnly) onEvent(PokemonListEvent.OnFavoritesFilterToggled(showFavoritesOnly = false))
                             onEvent(PokemonListEvent.OnTypeFilterSelected(type = null))
                         },
                         label = { Text(text = stringResource(id = R.string.filter_all)) }

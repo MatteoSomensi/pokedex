@@ -67,20 +67,12 @@ class PokemonListViewModel @Inject constructor(
                 searchJob?.cancel()
                 searchJob = viewModelScope.launch {
                     delay(duration = SEARCH_DEBOUNCE)
-                    if (!uiState.value.showFavoritesOnly) {
-                        loadPokemon(isRefresh = false)
-                    } else {
-                        applyFilters()
-                    }
+                    loadPokemon(isRefresh = false)
                 }
             }
 
             is PokemonListEvent.OnTypeFilterSelected -> {
                 setState { copy(selectedType = event.type) }
-                applyFilters()
-            }
-            is PokemonListEvent.OnFavoritesFilterToggled -> {
-                setState { copy(showFavoritesOnly = event.showFavoritesOnly) }
                 applyFilters()
             }
         }
@@ -133,7 +125,7 @@ class PokemonListViewModel @Inject constructor(
 
     private fun loadNextPage() {
         val currentState = uiState.value
-        if (currentState.isLoading || currentState.isFetchingNextPage || currentState.isEndReached || currentState.showFavoritesOnly) {
+        if (currentState.isLoading || currentState.isFetchingNextPage || currentState.isEndReached) {
             return
         }
 
@@ -182,11 +174,7 @@ class PokemonListViewModel @Inject constructor(
         filterJob = viewModelScope.launch {
             val state = uiState.value
             
-            val baseList = if (state.showFavoritesOnly) {
-                repository.getFavoritePokemonList().getOrDefault(emptyList())
-            } else {
-                state.pokemonList
-            }
+            val baseList = state.pokemonList
 
             val query = state.searchQuery.trim().lowercase()
             val filtered = baseList.filter { pokemon ->
@@ -199,11 +187,7 @@ class PokemonListViewModel @Inject constructor(
                     pokemon.types.any { it.equals(other = state.selectedType, ignoreCase = true) }
                 } else true
 
-                val matchesFavorites = if (state.showFavoritesOnly) {
-                    pokemon.isFavorite
-                } else true
-
-                matchesQuery && matchesType && matchesFavorites
+                matchesQuery && matchesType
             }
             setState { copy(filteredPokemonList = filtered) }
         }
