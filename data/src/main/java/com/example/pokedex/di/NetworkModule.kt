@@ -46,25 +46,18 @@ object NetworkModule {
         authInterceptor: AuthInterceptor,
         tokenAuthenticator: TokenAuthenticator
     ): OkHttpClient {
-        val logging = HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BASIC
-        }
-
-        // Certificate Pinning per pokeapi.co per prevenire attacchi Man-in-the-Middle.
-        // ATTENZIONE: Questo è solo un template didattico. Applicare il pinning a un'API pubblica di terze parti
-        // può rompere l'app quando ruotano il certificato.
-        /*
-        val certificatePinner = okhttp3.CertificatePinner.Builder()
-            .add("pokeapi.co", "sha256/WoiWRyIOVNa9ihaBciRSC7XHjliYS9VwUGOIud4PB18=") // primary
-            .add("pokeapi.co", "sha256/k2v657xBsOVe1PQRwOsHsw3bsGT2VzIqz5K+59sNQws=") // backup
-            .build()
-        */
-
-        return OkHttpClient.Builder()
+        val builder = OkHttpClient.Builder()
             .addInterceptor(authInterceptor)
             .authenticator(tokenAuthenticator)
-            .addInterceptor(logging)
-            .build()
+            
+        if (com.example.pokedex.data.BuildConfig.DEBUG) {
+            val logging = HttpLoggingInterceptor().apply {
+                level = HttpLoggingInterceptor.Level.BASIC
+            }
+            builder.addInterceptor(logging)
+        }
+
+        return builder.build()
     }
 
     @Provides

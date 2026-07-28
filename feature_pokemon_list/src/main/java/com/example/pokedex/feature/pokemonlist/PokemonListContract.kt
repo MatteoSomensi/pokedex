@@ -11,6 +11,7 @@ import com.example.pokedex.domain.model.Pokemon
  * This class is responsible for PokemonListContract logic.
  * Part of the Clean Architecture structure.
  */
+@androidx.compose.runtime.Immutable
 data class PokemonListState(
     val isLoading: Boolean = false,
     val isRefreshing: Boolean = false,

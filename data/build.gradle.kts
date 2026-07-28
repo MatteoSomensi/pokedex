@@ -6,6 +6,9 @@ plugins {
 
 android {
     namespace = "com.example.pokedex.data"
+    buildFeatures {
+        buildConfig = true
+    }
 }
 
 dependencies {

@@ -28,6 +28,7 @@ import com.example.pokedex.feature.pokemondetail.PokemonDetailScreen
 import com.example.pokedex.feature.pokemonlist.PokemonListScreen
 import com.google.firebase.auth.FirebaseAuth
 
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 
 private data object PokedexListDetailScene
@@ -38,9 +39,23 @@ fun MainNavigation(
     deepLinkUri: android.net.Uri? = null,
     onDeepLinkConsumed: () -> Unit = {}
 ) {
-    val startDestination = if (FirebaseAuth.getInstance().currentUser != null) PokemonList else Auth
+    val startDestination = remember { if (FirebaseAuth.getInstance().currentUser != null) PokemonList else Auth }
     val backStack = rememberNavBackStack(startDestination)
     
+    DisposableEffect(Unit) {
+        val auth = FirebaseAuth.getInstance()
+        val listener = FirebaseAuth.AuthStateListener { firebaseAuth ->
+            if (firebaseAuth.currentUser == null && backStack.lastOrNull() != Auth) {
+                backStack.clear()
+                backStack.add(Auth)
+            }
+        }
+        auth.addAuthStateListener(listener)
+        onDispose {
+            auth.removeAuthStateListener(listener)
+        }
+    }
+
     LaunchedEffect(deepLinkUri) {
         if (deepLinkUri != null && deepLinkUri.scheme == "pokedex" && deepLinkUri.host == "pokemon") {
             val idString = deepLinkUri.lastPathSegment
