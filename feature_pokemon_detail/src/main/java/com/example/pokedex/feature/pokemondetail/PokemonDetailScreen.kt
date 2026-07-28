@@ -58,6 +58,7 @@ import androidx.compose.ui.res.painterResource
 import android.media.AudioAttributes
 import android.media.MediaPlayer
 import androidx.compose.ui.res.stringResource
+import com.example.pokedex.core.designsystem.LocalBackButtonVisibility
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -147,11 +148,13 @@ fun PokemonDetailScreen(
                     Text(text = state.pokemon?.name?.replaceFirstChar { it.uppercase() } ?: "")
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(id = R.string.cd_back)
-                        )
+                    if (LocalBackButtonVisibility.current) {
+                        IconButton(onClick = onBackClick) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = stringResource(id = R.string.cd_back)
+                            )
+                        }
                     }
                 },
                 actions = {

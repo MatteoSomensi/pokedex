@@ -24,19 +24,25 @@ import com.google.firebase.auth.FirebaseAuth
 fun MainNavigation() {
     val startDestination = if (FirebaseAuth.getInstance().currentUser != null) PokemonList else Auth
     val backStack = rememberNavBackStack(startDestination)
+    val listDetailStrategy = rememberListDetailSceneStrategy<NavKey>()
     NavDisplay(
         backStack = backStack,
         onBack = { backStack.removeLastOrNull() },
+        sceneStrategies = listOf(listDetailStrategy),
         entryProvider =
             entryProvider {
-                entry<PokemonList> {
+                entry<PokemonList>(
+                    metadata = ListDetailScene.listPane()
+                ) {
                     PokemonListScreen(
                         onNavigateToDetail = { pokemonId -> backStack.add(PokemonDetail(id = pokemonId)) },
                         onNavigateToProfile = { backStack.add(element = Profile) },
                         onNavigateToFavorites = { backStack.add(Favorite) }
                     )
                 }
-                entry<PokemonDetail> {
+                entry<PokemonDetail>(
+                    metadata = ListDetailScene.detailPane()
+                ) {
                     PokemonDetailScreen(
                         pokemonId = it.id,
                         onBackClick = { backStack.removeLastOrNull() }
