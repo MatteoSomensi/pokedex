@@ -10,8 +10,15 @@ import kotlinx.coroutines.flow.Flow
 interface AuthRepository {
     val currentUser: Flow<AuthUser?>
 
-    suspend fun signInWithEmail(email: String, password: String): Result<AuthUser>
-    suspend fun signUpWithEmail(email: String, password: String): Result<AuthUser>
+    suspend fun signInWithEmail(
+        email: String,
+        password: String,
+    ): Result<AuthUser>
+
+    suspend fun signUpWithEmail(
+        email: String,
+        password: String,
+    ): Result<AuthUser>
 
     /**
      * @param idToken The token obtained from Credential Manager (Google Sign-In)

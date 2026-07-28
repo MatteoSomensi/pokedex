@@ -8,17 +8,19 @@ import androidx.compose.ui.res.stringResource
 
 @Stable
 sealed interface UiText {
-    data class Dynamic(val value: String) : UiText
+    data class Dynamic(
+        val value: String,
+    ) : UiText
 
     @Stable
     data class StringResource(
         @StringRes val id: Int,
-        val args: List<Any> = emptyList()
+        val args: List<Any> = emptyList(),
     ) : UiText
 
     @Composable
-    fun asString(): String {
-        return when (this) {
+    fun asString(): String =
+        when (this) {
             is Dynamic -> value
             is StringResource -> {
                 if (args.isEmpty()) {
@@ -28,10 +30,9 @@ sealed interface UiText {
                 }
             }
         }
-    }
 
-    fun asString(context: Context): String {
-        return when (this) {
+    fun asString(context: Context): String =
+        when (this) {
             is Dynamic -> value
             is StringResource -> {
                 if (args.isEmpty()) {
@@ -41,5 +42,4 @@ sealed interface UiText {
                 }
             }
         }
-    }
 }

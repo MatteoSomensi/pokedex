@@ -4,11 +4,11 @@ import androidx.room.Entity
 
 @Entity(
     tableName = "pokemon_remote_keys",
-    primaryKeys = ["pokemonId", "query"]
+    primaryKeys = ["pokemonId", "query"],
 )
 data class PokemonRemoteKey(
     val pokemonId: Int,
     val query: String,
     val prevOffset: Int?,
-    val nextOffset: Int?
+    val nextOffset: Int?,
 )

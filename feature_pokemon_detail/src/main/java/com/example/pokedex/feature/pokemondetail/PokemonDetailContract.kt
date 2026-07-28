@@ -9,15 +9,21 @@ import com.example.pokedex.domain.model.Pokemon
 data class PokemonDetailState(
     val isLoading: Boolean = false,
     val pokemon: Pokemon? = null,
-    val errorMessage: UiText? = null
+    val errorMessage: UiText? = null,
 ) : UiState
 
 sealed interface PokemonDetailEvent : UiEvent {
-    data class LoadPokemon(val id: Int) : PokemonDetailEvent
+    data class LoadPokemon(
+        val id: Int,
+    ) : PokemonDetailEvent
+
     object ToggleFavorite : PokemonDetailEvent
+
     object PlayCry : PokemonDetailEvent
 }
 
 sealed interface PokemonDetailEffect : UiEffect {
-    data class PlayAudio(val url: String) : PokemonDetailEffect
+    data class PlayAudio(
+        val url: String,
+    ) : PokemonDetailEffect
 }

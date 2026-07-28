@@ -10,6 +10,8 @@ import androidx.compose.material3.adaptive.navigation3.ListDetailSceneStrategy
 import androidx.compose.material3.adaptive.navigation3.LocalListDetailSceneScope
 import androidx.compose.material3.adaptive.navigation3.rememberListDetailSceneStrategy
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,30 +30,29 @@ import com.example.pokedex.feature.pokemondetail.PokemonDetailScreen
 import com.example.pokedex.feature.pokemonlist.PokemonListScreen
 import com.google.firebase.auth.FirebaseAuth
 
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-
 private data object PokedexListDetailScene
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun MainNavigation(
     deepLinkUri: android.net.Uri? = null,
-    onDeepLinkConsumed: () -> Unit = {}
+    onDeepLinkConsumed: () -> Unit = {},
 ) {
     val firebaseAuth = remember { FirebaseAuth.getInstance() }
-    val startDestination = remember {
-        if (firebaseAuth.currentUser != null) PokemonList else Auth
-    }
-    val backStack = rememberNavBackStack(startDestination)
-    
-    DisposableEffect(Unit) {
-        val listener = FirebaseAuth.AuthStateListener { firebaseAuth ->
-            if (firebaseAuth.currentUser == null && backStack.lastOrNull() != Auth) {
-                backStack.clear()
-                backStack.add(Auth)
-            }
+    val startDestination =
+        remember {
+            if (firebaseAuth.currentUser != null) PokemonList else Auth
         }
+    val backStack = rememberNavBackStack(startDestination)
+
+    DisposableEffect(Unit) {
+        val listener =
+            FirebaseAuth.AuthStateListener { firebaseAuth ->
+                if (firebaseAuth.currentUser == null && backStack.lastOrNull() != Auth) {
+                    backStack.clear()
+                    backStack.add(Auth)
+                }
+            }
         firebaseAuth.addAuthStateListener(listener)
         onDispose {
             firebaseAuth.removeAuthStateListener(listener)
@@ -73,14 +74,16 @@ fun MainNavigation(
         }
     }
     val windowAdaptiveInfo = currentWindowAdaptiveInfoV2()
-    val paneScaffoldDirective = remember(windowAdaptiveInfo) {
-        calculatePaneScaffoldDirective(windowAdaptiveInfo)
-            .copy(horizontalPartitionSpacerSize = 0.dp)
-    }
-    val listDetailStrategy = rememberListDetailSceneStrategy<NavKey>(
-        shouldHandleSinglePaneLayout = false,
-        directive = paneScaffoldDirective
-    )
+    val paneScaffoldDirective =
+        remember(windowAdaptiveInfo) {
+            calculatePaneScaffoldDirective(windowAdaptiveInfo)
+                .copy(horizontalPartitionSpacerSize = 0.dp)
+        }
+    val listDetailStrategy =
+        rememberListDetailSceneStrategy<NavKey>(
+            shouldHandleSinglePaneLayout = false,
+            directive = paneScaffoldDirective,
+        )
 
     NavDisplay(
         backStack = backStack,
@@ -89,53 +92,56 @@ fun MainNavigation(
         entryProvider =
             entryProvider {
                 entry<PokemonList>(
-                    metadata = ListDetailSceneStrategy.listPane(
-                        sceneKey = PokedexListDetailScene,
-                        detailPlaceholder = { PokemonDetailPlaceholder() }
-                    )
+                    metadata =
+                        ListDetailSceneStrategy.listPane(
+                            sceneKey = PokedexListDetailScene,
+                            detailPlaceholder = { PokemonDetailPlaceholder() },
+                        ),
                 ) {
                     PokemonListScreen(
-                        onNavigateToDetail = { pokemonId -> 
+                        onNavigateToDetail = { pokemonId ->
                             if (backStack.lastOrNull() != PokemonDetail(id = pokemonId)) {
-                                backStack.add(PokemonDetail(id = pokemonId)) 
+                                backStack.add(PokemonDetail(id = pokemonId))
                             }
                         },
-                        onNavigateToProfile = { 
+                        onNavigateToProfile = {
                             if (backStack.lastOrNull() != Profile) {
-                                backStack.add(element = Profile) 
+                                backStack.add(element = Profile)
                             }
                         },
-                        onNavigateToFavorites = { 
+                        onNavigateToFavorites = {
                             if (backStack.lastOrNull() != Favorite) {
-                                backStack.add(Favorite) 
+                                backStack.add(Favorite)
                             }
-                        }
+                        },
                     )
                 }
                 entry<PokemonDetail>(
-                    metadata = ListDetailSceneStrategy.detailPane(
-                        sceneKey = PokedexListDetailScene
-                    )
+                    metadata =
+                        ListDetailSceneStrategy.detailPane(
+                            sceneKey = PokedexListDetailScene,
+                        ),
                 ) {
                     PokemonDetailScreen(
                         pokemonId = it.id,
                         onBackClick = { backStack.removeLastOrNull() },
-                        showBackButton = LocalListDetailSceneScope.current == null
+                        showBackButton = LocalListDetailSceneScope.current == null,
                     )
                 }
                 entry<Favorite>(
-                    metadata = ListDetailSceneStrategy.listPane(
-                        sceneKey = PokedexListDetailScene,
-                        detailPlaceholder = { PokemonDetailPlaceholder() }
-                    )
+                    metadata =
+                        ListDetailSceneStrategy.listPane(
+                            sceneKey = PokedexListDetailScene,
+                            detailPlaceholder = { PokemonDetailPlaceholder() },
+                        ),
                 ) {
                     FavoriteScreen(
                         onBackClick = { backStack.removeLastOrNull() },
-                        onNavigateToDetail = { pokemonId -> 
+                        onNavigateToDetail = { pokemonId ->
                             if (backStack.lastOrNull() != PokemonDetail(id = pokemonId)) {
-                                backStack.add(PokemonDetail(id = pokemonId)) 
+                                backStack.add(PokemonDetail(id = pokemonId))
                             }
-                        }
+                        },
                     )
                 }
                 entry<Auth> {
@@ -149,7 +155,7 @@ fun MainNavigation(
                             if (deepLinkUri != null) {
                                 onDeepLinkConsumed()
                             }
-                        }
+                        },
                     )
                 }
                 entry<Profile> {
@@ -158,7 +164,7 @@ fun MainNavigation(
                         onNavigateToAuth = {
                             backStack.clear()
                             backStack.add(element = Auth)
-                        }
+                        },
                     )
                 }
             },
@@ -174,7 +180,7 @@ private fun android.net.Uri.toPokemonId(): Int? {
 private fun PokemonDetailPlaceholder() {
     Box(
         modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         Text(text = stringResource(id = R.string.list_detail_placeholder))
     }

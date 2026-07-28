@@ -2,6 +2,10 @@ package com.example.pokedex.di
 
 import com.example.pokedex.core.util.Constants
 import com.example.pokedex.data.remote.PokeApiService
+import com.example.pokedex.data.remote.auth.AuthInterceptor
+import com.example.pokedex.data.remote.auth.SecureSessionManager
+import com.example.pokedex.data.remote.auth.SessionManager
+import com.example.pokedex.data.remote.auth.TokenAuthenticator
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -13,47 +17,45 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import javax.inject.Singleton
-import com.example.pokedex.data.remote.auth.AuthInterceptor
-import com.example.pokedex.data.remote.auth.SecureSessionManager
-import com.example.pokedex.data.remote.auth.SessionManager
-import com.example.pokedex.data.remote.auth.TokenAuthenticator
-
-@Module
-@InstallIn(SingletonComponent::class)
 
 /**
  * This object is responsible for NetworkModule logic.
  * Part of the Clean Architecture structure.
  */
+@Module
+@InstallIn(SingletonComponent::class)
 object NetworkModule {
+    @Provides
+    @Singleton
+    fun provideJson(): Json =
+        Json {
+            ignoreUnknownKeys = true
+            coerceInputValues = true
+        }
 
     @Provides
     @Singleton
-    fun provideJson(): Json = Json {
-        ignoreUnknownKeys = true
-        coerceInputValues = true
-    }
-
-    @Provides
-    @Singleton
-    fun provideSessionManager(@dagger.hilt.android.qualifiers.ApplicationContext context: android.content.Context): SessionManager {
-        return SecureSessionManager(context)
-    }
+    fun provideSessionManager(
+        @dagger.hilt.android.qualifiers.ApplicationContext context: android.content.Context,
+    ): SessionManager = SecureSessionManager(context)
 
     @Provides
     @Singleton
     fun provideOkHttpClient(
         authInterceptor: AuthInterceptor,
-        tokenAuthenticator: TokenAuthenticator
+        tokenAuthenticator: TokenAuthenticator,
     ): OkHttpClient {
-        val builder = OkHttpClient.Builder()
-            .addInterceptor(authInterceptor)
-            .authenticator(tokenAuthenticator)
-            
+        val builder =
+            OkHttpClient
+                .Builder()
+                .addInterceptor(authInterceptor)
+                .authenticator(tokenAuthenticator)
+
         if (com.example.pokedex.data.BuildConfig.DEBUG) {
-            val logging = HttpLoggingInterceptor().apply {
-                level = HttpLoggingInterceptor.Level.BASIC
-            }
+            val logging =
+                HttpLoggingInterceptor().apply {
+                    level = HttpLoggingInterceptor.Level.BASIC
+                }
             builder.addInterceptor(logging)
         }
 
@@ -62,9 +64,13 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideRetrofit(okHttpClient: OkHttpClient, json: Json): Retrofit {
+    fun provideRetrofit(
+        okHttpClient: OkHttpClient,
+        json: Json,
+    ): Retrofit {
         val contentType = "application/json; charset=UTF8".toMediaType()
-        return Retrofit.Builder()
+        return Retrofit
+            .Builder()
             .baseUrl(Constants.POKE_API_BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(json.asConverterFactory(contentType))
@@ -73,7 +79,5 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun providePokeApiService(retrofit: Retrofit): PokeApiService {
-        return retrofit.create(PokeApiService::class.java)
-    }
+    fun providePokeApiService(retrofit: Retrofit): PokeApiService = retrofit.create(PokeApiService::class.java)
 }

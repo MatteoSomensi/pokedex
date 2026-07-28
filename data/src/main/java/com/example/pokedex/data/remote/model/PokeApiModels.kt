@@ -11,14 +11,14 @@ import kotlinx.serialization.Serializable
  * Part of the Clean Architecture structure.
  */
 data class PokemonListResponse(
-    val results: List<PokemonResultItem>
+    val results: List<PokemonResultItem>,
 )
 
 @Serializable
 @InternalSerializationApi
 data class PokemonResultItem(
     val name: String,
-    val url: String
+    val url: String,
 )
 
 @Serializable
@@ -29,38 +29,38 @@ data class PokemonDetailResponse(
     val types: List<PokemonTypeSlot>,
     val height: Int = 0,
     val weight: Int = 0,
-    val stats: List<PokemonStatSlot> = emptyList()
+    val stats: List<PokemonStatSlot> = emptyList(),
 )
 
 @Serializable
 @InternalSerializationApi
 data class PokemonTypeSlot(
     val slot: Int,
-    val type: PokemonTypeItem
+    val type: PokemonTypeItem,
 )
 
 @Serializable
 @InternalSerializationApi
 data class PokemonTypeItem(
     val name: String,
-    val url: String
+    val url: String,
 )
 
 @Serializable
 @InternalSerializationApi
 data class PokemonStatSlot(
     @SerialName("base_stat") val baseStat: Int,
-    val stat: PokemonStatItem
+    val stat: PokemonStatItem,
 )
 
 @Serializable
 @InternalSerializationApi
 data class PokemonStatItem(
-    val name: String
+    val name: String,
 )
 
 @Serializable
 @InternalSerializationApi
 data class TypeListResponse(
-    val results: List<PokemonTypeItem>
+    val results: List<PokemonTypeItem>,
 )

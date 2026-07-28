@@ -1,5 +1,7 @@
 package com.example.pokedex.feature.pokemondetail
 
+import android.media.AudioAttributes
+import android.media.MediaPlayer
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -55,15 +57,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
-import android.media.AudioAttributes
-import android.media.MediaPlayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import coil.compose.AsyncImage
 import com.example.pokedex.core.R
 import com.example.pokedex.core.ui.DevicePreviews
@@ -81,7 +81,7 @@ fun PokemonDetailScreen(
     pokemonId: Int,
     onBackClick: () -> Unit,
     showBackButton: Boolean = true,
-    viewModel: PokemonDetailViewModel = hiltViewModel<PokemonDetailViewModel>()
+    viewModel: PokemonDetailViewModel = hiltViewModel<PokemonDetailViewModel>(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -110,19 +110,25 @@ fun PokemonDetailScreen(
                         try {
                             player.apply {
                                 setAudioAttributes(
-                                    AudioAttributes.Builder()
+                                    AudioAttributes
+                                        .Builder()
                                         .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
                                         .setUsage(AudioAttributes.USAGE_MEDIA)
-                                        .build()
+                                        .build(),
                                 )
                                 setDataSource(context, android.net.Uri.parse(effect.url))
                                 setOnPreparedListener { it.start() }
-                                setOnCompletionListener { 
+                                setOnCompletionListener {
                                     it.release()
                                     if (mediaPlayer == it) mediaPlayer = null
                                 }
                                 setOnErrorListener { mp, what, extra ->
-                                    android.widget.Toast.makeText(context, "Errore riproduzione (what:$what, extra:$extra)", android.widget.Toast.LENGTH_SHORT).show()
+                                    android.widget.Toast
+                                        .makeText(
+                                            context,
+                                            "Errore riproduzione (what:$what, extra:$extra)",
+                                            android.widget.Toast.LENGTH_SHORT,
+                                        ).show()
                                     mp.release()
                                     if (mediaPlayer == mp) mediaPlayer = null
                                     true
@@ -131,7 +137,9 @@ fun PokemonDetailScreen(
                             }
                             mediaPlayer = player
                         } catch (e: Exception) {
-                            android.widget.Toast.makeText(context, "Errore: ${e.message}", android.widget.Toast.LENGTH_SHORT).show()
+                            android.widget.Toast
+                                .makeText(context, "Errore: ${e.message}", android.widget.Toast.LENGTH_SHORT)
+                                .show()
                             player.release()
                             e.printStackTrace()
                         }
@@ -152,7 +160,7 @@ fun PokemonDetailScreen(
                         IconButton(onClick = onBackClick) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = stringResource(id = R.string.cd_back)
+                                contentDescription = stringResource(id = R.string.cd_back),
                             )
                         }
                     }
@@ -162,20 +170,28 @@ fun PokemonDetailScreen(
                     IconButton(onClick = { viewModel.setEvent(PokemonDetailEvent.ToggleFavorite) }) {
                         Icon(
                             imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                            contentDescription = if (isFavorite) stringResource(id = R.string.cd_remove_favorite) else stringResource(id = R.string.cd_add_favorite),
-                            tint = if (isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
+                            contentDescription =
+                                if (isFavorite) {
+                                    stringResource(
+                                        id = R.string.cd_remove_favorite,
+                                    )
+                                } else {
+                                    stringResource(id = R.string.cd_add_favorite)
+                                },
+                            tint = if (isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent,
-                    titleContentColor = MaterialTheme.colorScheme.onSurface
-                )
+                colors =
+                    TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Transparent,
+                        titleContentColor = MaterialTheme.colorScheme.onSurface,
+                    ),
             )
-        }
+        },
     ) { paddingValues ->
         Box(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
         ) {
             when {
                 state.isLoading -> {
@@ -185,15 +201,15 @@ fun PokemonDetailScreen(
                 state.errorMessage != null -> {
                     Text(
                         text = state.errorMessage!!.asString(),
-                        modifier = Modifier.align(alignment = Alignment.Center).padding(paddingValues)
+                        modifier = Modifier.align(alignment = Alignment.Center).padding(paddingValues),
                     )
                 }
 
                 state.pokemon != null -> {
                     PokemonDetailContent(
-                        pokemon = state.pokemon!!, 
+                        pokemon = state.pokemon!!,
                         paddingValues = paddingValues,
-                        onPlayCryClick = { viewModel.setEvent(PokemonDetailEvent.PlayCry) }
+                        onPlayCryClick = { viewModel.setEvent(PokemonDetailEvent.PlayCry) },
                     )
                 }
             }
@@ -204,9 +220,11 @@ fun PokemonDetailScreen(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun PokemonDetailContent(
-    pokemon: Pokemon, 
-    paddingValues: androidx.compose.foundation.layout.PaddingValues = androidx.compose.foundation.layout.PaddingValues(),
-    onPlayCryClick: () -> Unit = {}
+    pokemon: Pokemon,
+    paddingValues: androidx.compose.foundation.layout.PaddingValues =
+        androidx.compose.foundation.layout
+            .PaddingValues(),
+    onPlayCryClick: () -> Unit = {},
 ) {
     var isVisible by remember { mutableStateOf(value = false) }
     val dimensions = LocalDimensions.current
@@ -217,32 +235,37 @@ fun PokemonDetailContent(
     }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(state = rememberScrollState())
-            .padding(
-                start = dimensions.paddingLarge,
-                end = dimensions.paddingLarge,
-                top = dimensions.paddingLarge + paddingValues.calculateTopPadding(),
-                bottom = dimensions.paddingLarge + paddingValues.calculateBottomPadding()
-            ),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .verticalScroll(state = rememberScrollState())
+                .padding(
+                    start = dimensions.paddingLarge,
+                    end = dimensions.paddingLarge,
+                    top = dimensions.paddingLarge + paddingValues.calculateTopPadding(),
+                    bottom = dimensions.paddingLarge + paddingValues.calculateBottomPadding(),
+                ),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         AnimatedVisibility(
             visible = isVisible,
-            enter = fadeIn(animationSpec = tween(durationMillis = animations.durationMedium)) + slideInVertically(
-                initialOffsetY = { -animations.slideOffsetStandard })
+            enter =
+                fadeIn(animationSpec = tween(durationMillis = animations.durationMedium)) +
+                    slideInVertically(
+                        initialOffsetY = { -animations.slideOffsetStandard },
+                    ),
         ) {
             AsyncImage(
                 model = pokemon.imageUrl,
                 contentDescription = stringResource(id = R.string.cd_pokemon_image, pokemon.name),
-                modifier = Modifier
-                    .size(size = dimensions.imageSizeDetail)
-                    .clip(shape = RoundedCornerShape(size = dimensions.cornerRadiusLarge))
-                    .background(color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
-                    .padding(all = dimensions.paddingMedium),
+                modifier =
+                    Modifier
+                        .size(size = dimensions.imageSizeDetail)
+                        .clip(shape = RoundedCornerShape(size = dimensions.cornerRadiusLarge))
+                        .background(color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                        .padding(all = dimensions.paddingMedium),
                 placeholder = if (LocalInspectionMode.current) painterResource(id = android.R.drawable.ic_menu_gallery) else null,
-                error = if (LocalInspectionMode.current) painterResource(id = android.R.drawable.ic_menu_gallery) else null
+                error = if (LocalInspectionMode.current) painterResource(id = android.R.drawable.ic_menu_gallery) else null,
             )
         }
 
@@ -250,22 +273,25 @@ fun PokemonDetailContent(
 
         AnimatedVisibility(
             visible = isVisible,
-            enter = fadeIn(animationSpec = tween(durationMillis = animations.durationSlow)) + slideInVertically(
-                initialOffsetY = { animations.slideOffsetStandard })
+            enter =
+                fadeIn(animationSpec = tween(durationMillis = animations.durationSlow)) +
+                    slideInVertically(
+                        initialOffsetY = { animations.slideOffsetStandard },
+                    ),
         ) {
             Column(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
+                    horizontalArrangement = Arrangement.Center,
                 ) {
                     Text(
                         text = pokemon.name.replaceFirstChar { it.uppercase() },
                         style = MaterialTheme.typography.displaySmall,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary
+                        color = MaterialTheme.colorScheme.primary,
                     )
                     Spacer(modifier = Modifier.width(width = dimensions.paddingSmall))
                     IconButton(onClick = onPlayCryClick) {
@@ -273,7 +299,7 @@ fun PokemonDetailContent(
                             imageVector = Icons.Default.PlayArrow,
                             contentDescription = stringResource(id = R.string.cd_play_cry),
                             tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(48.dp)
+                            modifier = Modifier.size(48.dp),
                         )
                     }
                 }
@@ -282,21 +308,22 @@ fun PokemonDetailContent(
 
                 FlowRow(
                     horizontalArrangement = Arrangement.spacedBy(space = dimensions.paddingSmall),
-                    verticalArrangement = Arrangement.spacedBy(space = dimensions.paddingSmall)
+                    verticalArrangement = Arrangement.spacedBy(space = dimensions.paddingSmall),
                 ) {
                     pokemon.types.forEach { type ->
                         Surface(
                             color = MaterialTheme.colorScheme.primaryContainer,
-                            shape = RoundedCornerShape(size = dimensions.cornerRadiusExtraLarge)
+                            shape = RoundedCornerShape(size = dimensions.cornerRadiusExtraLarge),
                         ) {
                             Text(
                                 text = type,
-                                modifier = Modifier.padding(
-                                    horizontal = dimensions.paddingMedium,
-                                    vertical = dimensions.paddingSmall
-                                ),
+                                modifier =
+                                    Modifier.padding(
+                                        horizontal = dimensions.paddingMedium,
+                                        vertical = dimensions.paddingSmall,
+                                    ),
                                 style = MaterialTheme.typography.labelLarge,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                                color = MaterialTheme.colorScheme.onPrimaryContainer,
                             )
                         }
                     }
@@ -308,18 +335,19 @@ fun PokemonDetailContent(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(size = dimensions.cornerRadiusExtraLarge),
                     elevation = CardDefaults.cardElevation(defaultElevation = dimensions.elevationLarge),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surface
-                    )
+                    colors =
+                        CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surface,
+                        ),
                 ) {
                     Column(
-                        modifier = Modifier.padding(all = dimensions.paddingLarge)
+                        modifier = Modifier.padding(all = dimensions.paddingLarge),
                     ) {
                         Text(
                             text = stringResource(id = R.string.base_stats),
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(bottom = dimensions.paddingMedium)
+                            modifier = Modifier.padding(bottom = dimensions.paddingMedium),
                         )
 
                         pokemon.stats.forEach { (statName, statValue) ->
@@ -330,41 +358,43 @@ fun PokemonDetailContent(
                         HorizontalDivider(
                             modifier = Modifier.padding(vertical = dimensions.paddingMedium),
                             thickness = DividerDefaults.Thickness,
-                            color = DividerDefaults.color
+                            color = DividerDefaults.color,
                         )
 
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceEvenly
+                            horizontalArrangement = Arrangement.SpaceEvenly,
                         ) {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 Text(
                                     text = stringResource(id = R.string.height),
                                     style = MaterialTheme.typography.labelMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
                                 Text(
-                                    text = stringResource(
-                                        id = R.string.height_format,
-                                        pokemon.heightInMeters
-                                    ),
+                                    text =
+                                        stringResource(
+                                            id = R.string.height_format,
+                                            pokemon.heightInMeters,
+                                        ),
                                     style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold
+                                    fontWeight = FontWeight.Bold,
                                 )
                             }
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 Text(
                                     text = stringResource(id = R.string.weight),
                                     style = MaterialTheme.typography.labelMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
                                 Text(
-                                    text = stringResource(
-                                        id = R.string.weight_format,
-                                        pokemon.weightInKg
-                                    ),
+                                    text =
+                                        stringResource(
+                                            id = R.string.weight_format,
+                                            pokemon.weightInKg,
+                                        ),
                                     style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold
+                                    fontWeight = FontWeight.Bold,
                                 )
                             }
                         }
@@ -376,7 +406,10 @@ fun PokemonDetailContent(
 }
 
 @Composable
-fun StatRow(statName: String, statValue: Int) {
+fun StatRow(
+    statName: String,
+    statValue: Int,
+) {
     val formattedName = statName.replaceFirstChar { it.uppercase() }
     val progress = statValue / 255f
     val dimensions = LocalDimensions.current
@@ -384,47 +417,48 @@ fun StatRow(statName: String, statValue: Int) {
 
     Row(
         modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = formattedName,
             style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.weight(weight = weights.statNameWeight)
+            modifier = Modifier.weight(weight = weights.statNameWeight),
         )
         Text(
             text = statValue.toString(),
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.width(width = dimensions.statValueWidth),
-            textAlign = TextAlign.End
+            textAlign = TextAlign.End,
         )
         Spacer(modifier = Modifier.width(width = dimensions.paddingSmall))
         LinearProgressIndicator(
             progress = { progress },
-            modifier = Modifier
-                .weight(weight = weights.statProgressBarWeight)
-                .height(height = dimensions.statProgressBarHeight)
-                .clip(shape = RoundedCornerShape(size = dimensions.cornerRadiusSmall)),
+            modifier =
+                Modifier
+                    .weight(weight = weights.statProgressBarWeight)
+                    .height(height = dimensions.statProgressBarHeight)
+                    .clip(shape = RoundedCornerShape(size = dimensions.cornerRadiusSmall)),
             color = if (progress > 0.5f) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
-            trackColor = MaterialTheme.colorScheme.surfaceVariant
+            trackColor = MaterialTheme.colorScheme.surfaceVariant,
         )
     }
 }
 
-
 @DevicePreviews
 @Composable
 fun PokemonDetailScreenPreview() {
-    val mockPokemon = Pokemon(
-        id = 1,
-        name = "Bulbasaur",
-        imageUrl = "",
-        cryUrl = "",
-        types = listOf("Grass", "Poison"),
-        height = 7,
-        weight = 69,
-        stats = mapOf("hp" to 45, "attack" to 49, "defense" to 49, "speed" to 45)
-    )
+    val mockPokemon =
+        Pokemon(
+            id = 1,
+            name = "Bulbasaur",
+            imageUrl = "",
+            cryUrl = "",
+            types = listOf("Grass", "Poison"),
+            height = 7,
+            weight = 69,
+            stats = mapOf("hp" to 45, "attack" to 49, "defense" to 49, "speed" to 45),
+        )
     PokedexTheme {
         Surface {
             PokemonDetailContent(pokemon = mockPokemon)

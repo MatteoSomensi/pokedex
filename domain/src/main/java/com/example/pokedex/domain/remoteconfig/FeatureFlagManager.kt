@@ -6,7 +6,6 @@ import kotlinx.coroutines.flow.Flow
  * Interface per gestire l'abilitazione delle funzionalità da remoto.
  */
 interface FeatureFlagManager {
-
     /**
      * Sincronizza i flag con il backend remoto (es. all'avvio dell'app).
      */

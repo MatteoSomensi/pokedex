@@ -17,7 +17,7 @@ android {
         buildConfigField(
             "String",
             "WEB_CLIENT_ID",
-            "\"${project.findProperty("WEB_CLIENT_ID") ?: ""}\""
+            "\"${project.findProperty("WEB_CLIENT_ID") ?: ""}\"",
         )
     }
 
@@ -38,8 +38,6 @@ android {
         arg("appfunctions:aggregateAppFunctions", "true")
     }
 }
-
-
 
 dependencies {
     implementation(libs.androidx.appfunctions)
@@ -82,7 +80,7 @@ dependencies {
     androidTestImplementation(libs.bundles.android.test)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
-    
+
     // WorkManager
     implementation(libs.bundles.workmanager)
     ksp(libs.androidx.hilt.compiler)

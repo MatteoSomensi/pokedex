@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>FunctionNaming:PokemonCard.kt$@OptIn(ExperimentalLayoutApi::class) @Composable fun PokemonCard( pokemon: Pokemon, onClick: () -&gt; Unit, onFavoriteClick: (() -&gt; Unit)? = null, )</ID>
+    <ID>FunctionNaming:Theme.kt$@Composable fun PokedexTheme( darkTheme: Boolean = isSystemInDarkTheme(), dynamicColor: Boolean = true, content: @Composable () -&gt; Unit, )</ID>
+    <ID>LongMethod:PokemonCard.kt$@OptIn(ExperimentalLayoutApi::class) @Composable fun PokemonCard( pokemon: Pokemon, onClick: () -&gt; Unit, onFavoriteClick: (() -&gt; Unit)? = null, )</ID>
+    <ID>MagicNumber:Color.kt$0xFF625b71</ID>
+    <ID>MagicNumber:Color.kt$0xFF6650a4</ID>
+    <ID>MagicNumber:Color.kt$0xFF7D5260</ID>
+    <ID>MagicNumber:Color.kt$0xFFCCC2DC</ID>
+    <ID>MagicNumber:Color.kt$0xFFD0BCFF</ID>
+    <ID>MagicNumber:Color.kt$0xFFEFB8C8</ID>
+    <ID>MagicNumber:Theme.kt$600</ID>
+    <ID>MaxLineLength:PokemonCard.kt$error = if (LocalInspectionMode.current) painterResource(id = android.R.drawable.ic_menu_gallery) else null</ID>
+    <ID>MaxLineLength:PokemonCard.kt$placeholder = if (LocalInspectionMode.current) painterResource(id = android.R.drawable.ic_menu_gallery) else null</ID>
+  </CurrentIssues>
+</SmellBaseline>

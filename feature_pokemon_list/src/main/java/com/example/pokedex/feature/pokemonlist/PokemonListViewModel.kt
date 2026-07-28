@@ -21,64 +21,64 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class PokemonListViewModel @Inject constructor(
-    private val repository: PokemonRepository
-) : BaseViewModel<PokemonListState, PokemonListEvent, PokemonListEffect>() {
+class PokemonListViewModel
+    @Inject
+    constructor(
+        private val repository: PokemonRepository,
+    ) : BaseViewModel<PokemonListState, PokemonListEvent, PokemonListEffect>() {
+        override fun createInitialState(): PokemonListState = PokemonListState()
 
-    override fun createInitialState(): PokemonListState = PokemonListState()
+        init {
+            loadTypes()
+        }
 
-    init {
-        loadTypes()
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
-    val pagedPokemonFlow: Flow<PagingData<Pokemon>> = combine(
-        uiState
-            .map { it.searchQuery.trim() }
-            .distinctUntilChanged()
-            .debounce(SEARCH_DEBOUNCE_MILLIS),
-        uiState
-            .map { it.selectedType }
-            .distinctUntilChanged()
-    ) { query, selectedType ->
-        query to selectedType
-    }
-        .flatMapLatest { (query, selectedType) ->
-            repository.getPokemonPaged(query).map { pagingData ->
-                if (selectedType != null) {
-                    pagingData.filter { pokemon ->
-                        pokemon.types.any { it.equals(selectedType, ignoreCase = true) }
+        @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
+        val pagedPokemonFlow: Flow<PagingData<Pokemon>> =
+            combine(
+                uiState
+                    .map { it.searchQuery.trim() }
+                    .distinctUntilChanged()
+                    .debounce(SEARCH_DEBOUNCE_MILLIS),
+                uiState
+                    .map { it.selectedType }
+                    .distinctUntilChanged(),
+            ) { query, selectedType ->
+                query to selectedType
+            }.flatMapLatest { (query, selectedType) ->
+                repository.getPokemonPaged(query).map { pagingData ->
+                    if (selectedType != null) {
+                        pagingData.filter { pokemon ->
+                            pokemon.types.any { it.equals(selectedType, ignoreCase = true) }
+                        }
+                    } else {
+                        pagingData
                     }
-                } else {
-                    pagingData
+                }
+            }.cachedIn(viewModelScope)
+
+        private fun loadTypes() {
+            viewModelScope.launch {
+                repository.getPokemonTypes().onSuccess { types ->
+                    setState { copy(availableTypes = types) }
                 }
             }
         }
-        .cachedIn(viewModelScope)
 
-    private fun loadTypes() {
-        viewModelScope.launch {
-            repository.getPokemonTypes().onSuccess { types ->
-                setState { copy(availableTypes = types) }
+        override fun handleEvent(event: PokemonListEvent) {
+            when (event) {
+                is PokemonListEvent.OnPokemonClicked -> {
+                    setEffect { PokemonListEffect.NavigateToDetail(pokemonId = event.pokemonId) }
+                }
+                is PokemonListEvent.OnSearchQueryChanged -> {
+                    setState { copy(searchQuery = event.query) }
+                }
+                is PokemonListEvent.OnTypeFilterSelected -> {
+                    setState { copy(selectedType = event.type) }
+                }
             }
         }
-    }
 
-    override fun handleEvent(event: PokemonListEvent) {
-        when (event) {
-            is PokemonListEvent.OnPokemonClicked -> {
-                setEffect { PokemonListEffect.NavigateToDetail(pokemonId = event.pokemonId) }
-            }
-            is PokemonListEvent.OnSearchQueryChanged -> {
-                setState { copy(searchQuery = event.query) }
-            }
-            is PokemonListEvent.OnTypeFilterSelected -> {
-                setState { copy(selectedType = event.type) }
-            }
+        private companion object {
+            const val SEARCH_DEBOUNCE_MILLIS = 300L
         }
     }
-
-    private companion object {
-        const val SEARCH_DEBOUNCE_MILLIS = 300L
-    }
-}

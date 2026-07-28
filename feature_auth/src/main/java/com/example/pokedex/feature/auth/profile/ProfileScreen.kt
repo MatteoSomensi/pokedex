@@ -7,14 +7,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -31,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -46,7 +45,7 @@ import com.example.pokedex.theme.PokedexTheme
 fun ProfileScreen(
     onNavigateBack: () -> Unit,
     onNavigateToAuth: () -> Unit,
-    viewModel: ProfileViewModel = hiltViewModel<ProfileViewModel>()
+    viewModel: ProfileViewModel = hiltViewModel<ProfileViewModel>(),
 ) {
     val currentUser by viewModel.currentUser.collectAsStateWithLifecycle()
 
@@ -54,7 +53,7 @@ fun ProfileScreen(
         currentUser = currentUser,
         onNavigateBack = onNavigateBack,
         onNavigateToAuth = onNavigateToAuth,
-        onLogout = { viewModel.logout() }
+        onLogout = { viewModel.logout() },
     )
 }
 
@@ -64,7 +63,7 @@ fun ProfileScreenContent(
     currentUser: AuthUser?,
     onNavigateBack: () -> Unit,
     onNavigateToAuth: () -> Unit,
-    onLogout: () -> Unit
+    onLogout: () -> Unit,
 ) {
     val dimensions = LocalDimensions.current
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -77,39 +76,41 @@ fun ProfileScreenContent(
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = stringResource(id = R.string.cd_back)
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(id = R.string.cd_back),
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                ),
-                scrollBehavior = scrollBehavior
+                colors =
+                    TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                        navigationIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    ),
+                scrollBehavior = scrollBehavior,
             )
-        }
+        },
     ) { paddingValues ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues = paddingValues)
-                .padding(all = dimensions.paddingLarge)
-                .verticalScroll(state = rememberScrollState()),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues = paddingValues)
+                    .padding(all = dimensions.paddingLarge)
+                    .verticalScroll(state = rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
         ) {
             Surface(
                 shape = CircleShape,
                 color = MaterialTheme.colorScheme.secondaryContainer,
-                modifier = Modifier.size(dimensions.imageSizeProfile)
+                modifier = Modifier.size(dimensions.imageSizeProfile),
             ) {
                 Icon(
                     imageVector = Icons.Default.Person,
                     contentDescription = stringResource(id = R.string.profile_title),
                     modifier = Modifier.padding(all = dimensions.paddingLarge),
-                    tint = MaterialTheme.colorScheme.onSecondaryContainer
+                    tint = MaterialTheme.colorScheme.onSecondaryContainer,
                 )
             }
 
@@ -121,7 +122,7 @@ fun ProfileScreenContent(
                         text = currentUser.displayName!!,
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onBackground
+                        color = MaterialTheme.colorScheme.onBackground,
                     )
                     Spacer(modifier = Modifier.height(dimensions.paddingSmall))
                 }
@@ -129,13 +130,13 @@ fun ProfileScreenContent(
                 Text(
                     text = currentUser.email ?: "No email provided",
                     style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             } else {
                 Text(
                     text = stringResource(id = R.string.profile_not_logged_in),
                     style = MaterialTheme.typography.headlineSmall,
-                    color = MaterialTheme.colorScheme.error
+                    color = MaterialTheme.colorScheme.error,
                 )
             }
 
@@ -147,14 +148,15 @@ fun ProfileScreenContent(
                     onNavigateToAuth()
                 },
                 modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.error,
-                    contentColor = MaterialTheme.colorScheme.onError
-                )
+                colors =
+                    ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error,
+                        contentColor = MaterialTheme.colorScheme.onError,
+                    ),
             ) {
                 Text(
                     text = stringResource(id = R.string.profile_logout),
-                    modifier = Modifier.padding(vertical = dimensions.paddingSmall)
+                    modifier = Modifier.padding(vertical = dimensions.paddingSmall),
                 )
             }
         }
@@ -169,7 +171,7 @@ fun ProfileScreenPreview() {
             currentUser = AuthUser("1", "ash@ketchum.com", "Ash Ketchum"),
             onNavigateBack = {},
             onNavigateToAuth = {},
-            onLogout = {}
+            onLogout = {},
         )
     }
 }

@@ -14,16 +14,14 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object CoroutineScopesModule {
-
     @Provides
     @Singleton
     @ApplicationScope
-    fun provideApplicationScope(
-        dispatcherProvider: DispatcherProvider
-    ): CoroutineScope {
-        val exceptionHandler = CoroutineExceptionHandler { _, exception ->
-            Log.e("ApplicationScope", "Eccezione non gestita nella coroutine", exception)
-        }
+    fun provideApplicationScope(dispatcherProvider: DispatcherProvider): CoroutineScope {
+        val exceptionHandler =
+            CoroutineExceptionHandler { _, exception ->
+                Log.e("ApplicationScope", "Eccezione non gestita nella coroutine", exception)
+            }
 
         return CoroutineScope(SupervisorJob() + dispatcherProvider.default + exceptionHandler)
     }

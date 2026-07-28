@@ -9,26 +9,24 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class MockFeatureFlagManager @Inject constructor() : FeatureFlagManager {
+class MockFeatureFlagManager
+    @Inject
+    constructor() : FeatureFlagManager {
+        // Simula i flag con valori di default. In futuro sarà sostituito da Firebase Remote Config.
+        private val flags =
+            MutableStateFlow(
+                mapOf(
+                    "enable_new_ui" to false,
+                    "show_ads" to false,
+                ),
+            )
 
-    // Simula i flag con valori di default. In futuro sarà sostituito da Firebase Remote Config.
-    private val flags = MutableStateFlow(
-        mapOf(
-            "enable_new_ui" to false,
-            "show_ads" to false
-        )
-    )
+        override suspend fun fetchAndActivate() {
+            Log.d("MockFeatureFlag", "Fetching flags from remote...")
+            // In una vera implementazione, qui si chiama FirebaseRemoteConfig.fetchAndActivate()
+        }
 
-    override suspend fun fetchAndActivate() {
-        Log.d("MockFeatureFlag", "Fetching flags from remote...")
-        // In una vera implementazione, qui si chiama FirebaseRemoteConfig.fetchAndActivate()
+        override fun isFeatureEnabled(flagKey: String): Flow<Boolean> = flags.map { it[flagKey] ?: false }
+
+        override fun isFeatureEnabledSync(flagKey: String): Boolean = flags.value[flagKey] ?: false
     }
-
-    override fun isFeatureEnabled(flagKey: String): Flow<Boolean> {
-        return flags.map { it[flagKey] ?: false }
-    }
-
-    override fun isFeatureEnabledSync(flagKey: String): Boolean {
-        return flags.value[flagKey] ?: false
-    }
-}

@@ -4,7 +4,6 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
-
 /**
  * This class is responsible for Dimensions logic.
  * Part of the Clean Architecture structure.
@@ -25,7 +24,7 @@ data class Dimensions(
     val statProgressBarHeight: Dp = 8.dp,
     val statValueWidth: Dp = 36.dp,
     val gridCellMinSize: Dp = 150.dp,
-    val imageSizeProfile: Dp = 100.dp
+    val imageSizeProfile: Dp = 100.dp,
 )
 
 val LocalDimensions = staticCompositionLocalOf { Dimensions() }

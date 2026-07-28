@@ -12,5 +12,5 @@ data class PokemonResult(
     /** The name of the Pokemon. */
     val name: String,
     /** Whether the Pokemon is a favorite. */
-    val isFavorite: Boolean
+    val isFavorite: Boolean,
 )

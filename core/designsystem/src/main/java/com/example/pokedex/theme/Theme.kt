@@ -22,7 +22,6 @@ private val LightColorScheme =
         primary = Purple40,
         secondary = PurpleGrey40,
         tertiary = Pink40,
-
         /* Other default colors to override
         background = Color(0xFFFFFBFE),
         surface = Color(0xFFFFFBFE),
@@ -31,7 +30,7 @@ private val LightColorScheme =
         onTertiary = Color.White,
         onBackground = Color(0xFF1C1B1F),
         onSurface = Color(0xFF1C1B1F),
-        */
+         */
     )
 
 @Composable
@@ -53,25 +52,26 @@ fun PokedexTheme(
         }
 
     val configuration = LocalConfiguration.current
-    val dimensions = if (configuration.screenWidthDp < 600) {
-        Dimensions()
-    } else {
-        Dimensions(
-            paddingSmall = 12.dp,
-            paddingMedium = 24.dp,
-            paddingLarge = 36.dp,
-            paddingExtraLarge = 48.dp,
-            imageSizeList = 140.dp,
-            imageSizeDetail = 300.dp,
-            gridCellMinSize = 200.dp,
-            imageSizeProfile = 140.dp
-        )
-    }
+    val dimensions =
+        if (configuration.screenWidthDp < 600) {
+            Dimensions()
+        } else {
+            Dimensions(
+                paddingSmall = 12.dp,
+                paddingMedium = 24.dp,
+                paddingLarge = 36.dp,
+                paddingExtraLarge = 48.dp,
+                imageSizeList = 140.dp,
+                imageSizeDetail = 300.dp,
+                gridCellMinSize = 200.dp,
+                imageSizeProfile = 140.dp,
+            )
+        }
 
     CompositionLocalProvider(
         LocalDimensions provides dimensions,
         LocalWeights provides Weights(),
-        LocalAnimations provides Animations()
+        LocalAnimations provides Animations(),
     ) {
         MaterialTheme(colorScheme = colorScheme, typography = Typography, content = content)
     }

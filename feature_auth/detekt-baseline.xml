@@ -1,0 +1,16 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>FunctionNaming:AuthScreen.kt$@Composable fun AuthRoute( onAuthSuccess: () -&gt; Unit, modifier: Modifier = Modifier, viewModel: AuthViewModel = hiltViewModel&lt;AuthViewModel&gt;(), )</ID>
+    <ID>FunctionNaming:AuthScreen.kt$@Composable internal fun AuthScreen( uiState: AuthState, onEmailChange: (String) -&gt; Unit, onPasswordChange: (String) -&gt; Unit, onSubmit: () -&gt; Unit, onToggleLogin: () -&gt; Unit, onGoogleSignInClick: () -&gt; Unit, modifier: Modifier = Modifier, )</ID>
+    <ID>FunctionNaming:AuthScreen.kt$@DevicePreviews @Composable fun AuthScreenPreview()</ID>
+    <ID>FunctionNaming:ProfileScreen.kt$@DevicePreviews @Composable fun ProfileScreenPreview()</ID>
+    <ID>FunctionNaming:ProfileScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun ProfileScreen( onNavigateBack: () -&gt; Unit, onNavigateToAuth: () -&gt; Unit, viewModel: ProfileViewModel = hiltViewModel&lt;ProfileViewModel&gt;(), )</ID>
+    <ID>FunctionNaming:ProfileScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun ProfileScreenContent( currentUser: AuthUser?, onNavigateBack: () -&gt; Unit, onNavigateToAuth: () -&gt; Unit, onLogout: () -&gt; Unit, )</ID>
+    <ID>LongMethod:AuthScreen.kt$@Composable fun AuthRoute( onAuthSuccess: () -&gt; Unit, modifier: Modifier = Modifier, viewModel: AuthViewModel = hiltViewModel&lt;AuthViewModel&gt;(), )</ID>
+    <ID>LongMethod:AuthScreen.kt$@Composable internal fun AuthScreen( uiState: AuthState, onEmailChange: (String) -&gt; Unit, onPasswordChange: (String) -&gt; Unit, onSubmit: () -&gt; Unit, onToggleLogin: () -&gt; Unit, onGoogleSignInClick: () -&gt; Unit, modifier: Modifier = Modifier, )</ID>
+    <ID>LongMethod:ProfileScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun ProfileScreenContent( currentUser: AuthUser?, onNavigateBack: () -&gt; Unit, onNavigateToAuth: () -&gt; Unit, onLogout: () -&gt; Unit, )</ID>
+    <ID>LongParameterList:AuthScreen.kt$( uiState: AuthState, onEmailChange: (String) -&gt; Unit, onPasswordChange: (String) -&gt; Unit, onSubmit: () -&gt; Unit, onToggleLogin: () -&gt; Unit, onGoogleSignInClick: () -&gt; Unit, modifier: Modifier = Modifier, )</ID>
+  </CurrentIssues>
+</SmellBaseline>

@@ -58,7 +58,7 @@ import kotlin.coroutines.cancellation.CancellationException
 fun AuthRoute(
     onAuthSuccess: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: AuthViewModel = hiltViewModel<AuthViewModel>()
+    viewModel: AuthViewModel = hiltViewModel<AuthViewModel>(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
@@ -81,23 +81,30 @@ fun AuthRoute(
                 viewModel.setLoading(isLoading = true)
                 try {
                     val credentialManager = CredentialManager.create(context = context)
-                    val googleIdOption = GetGoogleIdOption.Builder()
-                        .setFilterByAuthorizedAccounts(filterByAuthorizedAccounts = false)
-                        .setServerClientId(serverClientId = viewModel.webClientId)
-                        .setAutoSelectEnabled(autoSelectEnabled = true)
-                        .build()
+                    val googleIdOption =
+                        GetGoogleIdOption
+                            .Builder()
+                            .setFilterByAuthorizedAccounts(filterByAuthorizedAccounts = false)
+                            .setServerClientId(serverClientId = viewModel.webClientId)
+                            .setAutoSelectEnabled(autoSelectEnabled = true)
+                            .build()
 
-                    val request = GetCredentialRequest.Builder()
-                        .addCredentialOption(credentialOption = googleIdOption)
-                        .build()
+                    val request =
+                        GetCredentialRequest
+                            .Builder()
+                            .addCredentialOption(credentialOption = googleIdOption)
+                            .build()
 
-                    val result = credentialManager.getCredential(
-                        context = context,
-                        request = request
-                    )
+                    val result =
+                        credentialManager.getCredential(
+                            context = context,
+                            request = request,
+                        )
                     val credential = result.credential
 
-                    if (credential is androidx.credentials.CustomCredential && credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
+                    if (credential is androidx.credentials.CustomCredential &&
+                        credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL
+                    ) {
                         val googleIdTokenCredential =
                             GoogleIdTokenCredential.createFrom(data = credential.data)
                         val idToken = googleIdTokenCredential.idToken
@@ -108,7 +115,7 @@ fun AuthRoute(
                 } catch (_: androidx.credentials.exceptions.GetCredentialCancellationException) {
                     viewModel.setLoading(isLoading = false)
                 } catch (
-                    e: CancellationException
+                    e: CancellationException,
                 ) {
                     throw e
                 } catch (_: Exception) {
@@ -116,7 +123,7 @@ fun AuthRoute(
                 }
             }
         },
-        modifier = modifier
+        modifier = modifier,
     )
 }
 
@@ -128,27 +135,37 @@ internal fun AuthScreen(
     onSubmit: () -> Unit,
     onToggleLogin: () -> Unit,
     onGoogleSignInClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     var passwordVisible by remember { mutableStateOf(value = false) }
-    val isFormValid = uiState.email.isNotBlank() && Patterns.EMAIL_ADDRESS.matcher(uiState.email)
-        .matches() && uiState.password.isNotBlank()
+    val isFormValid =
+        uiState.email.isNotBlank() &&
+            Patterns.EMAIL_ADDRESS
+                .matcher(uiState.email)
+                .matches() &&
+            uiState.password.isNotBlank()
     val dimensions = LocalDimensions.current
 
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .safeDrawingPadding()
-            .padding(all = dimensions.paddingLarge)
-            .verticalScroll(state = rememberScrollState()),
+        modifier =
+            modifier
+                .fillMaxSize()
+                .safeDrawingPadding()
+                .padding(all = dimensions.paddingLarge)
+                .verticalScroll(state = rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
     ) {
         Text(
-            text = if (uiState.isLogin) stringResource(id = R.string.auth_sign_in) else stringResource(
-                id = R.string.auth_sign_up
-            ),
-            style = MaterialTheme.typography.headlineMedium
+            text =
+                if (uiState.isLogin) {
+                    stringResource(id = R.string.auth_sign_in)
+                } else {
+                    stringResource(
+                        id = R.string.auth_sign_up,
+                    )
+                },
+            style = MaterialTheme.typography.headlineMedium,
         )
 
         Spacer(modifier = Modifier.height(height = dimensions.paddingExtraLarge))
@@ -159,10 +176,11 @@ internal fun AuthScreen(
             label = { Text(text = stringResource(id = R.string.auth_email)) },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Email,
-                imeAction = ImeAction.Next
-            )
+            keyboardOptions =
+                KeyboardOptions(
+                    keyboardType = KeyboardType.Email,
+                    imeAction = ImeAction.Next,
+                ),
         )
 
         Spacer(modifier = Modifier.height(height = dimensions.paddingMedium))
@@ -174,29 +192,36 @@ internal fun AuthScreen(
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Password,
-                imeAction = ImeAction.Done
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = { if (isFormValid) onSubmit() }
-            ),
+            keyboardOptions =
+                KeyboardOptions(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Done,
+                ),
+            keyboardActions =
+                KeyboardActions(
+                    onDone = { if (isFormValid) onSubmit() },
+                ),
             trailingIcon = {
-                val image = if (passwordVisible) {
-                    Icons.Filled.Lock
-                } else {
-                    Icons.Filled.Lock
-                }
+                val image =
+                    if (passwordVisible) {
+                        Icons.Filled.Lock
+                    } else {
+                        Icons.Filled.Lock
+                    }
 
                 val description =
-                    if (passwordVisible) stringResource(id = R.string.auth_hide_password) else stringResource(
-                        id = R.string.auth_show_password
-                    )
+                    if (passwordVisible) {
+                        stringResource(id = R.string.auth_hide_password)
+                    } else {
+                        stringResource(
+                            id = R.string.auth_show_password,
+                        )
+                    }
 
                 IconButton(onClick = { passwordVisible = !passwordVisible }) {
                     Icon(imageVector = image, contentDescription = description)
                 }
-            }
+            },
         )
 
         Spacer(modifier = Modifier.height(height = dimensions.paddingLarge))
@@ -207,12 +232,16 @@ internal fun AuthScreen(
             Button(
                 onClick = onSubmit,
                 modifier = Modifier.fillMaxWidth(),
-                enabled = isFormValid
+                enabled = isFormValid,
             ) {
                 Text(
-                    if (uiState.isLogin) stringResource(id = R.string.auth_sign_in) else stringResource(
-                        id = R.string.auth_sign_up
-                    )
+                    if (uiState.isLogin) {
+                        stringResource(id = R.string.auth_sign_in)
+                    } else {
+                        stringResource(
+                            id = R.string.auth_sign_up,
+                        )
+                    },
                 )
             }
         }
@@ -221,9 +250,13 @@ internal fun AuthScreen(
 
         TextButton(onClick = onToggleLogin) {
             Text(
-                if (uiState.isLogin) stringResource(id = R.string.auth_toggle_to_sign_up) else stringResource(
-                    id = R.string.auth_toggle_to_sign_in
-                )
+                if (uiState.isLogin) {
+                    stringResource(id = R.string.auth_toggle_to_sign_up)
+                } else {
+                    stringResource(
+                        id = R.string.auth_toggle_to_sign_in,
+                    )
+                },
             )
         }
 
@@ -235,7 +268,7 @@ internal fun AuthScreen(
 
         OutlinedButton(
             onClick = onGoogleSignInClick,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Text(text = stringResource(id = R.string.auth_google_sign_in))
         }
@@ -245,7 +278,7 @@ internal fun AuthScreen(
             Text(
                 text = uiState.error.asString(),
                 color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
             )
         }
     }
@@ -262,7 +295,7 @@ fun AuthScreenPreview() {
                 onPasswordChange = {},
                 onSubmit = {},
                 onToggleLogin = {},
-                onGoogleSignInClick = {}
+                onGoogleSignInClick = {},
             )
         }
     }

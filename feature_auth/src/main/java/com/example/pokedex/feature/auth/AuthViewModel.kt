@@ -19,76 +19,80 @@ import javax.inject.Named
  * and communicating with [AuthRepository] to perform authentication operations.
  */
 @HiltViewModel
-class AuthViewModel @Inject constructor(
-    private val authRepository: AuthRepository,
-    @Named("web_client_id") val webClientId: String
-) : ViewModel() {
+class AuthViewModel
+    @Inject
+    constructor(
+        private val authRepository: AuthRepository,
+        @Named("web_client_id") val webClientId: String,
+    ) : ViewModel() {
+        private val _uiState = MutableStateFlow(value = AuthState())
+        val uiState: StateFlow<AuthState> = _uiState
 
-    val uiState: StateFlow<AuthState>
-        field = MutableStateFlow(value = AuthState())
+        fun onEmailChange(email: String) {
+            _uiState.updateState { copy(email = email) }
+        }
 
-    fun onEmailChange(email: String) {
-        uiState.updateState { copy(email = email) }
-    }
+        fun onPasswordChange(password: String) {
+            _uiState.updateState { copy(password = password) }
+        }
 
-    fun onPasswordChange(password: String) {
-        uiState.updateState { copy(password = password) }
-    }
+        fun toggleIsLogin() {
+            _uiState.updateState { copy(isLogin = !isLogin) }
+        }
 
-    fun toggleIsLogin() {
-        uiState.updateState { copy(isLogin = !isLogin) }
-    }
+        fun submitEmailAuth() {
+            viewModelScope.launch {
+                _uiState.updateState { copy(isLoading = true, error = null) }
+                val state = uiState.value
+                val result =
+                    if (state.isLogin) {
+                        authRepository.signInWithEmail(state.email, state.password)
+                    } else {
+                        authRepository.signUpWithEmail(state.email, state.password)
+                    }
 
-    fun submitEmailAuth() {
-        viewModelScope.launch {
-            uiState.updateState { copy(isLoading = true, error = null) }
-            val state = uiState.value
-            val result = if (state.isLogin) {
-                authRepository.signInWithEmail(state.email, state.password)
-            } else {
-                authRepository.signUpWithEmail(state.email, state.password)
+                result
+                    .onSuccess {
+                        _uiState.updateState { copy(isLoading = false, isSuccess = true) }
+                    }.onFailure {
+                        _uiState.updateState {
+                            copy(
+                                isLoading = false,
+                                error = UiText.StringResource(id = R.string.error_auth_failed),
+                            )
+                        }
+                    }
             }
+        }
 
-            result.onSuccess {
-                uiState.updateState { copy(isLoading = false, isSuccess = true) }
-            }.onFailure {
-                uiState.updateState {
-                    copy(
-                        isLoading = false,
-                        error = UiText.StringResource(id = R.string.error_auth_failed)
-                    )
-                }
+        fun setLoading(isLoading: Boolean) {
+            _uiState.updateState { copy(isLoading = isLoading, error = null) }
+        }
+
+        fun setAuthError(errorRes: Int) {
+            _uiState.updateState {
+                copy(
+                    isLoading = false,
+                    error = UiText.StringResource(id = errorRes),
+                )
+            }
+        }
+
+        fun signInWithGoogleToken(idToken: String) {
+            viewModelScope.launch {
+                _uiState.updateState { copy(isLoading = true, error = null) }
+                val authResult = authRepository.signInWithGoogle(idToken)
+                authResult
+                    .onSuccess {
+                        _uiState.updateState { copy(isLoading = false, isSuccess = true) }
+                    }.onFailure {
+                        _uiState.updateState {
+                            copy(
+                                isLoading = false,
+                                error = UiText.StringResource(id = R.string.error_auth_failed),
+                            )
+                        }
+                    }
             }
         }
     }
-
-    fun setLoading(isLoading: Boolean) {
-        uiState.updateState { copy(isLoading = isLoading, error = null) }
-    }
-
-    fun setAuthError(errorRes: Int) {
-        uiState.updateState {
-            copy(
-                isLoading = false,
-                error = UiText.StringResource(id = errorRes)
-            )
-        }
-    }
-
-    fun signInWithGoogleToken(idToken: String) {
-        viewModelScope.launch {
-            uiState.updateState { copy(isLoading = true, error = null) }
-            val authResult = authRepository.signInWithGoogle(idToken)
-            authResult.onSuccess {
-                uiState.updateState { copy(isLoading = false, isSuccess = true) }
-            }.onFailure {
-                uiState.updateState {
-                    copy(
-                        isLoading = false,
-                        error = UiText.StringResource(id = R.string.error_auth_failed)
-                    )
-                }
-            }
-        }
-    }
-}

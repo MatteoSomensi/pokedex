@@ -13,16 +13,11 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class ObservabilityModule {
+    @Binds
+    @Singleton
+    abstract fun bindAnalyticsLogger(impl: LogcatAnalyticsLogger): AnalyticsLogger
 
     @Binds
     @Singleton
-    abstract fun bindAnalyticsLogger(
-        impl: LogcatAnalyticsLogger
-    ): AnalyticsLogger
-
-    @Binds
-    @Singleton
-    abstract fun bindFeatureFlagManager(
-        impl: MockFeatureFlagManager
-    ): FeatureFlagManager
+    abstract fun bindFeatureFlagManager(impl: MockFeatureFlagManager): FeatureFlagManager
 }

@@ -9,22 +9,16 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 
-@Module
-@InstallIn(SingletonComponent::class)
-
 /**
  * This class is responsible for RepositoryModule logic.
  * Part of the Clean Architecture structure.
  */
+@Module
+@InstallIn(SingletonComponent::class)
 abstract class RepositoryModule {
+    @Binds
+    abstract fun bindPokemonRepository(impl: PokemonRepositoryImpl): PokemonRepository
 
     @Binds
-    abstract fun bindPokemonRepository(
-        impl: PokemonRepositoryImpl
-    ): PokemonRepository
-
-    @Binds
-    abstract fun bindAuthRepository(
-        impl: AuthRepositoryImpl
-    ): AuthRepository
+    abstract fun bindAuthRepository(impl: AuthRepositoryImpl): AuthRepository
 }

@@ -14,7 +14,6 @@ import com.example.pokedex.data.local.entity.TypeEntity
 @Dao
 @JvmSuppressWildcards
 interface PokemonDao {
-
     @Query(
         """
         SELECT pokemon.* FROM pokemon
@@ -22,7 +21,7 @@ interface PokemonDao {
             ON pokemon.id = pokemon_remote_keys.pokemonId
         WHERE pokemon_remote_keys.`query` = :query
         ORDER BY pokemon.id ASC
-        """
+        """,
     )
     fun getPokemonPagingSource(query: String): androidx.paging.PagingSource<Int, PokemonEntity>
 
@@ -30,7 +29,10 @@ interface PokemonDao {
     suspend fun clearNonFavoritePokemon(): Int
 
     @Query("SELECT * FROM pokemon ORDER BY id ASC LIMIT :limit OFFSET :offset")
-    suspend fun getPokemonList(limit: Int, offset: Int): List<PokemonEntity>
+    suspend fun getPokemonList(
+        limit: Int,
+        offset: Int,
+    ): List<PokemonEntity>
 
     @Query("SELECT * FROM pokemon WHERE id = :id")
     suspend fun getPokemonById(id: Int): PokemonEntity?
@@ -45,7 +47,7 @@ interface PokemonDao {
     suspend fun searchPokemon(
         query: String,
         limit: Int,
-        offset: Int
+        offset: Int,
     ): List<PokemonEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -61,7 +63,10 @@ interface PokemonDao {
     suspend fun insertTypes(types: List<TypeEntity>): List<Long>
 
     @Query("UPDATE pokemon SET isFavorite = :isFavorite WHERE id = :id")
-    suspend fun updateFavoriteStatus(id: Int, isFavorite: Boolean): Int
+    suspend fun updateFavoriteStatus(
+        id: Int,
+        isFavorite: Boolean,
+    ): Int
 
     @Query("SELECT * FROM pokemon WHERE isFavorite = 1 ORDER BY id ASC")
     suspend fun getFavoritePokemonList(): List<PokemonEntity>

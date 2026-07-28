@@ -20,22 +20,41 @@ import org.robolectric.annotation.GraphicsMode
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(sdk = [33], qualifiers = RobolectricDeviceQualifiers.Pixel5)
 class PokemonListScreenTest {
-
     @get:Rule
     val composeTestRule = createComposeRule()
 
     @Test
     fun pokemonListScreen_defaultState_looksCorrect() {
         // Arrange
-        val mockState = PokemonListState(
-            availableTypes = listOf("Grass", "Fire", "Water")
-        )
+        val mockState =
+            PokemonListState(
+                availableTypes = listOf("Grass", "Fire", "Water"),
+            )
 
-        val mockPokemon = listOf(
-            Pokemon(id = 1, name = "Bulbasaur", imageUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png", cryUrl = "", types = listOf("Grass", "Poison")),
-            Pokemon(id = 4, name = "Charmander", imageUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png", cryUrl = "", types = listOf("Fire")),
-            Pokemon(id = 7, name = "Squirtle", imageUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/7.png", cryUrl = "", types = listOf("Water"))
-        )
+        val mockPokemon =
+            listOf(
+                Pokemon(
+                    id = 1,
+                    name = "Bulbasaur",
+                    imageUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png",
+                    cryUrl = "",
+                    types = listOf("Grass", "Poison"),
+                ),
+                Pokemon(
+                    id = 4,
+                    name = "Charmander",
+                    imageUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png",
+                    cryUrl = "",
+                    types = listOf("Fire"),
+                ),
+                Pokemon(
+                    id = 7,
+                    name = "Squirtle",
+                    imageUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/7.png",
+                    cryUrl = "",
+                    types = listOf("Water"),
+                ),
+            )
 
         val flow = flowOf(PagingData.from(mockPokemon))
 
@@ -48,7 +67,7 @@ class PokemonListScreenTest {
                     pagedPokemon = lazyPagingItems,
                     onEvent = {},
                     onNavigateToProfile = {},
-                    onNavigateToFavorites = {}
+                    onNavigateToFavorites = {},
                 )
             }
         }

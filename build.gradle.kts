@@ -17,4 +17,8 @@ plugins {
 subprojects {
     apply(plugin = "io.gitlab.arturbosch.detekt")
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
+
+    extensions.configure<io.gitlab.arturbosch.detekt.extensions.DetektExtension> {
+        baseline = file("$projectDir/detekt-baseline.xml")
+    }
 }

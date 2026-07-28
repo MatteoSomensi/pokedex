@@ -1,0 +1,21 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ComplexCondition:PokemonRepositoryImpl.kt$PokemonRepositoryImpl$!forceRefresh &amp;&amp; (localList.size == limit || (localList.isNotEmpty() &amp;&amp; isEndReached))</ID>
+    <ID>InstanceOfCheckForException:PokemonRepositoryImpl.kt$PokemonRepositoryImpl$e is kotlinx.coroutines.CancellationException</ID>
+    <ID>LongMethod:PokemonRemoteMediator.kt$PokemonRemoteMediator$override suspend fun load( loadType: LoadType, state: PagingState&lt;Int, PokemonEntity&gt;, ): MediatorResult</ID>
+    <ID>MagicNumber:DatabaseModule.kt$DatabaseModule.&lt;no name provided&gt;$3</ID>
+    <ID>MagicNumber:DatabaseModule.kt$DatabaseModule.&lt;no name provided&gt;$4</ID>
+    <ID>MagicNumber:PokemonRepositoryImpl.kt$PokemonRepositoryImpl$10</ID>
+    <ID>MaxLineLength:PokemonDao.kt$PokemonDao$@Query("SELECT * FROM pokemon WHERE name LIKE '%' || :query || '%' OR CAST(id AS TEXT) = :query LIMIT :limit OFFSET :offset")</ID>
+    <ID>MaxLineLength:PokemonEntity.kt$PokemonEntity.Companion$private fun formatStats(stats: Map&lt;String, Int&gt;): String</ID>
+    <ID>ReturnCount:PokemonRemoteMediator.kt$PokemonRemoteMediator$override suspend fun load( loadType: LoadType, state: PagingState&lt;Int, PokemonEntity&gt;, ): MediatorResult</ID>
+    <ID>TooGenericExceptionCaught:AuthRepositoryImpl.kt$AuthRepositoryImpl$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:PokemonRemoteMediator.kt$PokemonRemoteMediator$exception: Exception</ID>
+    <ID>TooGenericExceptionCaught:PokemonRepositoryImpl.kt$PokemonRepositoryImpl$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:SyncWorker.kt$SyncWorker$e: Exception</ID>
+    <ID>TooGenericExceptionThrown:AuthRepositoryImpl.kt$AuthRepositoryImpl$throw Exception("User is null")</ID>
+    <ID>TooManyFunctions:PokemonDao.kt$PokemonDao</ID>
+  </CurrentIssues>
+</SmellBaseline>

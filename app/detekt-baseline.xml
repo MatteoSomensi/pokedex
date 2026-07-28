@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>FunctionNaming:Navigation.kt$@Composable private fun PokemonDetailPlaceholder()</ID>
+    <ID>FunctionNaming:Navigation.kt$@OptIn(ExperimentalMaterial3AdaptiveApi::class) @Composable fun MainNavigation( deepLinkUri: android.net.Uri? = null, onDeepLinkConsumed: () -&gt; Unit = {}, )</ID>
+    <ID>FunctionNaming:PokedexWidget.kt$@Composable fun PokedexWidgetContent(pokemon: Pokemon?)</ID>
+    <ID>InvalidPackageDeclaration:ExampleUnitTest.kt$package dev.matteosomensi.pokedex</ID>
+    <ID>LongMethod:Navigation.kt$@OptIn(ExperimentalMaterial3AdaptiveApi::class) @Composable fun MainNavigation( deepLinkUri: android.net.Uri? = null, onDeepLinkConsumed: () -&gt; Unit = {}, )</ID>
+    <ID>LongMethod:PokedexWidget.kt$@Composable fun PokedexWidgetContent(pokemon: Pokemon?)</ID>
+    <ID>UnusedParameter:PokedexAppFunctions.kt$PokedexAppFunctions$appFunctionContext: AppFunctionContext</ID>
+  </CurrentIssues>
+</SmellBaseline>

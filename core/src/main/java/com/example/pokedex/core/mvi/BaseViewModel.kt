@@ -12,10 +12,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 abstract class BaseViewModel<S : UiState, E : UiEvent, F : UiEffect> : ViewModel() {
-
     private val initialState: S by lazy { createInitialState() }
 
-    val uiState: StateFlow<S> field = MutableStateFlow(value = initialState)
+    private val _uiState = MutableStateFlow(value = initialState)
+    val uiState: StateFlow<S> = _uiState
 
     private val _uiEvent: MutableSharedFlow<E> = MutableSharedFlow()
 
@@ -31,8 +31,7 @@ abstract class BaseViewModel<S : UiState, E : UiEvent, F : UiEffect> : ViewModel
     abstract fun handleEvent(event: E)
 
     protected fun setState(reduce: S.() -> S) {
-        val mutableState = uiState
-        mutableState.update { it.reduce() }
+        _uiState.update { it.reduce() }
     }
 
     protected fun setEffect(builder: () -> F) {

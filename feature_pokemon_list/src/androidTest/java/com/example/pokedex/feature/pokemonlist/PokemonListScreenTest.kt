@@ -15,17 +15,17 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class PokemonListScreenTest {
-
     @get:Rule
     val composeTestRule = createComposeRule()
 
     @Test
     fun whenStateHasPokemon_thenTheyAreDisplayed() {
         // Given
-        val mockPokemon = listOf(
-            Pokemon(id = 1, name = "Bulbasaur", imageUrl = "", cryUrl = "", types = listOf("Grass")),
-            Pokemon(id = 2, name = "Ivysaur", imageUrl = "", cryUrl = "", types = listOf("Grass"))
-        )
+        val mockPokemon =
+            listOf(
+                Pokemon(id = 1, name = "Bulbasaur", imageUrl = "", cryUrl = "", types = listOf("Grass")),
+                Pokemon(id = 2, name = "Ivysaur", imageUrl = "", cryUrl = "", types = listOf("Grass")),
+            )
         val mockState = PokemonListState()
         val pokemonFlow = flowOf(PagingData.from(mockPokemon))
 
@@ -38,7 +38,7 @@ class PokemonListScreenTest {
                     pagedPokemon = pagedPokemon,
                     onEvent = {},
                     onNavigateToProfile = {},
-                    onNavigateToFavorites = {}
+                    onNavigateToFavorites = {},
                 )
             }
         }

@@ -22,7 +22,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
+
         deepLinkUri.value = intent?.data
 
         enableEdgeToEdge()
@@ -30,15 +30,15 @@ class MainActivity : ComponentActivity() {
             PokedexTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) { 
+                    color = MaterialTheme.colorScheme.background,
+                ) {
                     MainNavigation(
                         deepLinkUri = deepLinkUri.value,
                         onDeepLinkConsumed = {
                             intent?.data = null
                             deepLinkUri.value = null
-                        }
-                    ) 
+                        },
+                    )
                 }
             }
         }

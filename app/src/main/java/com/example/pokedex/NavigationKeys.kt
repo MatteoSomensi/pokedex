@@ -7,7 +7,9 @@ import kotlinx.serialization.Serializable
 data object PokemonList : NavKey
 
 @Serializable
-data class PokemonDetail(val id: Int) : NavKey
+data class PokemonDetail(
+    val id: Int,
+) : NavKey
 
 @Serializable
 data object Auth : NavKey

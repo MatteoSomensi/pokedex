@@ -15,6 +15,7 @@ import com.example.pokedex.data.local.entity.TypeEntity
 )
 abstract class PokedexDatabase : RoomDatabase() {
     abstract fun pokemonDao(): PokemonDao
+
     abstract fun remoteKeyDao(): RemoteKeyDao
 
     companion object {

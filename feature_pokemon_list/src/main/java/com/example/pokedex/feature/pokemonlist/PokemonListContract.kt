@@ -12,17 +12,29 @@ import com.example.pokedex.core.mvi.UiState
 data class PokemonListState(
     val searchQuery: String = "",
     val selectedType: String? = null,
-    val availableTypes: List<String> = emptyList()
+    val availableTypes: List<String> = emptyList(),
 ) : UiState
 
 sealed interface PokemonListEvent : UiEvent {
-    data class OnPokemonClicked(val pokemonId: Int) : PokemonListEvent
-    data class OnSearchQueryChanged(val query: String) : PokemonListEvent
-    data class OnTypeFilterSelected(val type: String?) : PokemonListEvent
+    data class OnPokemonClicked(
+        val pokemonId: Int,
+    ) : PokemonListEvent
+
+    data class OnSearchQueryChanged(
+        val query: String,
+    ) : PokemonListEvent
+
+    data class OnTypeFilterSelected(
+        val type: String?,
+    ) : PokemonListEvent
 }
 
 sealed interface PokemonListEffect : UiEffect {
-    data class NavigateToDetail(val pokemonId: Int) : PokemonListEffect
+    data class NavigateToDetail(
+        val pokemonId: Int,
+    ) : PokemonListEffect
+
     data object NavigateToProfile : PokemonListEffect
+
     data object NavigateToFavorites : PokemonListEffect
 }

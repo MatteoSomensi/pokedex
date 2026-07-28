@@ -13,10 +13,10 @@ data class PokemonEntity(
     val height: Int,
     val weight: Int,
     val stats: String,
-    val isFavorite: Boolean = false
+    val isFavorite: Boolean = false,
 ) {
-    fun toDomain(): Pokemon {
-        return Pokemon(
+    fun toDomain(): Pokemon =
+        Pokemon(
             id = id,
             name = name,
             imageUrl = imageUrl,
@@ -24,14 +24,13 @@ data class PokemonEntity(
             height = height,
             weight = weight,
             stats = parseStats(stats),
-            cryUrl = "https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/${id}.ogg",
-            isFavorite = isFavorite
+            cryUrl = "https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/$id.ogg",
+            isFavorite = isFavorite,
         )
-    }
 
     companion object {
-        fun fromDomain(pokemon: Pokemon): PokemonEntity {
-            return PokemonEntity(
+        fun fromDomain(pokemon: Pokemon): PokemonEntity =
+            PokemonEntity(
                 id = pokemon.id,
                 name = pokemon.name,
                 imageUrl = pokemon.imageUrl,
@@ -39,13 +38,10 @@ data class PokemonEntity(
                 height = pokemon.height,
                 weight = pokemon.weight,
                 stats = formatStats(pokemon.stats),
-                isFavorite = pokemon.isFavorite
+                isFavorite = pokemon.isFavorite,
             )
-        }
 
-        private fun formatStats(stats: Map<String, Int>): String {
-            return stats.entries.joinToString(";") { "${it.key}:${it.value}" }
-        }
+        private fun formatStats(stats: Map<String, Int>): String = stats.entries.joinToString(";") { "${it.key}:${it.value}" }
 
         private fun parseStats(stats: String): Map<String, Int> {
             if (stats.isBlank()) return emptyMap()

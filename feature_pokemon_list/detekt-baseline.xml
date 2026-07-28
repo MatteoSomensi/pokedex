@@ -1,0 +1,11 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>FunctionNaming:PokemonListScreen.kt$@DevicePreviews @Composable fun PokemonCardPreview( @PreviewParameter(PokemonPreviewProvider::class) pokemon: Pokemon, )</ID>
+    <ID>FunctionNaming:PokemonListScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun PokemonListScreen( onNavigateToDetail: (Int) -&gt; Unit, onNavigateToProfile: () -&gt; Unit, onNavigateToFavorites: () -&gt; Unit, viewModel: PokemonListViewModel = hiltViewModel&lt;PokemonListViewModel&gt;(), )</ID>
+    <ID>FunctionNaming:PokemonListScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun PokemonListScreenContent( state: PokemonListState, pagedPokemon: LazyPagingItems&lt;Pokemon&gt;, onEvent: (PokemonListEvent) -&gt; Unit, onNavigateToProfile: () -&gt; Unit, onNavigateToFavorites: () -&gt; Unit, )</ID>
+    <ID>LongMethod:PokemonListScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun PokemonListScreenContent( state: PokemonListState, pagedPokemon: LazyPagingItems&lt;Pokemon&gt;, onEvent: (PokemonListEvent) -&gt; Unit, onNavigateToProfile: () -&gt; Unit, onNavigateToFavorites: () -&gt; Unit, )</ID>
+    <ID>MaxLineLength:PokemonListScreen.kt$onClick = { onEvent(PokemonListEvent.OnPokemonClicked(pokemonId = pokemon.id)) }</ID>
+  </CurrentIssues>
+</SmellBaseline>

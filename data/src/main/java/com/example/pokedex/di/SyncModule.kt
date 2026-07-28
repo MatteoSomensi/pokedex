@@ -11,10 +11,7 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class SyncModule {
-
     @Binds
     @Singleton
-    abstract fun bindSyncManager(
-        syncManagerImpl: WorkManagerSyncManager
-    ): SyncManager
+    abstract fun bindSyncManager(syncManagerImpl: WorkManagerSyncManager): SyncManager
 }

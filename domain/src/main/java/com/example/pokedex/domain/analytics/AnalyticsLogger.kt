@@ -5,11 +5,13 @@ package com.example.pokedex.domain.analytics
  * Consente al dominio e alla UI di non dipendere direttamente da Firebase, Datadog, ecc.
  */
 interface AnalyticsLogger {
-
     /**
      * Invia un evento custom con opzionali parametri chiave-valore.
      */
-    fun logEvent(eventName: String, params: Map<String, Any> = emptyMap())
+    fun logEvent(
+        eventName: String,
+        params: Map<String, Any> = emptyMap(),
+    )
 
     /**
      * Imposta l'ID dell'utente loggato.
@@ -19,7 +21,10 @@ interface AnalyticsLogger {
     /**
      * Aggiunge proprietà utente per la segmentazione (es. "premium_user" -> "true").
      */
-    fun setUserProperty(name: String, value: String)
+    fun setUserProperty(
+        name: String,
+        value: String,
+    )
 
     /**
      * Logga un'eccezione non fatale.

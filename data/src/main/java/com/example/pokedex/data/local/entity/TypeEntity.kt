@@ -6,5 +6,5 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "types")
 data class TypeEntity(
     @PrimaryKey
-    val name: String
+    val name: String,
 )

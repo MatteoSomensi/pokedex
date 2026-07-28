@@ -1,6 +1,7 @@
 package com.example.pokedex.data.sync
 
 import android.content.Context
+import androidx.test.core.app.ApplicationProvider
 import androidx.work.ListenableWorker.Result
 import androidx.work.testing.TestListenableWorkerBuilder
 import com.example.pokedex.data.coroutines.TestDispatcherProvider
@@ -14,11 +15,9 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import androidx.test.core.app.ApplicationProvider
 
 @RunWith(RobolectricTestRunner::class)
 class SyncWorkerTest {
-
     private lateinit var context: Context
     private lateinit var pokemonRepository: PokemonRepository
 
@@ -29,78 +28,79 @@ class SyncWorkerTest {
     }
 
     @Test
-    fun `doWork returns success when repository fetch succeeds`() = runTest {
-        // Arrange
-        val mockPokemon = Pokemon(
-            id = 1,
-            name = "Bulbasaur",
-            imageUrl = "",
-            cryUrl = "",
-            types = emptyList(),
-            height = 7,
-            weight = 69,
-            stats = emptyMap()
-        )
-        coEvery { 
-            pokemonRepository.getPokemonList(any(), any(), any()) 
-        } returns kotlin.Result.success(listOf(mockPokemon))
+    fun `doWork returns success when repository fetch succeeds`() =
+        runTest {
+            // Arrange
+            val mockPokemon =
+                Pokemon(
+                    id = 1,
+                    name = "Bulbasaur",
+                    imageUrl = "",
+                    cryUrl = "",
+                    types = emptyList(),
+                    height = 7,
+                    weight = 69,
+                    stats = emptyMap(),
+                )
+            coEvery {
+                pokemonRepository.getPokemonList(any(), any(), any())
+            } returns kotlin.Result.success(listOf(mockPokemon))
 
-        val worker = TestListenableWorkerBuilder<SyncWorker>(context)
-            .setWorkerFactory(
-                object : androidx.work.WorkerFactory() {
-                    override fun createWorker(
-                        appContext: Context,
-                        workerClassName: String,
-                        workerParameters: androidx.work.WorkerParameters
-                    ): androidx.work.ListenableWorker {
-                        return SyncWorker(
-                            appContext,
-                            workerParameters,
-                            pokemonRepository,
-                            TestDispatcherProvider()
-                        )
-                    }
-                }
-            )
-            .build()
+            val worker =
+                TestListenableWorkerBuilder<SyncWorker>(context)
+                    .setWorkerFactory(
+                        object : androidx.work.WorkerFactory() {
+                            override fun createWorker(
+                                appContext: Context,
+                                workerClassName: String,
+                                workerParameters: androidx.work.WorkerParameters,
+                            ): androidx.work.ListenableWorker =
+                                SyncWorker(
+                                    appContext,
+                                    workerParameters,
+                                    pokemonRepository,
+                                    TestDispatcherProvider(),
+                                )
+                        },
+                    ).build()
 
-        // Act
-        val result = worker.doWork()
+            // Act
+            val result = worker.doWork()
 
-        // Assert
-        assertEquals(Result.success(), result)
-    }
+            // Assert
+            assertEquals(Result.success(), result)
+        }
 
     @Test
-    fun `doWork returns retry when repository fetch fails`() = runTest {
-        // Arrange
-        coEvery { 
-            pokemonRepository.getPokemonList(any(), any(), any()) 
-        } returns kotlin.Result.failure(Exception("Network error"))
+    fun `doWork returns retry when repository fetch fails`() =
+        runTest {
+            // Arrange
+            coEvery {
+                pokemonRepository.getPokemonList(any(), any(), any())
+            } returns kotlin.Result.failure(Exception("Network error"))
 
-        val worker = TestListenableWorkerBuilder<SyncWorker>(context)
-            .setWorkerFactory(
-                object : androidx.work.WorkerFactory() {
-                    override fun createWorker(
-                        appContext: Context,
-                        workerClassName: String,
-                        workerParameters: androidx.work.WorkerParameters
-                    ): androidx.work.ListenableWorker {
-                        return SyncWorker(
-                            appContext,
-                            workerParameters,
-                            pokemonRepository,
-                            TestDispatcherProvider()
-                        )
-                    }
-                }
-            )
-            .build()
+            val worker =
+                TestListenableWorkerBuilder<SyncWorker>(context)
+                    .setWorkerFactory(
+                        object : androidx.work.WorkerFactory() {
+                            override fun createWorker(
+                                appContext: Context,
+                                workerClassName: String,
+                                workerParameters: androidx.work.WorkerParameters,
+                            ): androidx.work.ListenableWorker =
+                                SyncWorker(
+                                    appContext,
+                                    workerParameters,
+                                    pokemonRepository,
+                                    TestDispatcherProvider(),
+                                )
+                        },
+                    ).build()
 
-        // Act
-        val result = worker.doWork()
+            // Act
+            val result = worker.doWork()
 
-        // Assert
-        assertEquals(Result.retry(), result)
-    }
+            // Assert
+            assertEquals(Result.retry(), result)
+        }
 }

@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>FunctionNaming:FavoriteScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun FavoriteScreen( onBackClick: () -&gt; Unit, onNavigateToDetail: (Int) -&gt; Unit, viewModel: FavoriteViewModel = hiltViewModel(), )</ID>
+    <ID>LongMethod:FavoriteScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun FavoriteScreen( onBackClick: () -&gt; Unit, onNavigateToDetail: (Int) -&gt; Unit, viewModel: FavoriteViewModel = hiltViewModel(), )</ID>
+  </CurrentIssues>
+</SmellBaseline>

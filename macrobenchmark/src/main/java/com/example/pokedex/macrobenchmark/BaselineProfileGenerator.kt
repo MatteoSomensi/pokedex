@@ -14,7 +14,7 @@ class BaselineProfileGenerator {
     @Test
     fun generate() {
         baselineProfileRule.collect(
-            packageName = "com.example.pokedex"
+            packageName = "com.example.pokedex",
         ) {
             // This block defines the app's critical user journey. Here we are interested in
             // optimizing for app startup.

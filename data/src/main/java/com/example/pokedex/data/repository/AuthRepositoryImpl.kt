@@ -15,58 +15,63 @@ import javax.inject.Inject
  * Concrete implementation of [AuthRepository] utilizing Firebase Authentication.
  * Manages Firebase sessions and converts Firebase users to the domain [AuthUser] model.
  */
-class AuthRepositoryImpl @Inject constructor(
-    private val auth: FirebaseAuth
-) : AuthRepository {
+class AuthRepositoryImpl
+    @Inject
+    constructor(
+        private val auth: FirebaseAuth,
+    ) : AuthRepository {
+        override val currentUser: Flow<AuthUser?> =
+            callbackFlow {
+                val authStateListener =
+                    FirebaseAuth.AuthStateListener { firebaseAuth ->
+                        trySend(firebaseAuth.currentUser?.toAuthUser())
+                    }
+                auth.addAuthStateListener(authStateListener)
+                awaitClose { auth.removeAuthStateListener(authStateListener) }
+            }
 
-    override val currentUser: Flow<AuthUser?> = callbackFlow {
-        val authStateListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
-            trySend(firebaseAuth.currentUser?.toAuthUser())
+        override suspend fun signInWithEmail(
+            email: String,
+            password: String,
+        ): Result<AuthUser> =
+            try {
+                val result = auth.signInWithEmailAndPassword(email, password).await()
+                val user = result.user?.toAuthUser() ?: throw Exception("User is null")
+                Result.success(user)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+
+        override suspend fun signUpWithEmail(
+            email: String,
+            password: String,
+        ): Result<AuthUser> =
+            try {
+                val result = auth.createUserWithEmailAndPassword(email, password).await()
+                val user = result.user?.toAuthUser() ?: throw Exception("User is null")
+                Result.success(user)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+
+        override suspend fun signInWithGoogle(idToken: String): Result<AuthUser> =
+            try {
+                val credential = GoogleAuthProvider.getCredential(idToken, null)
+                val result = auth.signInWithCredential(credential).await()
+                val user = result.user?.toAuthUser() ?: throw Exception("User is null")
+                Result.success(user)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+
+        override suspend fun signOut() {
+            auth.signOut()
         }
-        auth.addAuthStateListener(authStateListener)
-        awaitClose { auth.removeAuthStateListener(authStateListener) }
-    }
 
-    override suspend fun signInWithEmail(email: String, password: String): Result<AuthUser> {
-        return try {
-            val result = auth.signInWithEmailAndPassword(email, password).await()
-            val user = result.user?.toAuthUser() ?: throw Exception("User is null")
-            Result.success(user)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        private fun FirebaseUser.toAuthUser(): AuthUser =
+            AuthUser(
+                uid = this.uid,
+                email = this.email,
+                displayName = this.displayName,
+            )
     }
-
-    override suspend fun signUpWithEmail(email: String, password: String): Result<AuthUser> {
-        return try {
-            val result = auth.createUserWithEmailAndPassword(email, password).await()
-            val user = result.user?.toAuthUser() ?: throw Exception("User is null")
-            Result.success(user)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-    override suspend fun signInWithGoogle(idToken: String): Result<AuthUser> {
-        return try {
-            val credential = GoogleAuthProvider.getCredential(idToken, null)
-            val result = auth.signInWithCredential(credential).await()
-            val user = result.user?.toAuthUser() ?: throw Exception("User is null")
-            Result.success(user)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-    override suspend fun signOut() {
-        auth.signOut()
-    }
-
-    private fun FirebaseUser.toAuthUser(): AuthUser {
-        return AuthUser(
-            uid = this.uid,
-            email = this.email,
-            displayName = this.displayName
-        )
-    }
-}

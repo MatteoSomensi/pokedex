@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>FunctionNaming:PokemonDetailScreen.kt$@Composable fun StatRow( statName: String, statValue: Int, )</ID>
+    <ID>FunctionNaming:PokemonDetailScreen.kt$@DevicePreviews @Composable fun PokemonDetailScreenPreview()</ID>
+    <ID>FunctionNaming:PokemonDetailScreen.kt$@OptIn(ExperimentalLayoutApi::class) @Composable fun PokemonDetailContent( pokemon: Pokemon, paddingValues: androidx.compose.foundation.layout.PaddingValues = androidx.compose.foundation.layout .PaddingValues(), onPlayCryClick: () -&gt; Unit = {}, )</ID>
+    <ID>FunctionNaming:PokemonDetailScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun PokemonDetailScreen( pokemonId: Int, onBackClick: () -&gt; Unit, showBackButton: Boolean = true, viewModel: PokemonDetailViewModel = hiltViewModel&lt;PokemonDetailViewModel&gt;(), )</ID>
+    <ID>LongMethod:PokemonDetailScreen.kt$@OptIn(ExperimentalLayoutApi::class) @Composable fun PokemonDetailContent( pokemon: Pokemon, paddingValues: androidx.compose.foundation.layout.PaddingValues = androidx.compose.foundation.layout .PaddingValues(), onPlayCryClick: () -&gt; Unit = {}, )</ID>
+    <ID>LongMethod:PokemonDetailScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun PokemonDetailScreen( pokemonId: Int, onBackClick: () -&gt; Unit, showBackButton: Boolean = true, viewModel: PokemonDetailViewModel = hiltViewModel&lt;PokemonDetailViewModel&gt;(), )</ID>
+    <ID>MagicNumber:PokemonDetailScreen.kt$255f</ID>
+    <ID>MagicNumber:PokemonDetailScreen.kt$45</ID>
+    <ID>MagicNumber:PokemonDetailScreen.kt$49</ID>
+    <ID>MaxLineLength:PokemonDetailScreen.kt$error = if (LocalInspectionMode.current) painterResource(id = android.R.drawable.ic_menu_gallery) else null</ID>
+    <ID>MaxLineLength:PokemonDetailScreen.kt$placeholder = if (LocalInspectionMode.current) painterResource(id = android.R.drawable.ic_menu_gallery) else null</ID>
+    <ID>MaxLineLength:PokemonDetailScreen.kt$tint = if (isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface</ID>
+    <ID>TooGenericExceptionCaught:PokemonDetailScreen.kt$e: Exception</ID>
+  </CurrentIssues>
+</SmellBaseline>
