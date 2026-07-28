@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AppFunctionAppMetadata xmlns:appfn="http://schemas.android.com/apk/androidx.appfunctions"
+    appfn:description="This app manages Pokemon data.
+        Operational Patterns:
+        - Use 'searchPokemon' to find Pokemon.
+        - Use 'toggleFavorite' to favorite or unfavorite a Pokemon."
+    appfn:displayDescription="@string/app_name" />

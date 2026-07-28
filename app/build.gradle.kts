@@ -1,5 +1,6 @@
 plugins {
     id("pokedex.android.application")
+    id("com.google.devtools.ksp")
     id("pokedex.android.compose")
     id("pokedex.android.hilt")
     alias(libs.plugins.kotlin.serialization)
@@ -32,11 +33,19 @@ android {
             proguardFiles("benchmark-rules.pro")
         }
     }
+
+    ksp {
+        arg("appfunctions:aggregateAppFunctions", "true")
+    }
 }
 
 
 
 dependencies {
+    implementation(libs.androidx.appfunctions)
+    implementation(libs.androidx.appfunctions.service)
+    ksp(libs.androidx.appfunctions.compiler)
+
     implementation(project(":core"))
     implementation(project(":domain"))
     implementation(project(":data"))
