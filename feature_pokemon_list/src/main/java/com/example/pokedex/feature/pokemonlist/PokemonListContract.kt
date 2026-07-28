@@ -39,4 +39,6 @@ sealed interface PokemonListEvent : UiEvent {
 
 sealed interface PokemonListEffect : UiEffect {
     data class NavigateToDetail(val pokemonId: Int) : PokemonListEffect
+    data object NavigateToProfile : PokemonListEffect
+    data object NavigateToFavorites : PokemonListEffect
 }

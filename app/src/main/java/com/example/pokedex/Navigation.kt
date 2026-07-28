@@ -32,7 +32,8 @@ fun MainNavigation() {
                 entry<PokemonList> {
                     PokemonListScreen(
                         onNavigateToDetail = { pokemonId -> backStack.add(PokemonDetail(id = pokemonId)) },
-                        onNavigateToProfile = { backStack.add(element = Profile) }
+                        onNavigateToProfile = { backStack.add(element = Profile) },
+                        onNavigateToFavorites = { backStack.add(Favorite) }
                     )
                 }
                 entry<PokemonDetail> {

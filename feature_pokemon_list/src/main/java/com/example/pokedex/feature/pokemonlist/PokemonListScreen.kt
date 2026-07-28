@@ -21,8 +21,8 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -68,6 +68,7 @@ import com.example.pokedex.theme.PokedexTheme
 fun PokemonListScreen(
     onNavigateToDetail: (Int) -> Unit,
     onNavigateToProfile: () -> Unit,
+    onNavigateToFavorites: () -> Unit,
     viewModel: PokemonListViewModel = hiltViewModel<PokemonListViewModel>()
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -83,7 +84,8 @@ fun PokemonListScreen(
     PokemonListScreenContent(
         state = state,
         onEvent = viewModel::setEvent,
-        onNavigateToProfile = onNavigateToProfile
+        onNavigateToProfile = onNavigateToProfile,
+        onNavigateToFavorites = onNavigateToFavorites
     )
 }
 
@@ -92,15 +94,19 @@ fun PokemonListScreen(
 fun PokemonListScreenContent(
     state: PokemonListState,
     onEvent: (PokemonListEvent) -> Unit,
-    onNavigateToProfile: () -> Unit
+    onNavigateToProfile: () -> Unit,
+    onNavigateToFavorites: () -> Unit
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(text = stringResource(id = R.string.app_name)) },
                 actions = {
+                    IconButton(onClick = onNavigateToFavorites) {
+                        Icon(imageVector = Icons.Default.Favorite, contentDescription = "Preferiti")
+                    }
                     IconButton(onClick = onNavigateToProfile) {
-                        Icon(imageVector = Icons.Default.Person, contentDescription = "Profile")
+                        Icon(imageVector = Icons.Default.AccountCircle, contentDescription = stringResource(id = R.string.profile))
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -376,7 +382,7 @@ fun PokemonListScreenPreview() {
     )
     PokedexTheme {
         Surface {
-            PokemonListScreenContent(state = mockState, onEvent = {}, onNavigateToProfile = {})
+            PokemonListScreenContent(state = mockState, onEvent = {}, onNavigateToProfile = {}, onNavigateToFavorites = {})
         }
     }
 }
