@@ -2,6 +2,7 @@ package com.example.pokedex.feature.pokemondetail
 
 import android.media.AudioAttributes
 import android.media.MediaPlayer
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -61,7 +63,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import coil.compose.AsyncImage
@@ -75,6 +80,12 @@ import com.example.pokedex.theme.LocalDimensions
 import com.example.pokedex.theme.LocalWeights
 import com.example.pokedex.theme.PokedexTheme
 
+/**
+ * Connects [PokemonDetailViewModel] to detail presentation and Android audio playback.
+ *
+ * [pokemonId] changes trigger a new load. The screen owns and releases its [MediaPlayer], while
+ * navigation remains callback-based.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PokemonDetailScreen(
@@ -89,7 +100,7 @@ fun PokemonDetailScreen(
         viewModel.setEvent(event = PokemonDetailEvent.LoadPokemon(id = pokemonId))
     }
 
-    var mediaPlayer by remember { mutableStateOf<MediaPlayer?>(null) }
+    var mediaPlayer by remember { mutableStateOf<MediaPlayer?>(value = null) }
 
     DisposableEffect(Unit) {
         onDispose {
@@ -99,9 +110,9 @@ fun PokemonDetailScreen(
     }
 
     val context = LocalContext.current
-    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
+    val lifecycleOwner = LocalLifecycleOwner.current
     LaunchedEffect(viewModel, lifecycleOwner) {
-        lifecycleOwner.lifecycle.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
+        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
             viewModel.uiEffect.collect { effect ->
                 when (effect) {
                     is PokemonDetailEffect.PlayAudio -> {
@@ -116,18 +127,18 @@ fun PokemonDetailScreen(
                                         .setUsage(AudioAttributes.USAGE_MEDIA)
                                         .build(),
                                 )
-                                setDataSource(context, android.net.Uri.parse(effect.url))
+                                setDataSource(context, effect.url.toUri())
                                 setOnPreparedListener { it.start() }
                                 setOnCompletionListener {
                                     it.release()
                                     if (mediaPlayer == it) mediaPlayer = null
                                 }
                                 setOnErrorListener { mp, what, extra ->
-                                    android.widget.Toast
+                                    Toast
                                         .makeText(
                                             context,
                                             "Errore riproduzione (what:$what, extra:$extra)",
-                                            android.widget.Toast.LENGTH_SHORT,
+                                            Toast.LENGTH_SHORT,
                                         ).show()
                                     mp.release()
                                     if (mediaPlayer == mp) mediaPlayer = null
@@ -137,8 +148,8 @@ fun PokemonDetailScreen(
                             }
                             mediaPlayer = player
                         } catch (e: Exception) {
-                            android.widget.Toast
-                                .makeText(context, "Errore: ${e.message}", android.widget.Toast.LENGTH_SHORT)
+                            Toast
+                                .makeText(context, "Errore: ${e.message}", Toast.LENGTH_SHORT)
                                 .show()
                             player.release()
                             e.printStackTrace()
@@ -217,13 +228,17 @@ fun PokemonDetailScreen(
     }
 }
 
+/**
+ * Stateless detail content for a loaded [pokemon].
+ *
+ * @param paddingValues insets supplied by the parent scaffold.
+ * @param onPlayCryClick callback for the cry playback action.
+ */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun PokemonDetailContent(
     pokemon: Pokemon,
-    paddingValues: androidx.compose.foundation.layout.PaddingValues =
-        androidx.compose.foundation.layout
-            .PaddingValues(),
+    paddingValues: PaddingValues = PaddingValues(),
     onPlayCryClick: () -> Unit = {},
 ) {
     var isVisible by remember { mutableStateOf(value = false) }
@@ -405,6 +420,7 @@ fun PokemonDetailContent(
     }
 }
 
+/** Renders one base statistic normalized against the PokeAPI maximum of 255. */
 @Composable
 fun StatRow(
     statName: String,
@@ -445,6 +461,7 @@ fun StatRow(
     }
 }
 
+/** Design-time preview of loaded detail content. */
 @DevicePreviews
 @Composable
 fun PokemonDetailScreenPreview() {

@@ -26,6 +26,17 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
+/**
+ * Offline-first implementation of [PokemonRepository].
+ *
+ * Room is the source read by Paging, while [PokemonRemoteMediator] fetches network pages and writes
+ * Pokémon plus query-scoped remote keys in one transaction. Direct reads prefer cached data and
+ * populate missing records from PokeAPI. Favorite state is always preserved when network data
+ * replaces a cached record.
+ *
+ * Network and database work runs on [DispatcherProvider.io]. Cancellation is rethrown rather than
+ * converted to a failed [Result].
+ */
 class PokemonRepositoryImpl
     @Inject
     constructor(

@@ -1,5 +1,6 @@
 package com.example.pokedex
 
+import android.net.Uri
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
@@ -40,11 +41,20 @@ import com.google.firebase.auth.FirebaseAuth
 
 private data object PokedexListDetailScene
 
+/**
+ * Hosts authentication-aware and adaptive root navigation.
+ *
+ * The function owns the Navigation 3 back stack, switches between single-pane and list-detail
+ * scenes based on the current window, and consumes valid `pokedex://pokemon/{id}` deep links.
+ *
+ * @param deepLinkUri most recent unconsumed URI delivered by the activity.
+ * @param onDeepLinkConsumed callback invoked after a URI has been handled or rejected.
+ */
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @SuppressWarnings("CyclomaticComplexMethod", "LongMethod", "FunctionNaming")
 @Composable
 fun MainNavigation(
-    deepLinkUri: android.net.Uri? = null,
+    deepLinkUri: Uri? = null,
     onDeepLinkConsumed: () -> Unit = {},
 ) {
     val firebaseAuth = remember { FirebaseAuth.getInstance() }
@@ -238,7 +248,7 @@ fun MainNavigation(
     }
 }
 
-private fun android.net.Uri.toPokemonId(): Int? {
+private fun Uri.toPokemonId(): Int? {
     if (scheme != "pokedex" || host != "pokemon") return null
     return lastPathSegment?.toIntOrNull()?.takeIf { it > 0 }
 }

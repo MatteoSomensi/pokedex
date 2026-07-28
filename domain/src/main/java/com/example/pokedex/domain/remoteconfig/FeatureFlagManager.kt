@@ -2,22 +2,14 @@ package com.example.pokedex.domain.remoteconfig
 
 import kotlinx.coroutines.flow.Flow
 
-/**
- * Interface per gestire l'abilitazione delle funzionalità da remoto.
- */
+/** Provider-independent contract for remotely controlled Boolean feature flags. */
 interface FeatureFlagManager {
-    /**
-     * Sincronizza i flag con il backend remoto (es. all'avvio dell'app).
-     */
+    /** Fetches remote values, activates them, and refreshes observable local state. */
     suspend fun fetchAndActivate()
 
-    /**
-     * Ritorna il valore booleano di un flag come Flow, per aggiornare la UI in realtime.
-     */
+    /** Observes [flagKey], emitting `false` when the key is unknown. */
     fun isFeatureEnabled(flagKey: String): Flow<Boolean>
 
-    /**
-     * Ritorna il valore booleano istantaneo di un flag.
-     */
+    /** Returns the current local value for [flagKey], or `false` when it is unknown. */
     fun isFeatureEnabledSync(flagKey: String): Boolean
 }

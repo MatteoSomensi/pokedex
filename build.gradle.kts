@@ -11,6 +11,7 @@ plugins {
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.detekt) apply true
     alias(libs.plugins.ktlint) apply true
+    alias(libs.plugins.dokka)
     alias(libs.plugins.android.library) apply false
     alias(libs.plugins.androidx.baselineprofile) apply false
     alias(libs.plugins.roborazzi) apply false
@@ -23,5 +24,30 @@ subprojects {
 
     extensions.configure<io.gitlab.arturbosch.detekt.extensions.DetektExtension> {
         baseline = file("$projectDir/detekt-baseline.xml")
+    }
+}
+
+val documentedProjects =
+    listOf(
+        project(":app"),
+        project(":core"),
+        project(":core:designsystem"),
+        project(":domain"),
+        project(":data"),
+        project(":features:auth"),
+        project(":features:favorite:api"),
+        project(":features:favorite:impl"),
+        project(":features:pokemon_detail"),
+        project(":features:pokemon_list"),
+        project(":macrobenchmark"),
+    )
+
+configure(documentedProjects) {
+    apply(plugin = "org.jetbrains.dokka")
+}
+
+dependencies {
+    documentedProjects.forEach { documentedProject ->
+        dokka(documentedProject)
     }
 }

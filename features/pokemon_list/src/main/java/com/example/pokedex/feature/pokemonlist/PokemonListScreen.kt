@@ -9,12 +9,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -32,6 +30,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -59,6 +58,11 @@ import com.example.pokedex.theme.LocalDimensions
 import com.example.pokedex.theme.LocalWeights
 import com.example.pokedex.theme.PokedexTheme
 
+/**
+ * Connects [PokemonListViewModel] state, Paging data, and effects to the list presentation.
+ *
+ * Navigation remains callback-based so the feature does not depend on the application back stack.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressWarnings("FunctionNaming")
 @Composable
@@ -88,6 +92,12 @@ fun PokemonListScreen(
     )
 }
 
+/**
+ * Stateless list presentation for controlled [state] and [pagedPokemon].
+ *
+ * Search and filter changes are represented as [PokemonListEvent] values. Paging refresh and retry
+ * actions operate directly on [pagedPokemon].
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressWarnings("LongMethod", "FunctionNaming")
 @Composable
@@ -168,7 +178,7 @@ fun PokemonListScreenContent(
                 }
             }
 
-            androidx.compose.material3.pulltorefresh.PullToRefreshBox(
+            PullToRefreshBox(
                 isRefreshing = pagedPokemon.loadState.refresh is LoadState.Loading,
                 onRefresh = { pagedPokemon.refresh() },
                 modifier =
@@ -180,11 +190,11 @@ fun PokemonListScreenContent(
                     pagedPokemon.loadState.refresh is LoadState.Error -> {
                         val error = (pagedPokemon.loadState.refresh as LoadState.Error).error
                         Column(
-                            modifier = Modifier.align(Alignment.Center),
+                            modifier = Modifier.align(alignment = Alignment.Center),
                             horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
                             Text(text = "Errore: ${error.localizedMessage}")
-                            Spacer(modifier = Modifier.height(8.dp))
+                            Spacer(modifier = Modifier.height(height = 8.dp))
                             Button(onClick = { pagedPokemon.retry() }) {
                                 Text("Riprova")
                             }
@@ -196,7 +206,7 @@ fun PokemonListScreenContent(
                             modifier =
                                 Modifier
                                     .fillMaxSize()
-                                    .verticalScroll(rememberScrollState()),
+                                    .verticalScroll(state = rememberScrollState()),
                             contentAlignment = Alignment.Center,
                         ) {
                             Text(
@@ -226,7 +236,7 @@ fun PokemonListScreenContent(
                             modifier =
                                 Modifier
                                     .fillMaxSize()
-                                    .testTag("pokemon_list"),
+                                    .testTag(tag = "pokemon_list"),
                         ) {
                             items(
                                 count = pagedPokemon.itemCount,
@@ -268,7 +278,7 @@ fun PokemonListScreenContent(
                                             text = error.localizedMessage ?: "Errore di caricamento",
                                             color = MaterialTheme.colorScheme.error,
                                         )
-                                        Spacer(modifier = Modifier.height(dimensions.paddingSmall))
+                                        Spacer(modifier = Modifier.height(height = dimensions.paddingSmall))
                                         Button(onClick = { pagedPokemon.retry() }) {
                                             Text(stringResource(id = R.string.retry))
                                         }
@@ -283,10 +293,7 @@ fun PokemonListScreenContent(
     }
 }
 
-/**
- * This class is responsible for PokemonListScreen logic.
- * Part of the Clean Architecture structure.
- */
+/** Supplies a stable Pokémon sample to component previews and screenshot tests. */
 class PokemonPreviewProvider : PreviewParameterProvider<Pokemon> {
     override val values =
         sequenceOf(
@@ -300,6 +307,7 @@ class PokemonPreviewProvider : PreviewParameterProvider<Pokemon> {
         )
 }
 
+/** Design-time preview of [PokemonCard] across shared device configurations. */
 @DevicePreviews
 @Composable
 fun PokemonCardPreview(

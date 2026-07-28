@@ -10,6 +10,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
+/** Binds Firebase-backed observability services to SDK-independent domain contracts. */
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class ObservabilityModule {

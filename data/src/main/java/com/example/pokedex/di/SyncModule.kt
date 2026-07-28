@@ -8,6 +8,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
+/** Binds the WorkManager synchronization implementation to the domain contract. */
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class SyncModule {

@@ -2,9 +2,7 @@ package com.example.pokedex.core.di
 
 import javax.inject.Qualifier
 
-/**
- * Qualifier per il CoroutineScope dell'applicazione.
- */
+/** Qualifies the [kotlinx.coroutines.CoroutineScope] that lives for the application process. */
 @Retention(AnnotationRetention.RUNTIME)
 @Qualifier
 annotation class ApplicationScope

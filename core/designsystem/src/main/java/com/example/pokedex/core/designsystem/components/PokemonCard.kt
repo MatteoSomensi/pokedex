@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -30,6 +31,16 @@ import coil.compose.AsyncImage
 import com.example.pokedex.domain.model.Pokemon
 import com.example.pokedex.theme.LocalDimensions
 
+/**
+ * Displays a Pokémon summary using the shared design-system tokens.
+ *
+ * The entire card invokes [onClick]. When [pokemon] is a favorite, the favorite icon is actionable
+ * only if [onFavoriteClick] is provided; otherwise it is a decorative status indicator.
+ *
+ * @param pokemon domain model rendered by the card.
+ * @param onClick callback for opening the Pokémon detail.
+ * @param onFavoriteClick optional callback for removing or changing favorite status.
+ */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun PokemonCard(
@@ -93,7 +104,7 @@ fun PokemonCard(
 
             if (pokemon.isFavorite) {
                 if (onFavoriteClick != null) {
-                    androidx.compose.material3.IconButton(
+                    IconButton(
                         onClick = onFavoriteClick,
                         modifier = Modifier.align(alignment = Alignment.TopEnd),
                     ) {

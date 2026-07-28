@@ -10,8 +10,10 @@ import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 
 /**
- * This class is responsible for PokedexApplication logic.
- * Part of the Clean Architecture structure.
+ * Application entry point for Hilt, WorkManager, and AppFunctions.
+ *
+ * Supplies Hilt's worker factory to WorkManager, registers the injected AppFunctions enclosing
+ * class, and enqueues the unique periodic synchronization during process startup.
  */
 @HiltAndroidApp
 class PokedexApplication :

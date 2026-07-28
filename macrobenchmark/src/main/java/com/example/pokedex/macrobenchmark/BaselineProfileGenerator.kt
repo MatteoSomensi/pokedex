@@ -6,11 +6,18 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
+/**
+ * Generates a baseline profile from the critical startup-and-scroll user journey.
+ *
+ * Run this instrumentation test on a supported physical device or emulator through the
+ * `:macrobenchmark` Gradle tasks, then package the generated profile with the app.
+ */
 @RunWith(AndroidJUnit4::class)
 class BaselineProfileGenerator {
     @get:Rule
     val baselineProfileRule = BaselineProfileRule()
 
+    /** Records startup and list-scrolling code paths for ahead-of-time compilation. */
     @Suppress("MagicNumber")
     @Test
     fun generate() {

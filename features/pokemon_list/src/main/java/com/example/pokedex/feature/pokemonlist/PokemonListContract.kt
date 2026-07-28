@@ -1,20 +1,25 @@
 package com.example.pokedex.feature.pokemonlist
 
+import androidx.compose.runtime.Immutable
 import com.example.pokedex.core.mvi.UiEffect
 import com.example.pokedex.core.mvi.UiEvent
 import com.example.pokedex.core.mvi.UiState
 
 /**
- * This class is responsible for PokemonListContract logic.
- * Part of the Clean Architecture structure.
+ * Immutable controls state for the paginated list.
+ *
+ * Paging content is exposed separately by [PokemonListViewModel.pagedPokemonFlow].
+ *
+ * @property selectedType `null` means that all Pokémon types are accepted.
  */
-@androidx.compose.runtime.Immutable
+@Immutable
 data class PokemonListState(
     val searchQuery: String = "",
     val selectedType: String? = null,
     val availableTypes: List<String> = emptyList(),
 ) : UiState
 
+/** User intentions accepted by [PokemonListViewModel]. */
 sealed interface PokemonListEvent : UiEvent {
     data class OnPokemonClicked(
         val pokemonId: Int,
@@ -29,6 +34,7 @@ sealed interface PokemonListEvent : UiEvent {
     ) : PokemonListEvent
 }
 
+/** One-shot navigation requests emitted by [PokemonListViewModel]. */
 sealed interface PokemonListEffect : UiEffect {
     data class NavigateToDetail(
         val pokemonId: Int,

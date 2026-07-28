@@ -1,9 +1,5 @@
 package com.example.pokedex.feature.pokemondetail
 
-/**
- * ViewModel managing the state and logic for the Pokemon Detail screen.
- * Fetches and exposes detailed information about a specific Pokemon, including its stats, weight, and height.
- */
 import androidx.lifecycle.viewModelScope
 import com.example.pokedex.core.R
 import com.example.pokedex.core.mvi.BaseViewModel
@@ -13,6 +9,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * Loads one Pokémon detail and coordinates favorite and cry-playback intentions.
+ *
+ * Favorite changes are optimistic: state updates immediately and rolls back to the previous model
+ * if persistence fails. Audio playback is emitted as a one-shot effect because it requires Android
+ * platform resources owned by the screen.
+ */
 @HiltViewModel
 class PokemonDetailViewModel
     @Inject

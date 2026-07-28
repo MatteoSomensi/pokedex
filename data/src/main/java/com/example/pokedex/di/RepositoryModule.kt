@@ -10,8 +10,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 
 /**
- * This class is responsible for RepositoryModule logic.
- * Part of the Clean Architecture structure.
+ * Connects data-layer implementations to domain repository contracts.
  */
 @Module
 @InstallIn(SingletonComponent::class)

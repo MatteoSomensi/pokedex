@@ -13,6 +13,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
+/** Provides the Room database, its migrations, and data access objects as app-wide singletons. */
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {

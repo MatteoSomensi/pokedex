@@ -6,12 +6,14 @@ import com.example.pokedex.core.mvi.UiState
 import com.example.pokedex.core.util.UiText
 import com.example.pokedex.domain.model.Pokemon
 
+/** Immutable loading, content, or error state for one Pokémon detail. */
 data class PokemonDetailState(
     val isLoading: Boolean = false,
     val pokemon: Pokemon? = null,
     val errorMessage: UiText? = null,
 ) : UiState
 
+/** User and lifecycle events accepted by [PokemonDetailViewModel]. */
 sealed interface PokemonDetailEvent : UiEvent {
     data class LoadPokemon(
         val id: Int,
@@ -22,6 +24,7 @@ sealed interface PokemonDetailEvent : UiEvent {
     object PlayCry : PokemonDetailEvent
 }
 
+/** One-shot platform actions emitted by [PokemonDetailViewModel]. */
 sealed interface PokemonDetailEffect : UiEffect {
     data class PlayAudio(
         val url: String,

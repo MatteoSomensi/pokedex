@@ -8,11 +8,18 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
+/**
+ * Measures cold-start latency and frame timing while scrolling the main Pokémon list.
+ *
+ * Macrobenchmarks run out of process against the target app, which makes the measurements more
+ * representative than timings collected from regular unit or UI tests.
+ */
 @RunWith(AndroidJUnit4::class)
 class ExampleStartupBenchmark {
     @get:Rule
     val benchmarkRule = MacrobenchmarkRule()
 
+    /** Repeats the cold-start and scroll scenario while collecting startup and frame metrics. */
     @Suppress("MagicNumber")
     @Test
     fun startupAndScroll() =

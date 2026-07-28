@@ -6,6 +6,11 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.pokedex.data.local.entity.PokemonRemoteKey
 
+/**
+ * Persists the query-scoped offsets used by [androidx.paging.RemoteMediator].
+ *
+ * Keys are replaced atomically with their corresponding Pokémon records inside a Room transaction.
+ */
 @Dao
 @JvmSuppressWildcards
 interface RemoteKeyDao {

@@ -4,6 +4,12 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.pokedex.domain.model.Pokemon
 
+/**
+ * Cached Room representation of a [Pokemon].
+ *
+ * Collection-valued fields use a compact string encoding to keep the teaching project free from
+ * custom Room type converters. [toDomain] and [fromDomain] form the persistence boundary.
+ */
 @Entity(tableName = "pokemon")
 data class PokemonEntity(
     @PrimaryKey val id: Int,
@@ -15,6 +21,7 @@ data class PokemonEntity(
     val stats: String,
     val isFavorite: Boolean = false,
 ) {
+    /** Converts the persisted record to the model exposed by the domain layer. */
     fun toDomain(): Pokemon =
         Pokemon(
             id = id,
@@ -29,6 +36,7 @@ data class PokemonEntity(
         )
 
     companion object {
+        /** Creates a persistence record while preserving the domain favorite state. */
         fun fromDomain(pokemon: Pokemon): PokemonEntity =
             PokemonEntity(
                 id = pokemon.id,

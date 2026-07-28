@@ -12,12 +12,24 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * Immutable presentation state for the favorites destination.
+ *
+ * @property favorites locally stored favorite Pokémon ordered by the repository.
+ * @property error diagnostic message when loading fails.
+ */
 data class FavoriteUiState(
     val isLoading: Boolean = false,
     val favorites: List<Pokemon> = emptyList(),
     val error: String? = null,
 )
 
+/**
+ * Keeps the favorites screen synchronized with locally persisted favorite IDs.
+ *
+ * Every favorite-ID emission reloads the complete favorite projection so the UI receives current
+ * domain models rather than maintaining a second cache.
+ */
 @HiltViewModel
 class FavoriteViewModel
     @Inject
@@ -25,6 +37,8 @@ class FavoriteViewModel
         private val repository: PokemonRepository,
     ) : ViewModel() {
         private val _uiState = MutableStateFlow(FavoriteUiState())
+
+        /** Current loading, content, or error state. */
         val uiState: StateFlow<FavoriteUiState> = _uiState.asStateFlow()
 
         init {
@@ -61,6 +75,7 @@ class FavoriteViewModel
             }
         }
 
+        /** Removes [pokemon] from favorites; the observed ID flow triggers the subsequent reload. */
         fun toggleFavorite(pokemon: Pokemon) {
             viewModelScope.launch {
                 // Selezionando il preferito dalla schermata Preferiti, lo rimuoviamo.

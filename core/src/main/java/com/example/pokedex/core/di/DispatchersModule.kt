@@ -8,6 +8,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
+/** Connects [DispatcherProvider] to its production implementation in the Hilt graph. */
 @Module
 @InstallIn(SingletonComponent::class)
 object DispatchersModule {

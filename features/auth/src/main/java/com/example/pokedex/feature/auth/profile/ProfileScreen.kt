@@ -40,6 +40,13 @@ import com.example.pokedex.domain.model.AuthUser
 import com.example.pokedex.theme.LocalDimensions
 import com.example.pokedex.theme.PokedexTheme
 
+/**
+ * Connects [ProfileViewModel] to the profile presentation.
+ *
+ * @param onNavigateBack callback for the top-app-bar back action.
+ * @param onNavigateToAuth callback invoked after the user chooses to log out.
+ * @param viewModel Hilt-provided profile state holder.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
@@ -57,6 +64,12 @@ fun ProfileScreen(
     )
 }
 
+/**
+ * Stateless profile presentation for an optional [currentUser].
+ *
+ * [onLogout] performs the session mutation; [onNavigateToAuth] remains separate so navigation is
+ * owned by the application module.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreenContent(
@@ -163,6 +176,7 @@ fun ProfileScreenContent(
     }
 }
 
+/** Design-time preview of an authenticated profile. */
 @DevicePreviews
 @Composable
 fun ProfileScreenPreview() {

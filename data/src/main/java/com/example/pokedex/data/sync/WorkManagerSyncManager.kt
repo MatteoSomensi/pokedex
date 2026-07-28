@@ -14,6 +14,12 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * WorkManager-backed [SyncManager] implementation.
+ *
+ * Manual requests are unique and use [ExistingWorkPolicy.KEEP], so repeated UI actions do not
+ * enqueue duplicate synchronization work. The request is deferred until a network is available.
+ */
 @Singleton
 class WorkManagerSyncManager
     @Inject

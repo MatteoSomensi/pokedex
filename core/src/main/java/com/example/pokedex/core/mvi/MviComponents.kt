@@ -1,19 +1,17 @@
 package com.example.pokedex.core.mvi
 
-/**
- * Rappresenta lo stato della UI in un dato momento.
- * Deve essere immutabile (data class).
- */
+/** Marker for a complete, immutable snapshot of renderable UI state. */
 interface UiState
 
 /**
- * Rappresenta un'azione o intenzione dell'utente (es. click di un bottone, swipe to refresh)
- * o un evento di sistema che deve essere gestito dal ViewModel.
+ * Marker for a user action or intention, such as a click or pull-to-refresh, or for a system event
+ * that must be handled by a ViewModel.
  */
 interface UiEvent
 
 /**
- * Rappresenta un effetto "one-shot" che deve essere consumato una sola volta dalla UI
- * (es. mostrare una Snackbar, navigare verso un'altra schermata).
+ * Marker for a one-shot effect that must not be modeled as persistent state.
+ *
+ * Examples include navigation, a Snackbar, or starting audio playback.
  */
 interface UiEffect

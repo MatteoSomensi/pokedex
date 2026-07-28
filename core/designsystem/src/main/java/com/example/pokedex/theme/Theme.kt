@@ -33,6 +33,16 @@ private val LightColorScheme =
          */
     )
 
+/**
+ * Applies the Pokedex Material 3 theme and its custom design tokens.
+ *
+ * Dynamic colors are used on Android 12 and later unless composition is running in inspection
+ * mode. Dimension tokens switch at 600 dp to demonstrate basic adaptive scaling.
+ *
+ * @param darkTheme whether to use the dark color scheme.
+ * @param dynamicColor whether supported devices may derive colors from the system wallpaper.
+ * @param content themed Compose content.
+ */
 @Composable
 fun PokedexTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),

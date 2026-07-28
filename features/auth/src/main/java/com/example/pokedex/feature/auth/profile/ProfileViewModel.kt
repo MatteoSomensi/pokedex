@@ -12,9 +12,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
- * ViewModel managing the state and logic for the User Profile screen.
- * Exposes the currently authenticated user's data and handles user session actions
- * such as logging out via [AuthRepository].
+ * Exposes the current authenticated user and delegates logout to [AuthRepository].
+ *
+ * The repository flow remains active for five seconds after the last subscriber to avoid
+ * unnecessary listener churn during short configuration changes.
  */
 @HiltViewModel
 class ProfileViewModel
@@ -22,6 +23,7 @@ class ProfileViewModel
     constructor(
         private val authRepository: AuthRepository,
     ) : ViewModel() {
+        /** Current authenticated user, or `null` when the session is absent or not emitted yet. */
         val currentUser: StateFlow<AuthUser?> =
             authRepository.currentUser
                 .stateIn(
@@ -30,6 +32,7 @@ class ProfileViewModel
                     initialValue = null,
                 )
 
+        /** Ends the current authentication session asynchronously. */
         fun logout() {
             viewModelScope.launch {
                 authRepository.signOut()

@@ -43,7 +43,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.credentials.CredentialManager
+import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
+import androidx.credentials.exceptions.GetCredentialCancellationException
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.pokedex.core.R
 import com.example.pokedex.core.ui.DevicePreviews
@@ -54,6 +56,16 @@ import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import kotlinx.coroutines.launch
 import kotlin.coroutines.cancellation.CancellationException
 
+/**
+ * Connects [AuthViewModel] state to the authentication form and Credential Manager.
+ *
+ * Google credential requests are initiated from this route because they require a UI context.
+ * Successful email or Google authentication invokes [onAuthSuccess].
+ *
+ * @param onAuthSuccess navigation callback invoked after authentication completes.
+ * @param modifier modifier applied to the stateless authentication form.
+ * @param viewModel Hilt-provided state holder; injectable for focused tests.
+ */
 @Composable
 fun AuthRoute(
     onAuthSuccess: () -> Unit,
@@ -102,7 +114,7 @@ fun AuthRoute(
                         )
                     val credential = result.credential
 
-                    if (credential is androidx.credentials.CustomCredential &&
+                    if (credential is CustomCredential &&
                         credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL
                     ) {
                         val googleIdTokenCredential =
@@ -112,7 +124,7 @@ fun AuthRoute(
                     } else {
                         viewModel.setAuthError(errorRes = R.string.error_auth_failed)
                     }
-                } catch (_: androidx.credentials.exceptions.GetCredentialCancellationException) {
+                } catch (_: GetCredentialCancellationException) {
                     viewModel.setLoading(isLoading = false)
                 } catch (
                     e: CancellationException,
@@ -284,6 +296,7 @@ internal fun AuthScreen(
     }
 }
 
+/** Design-time preview of the sign-in state across shared device configurations. */
 @DevicePreviews
 @Composable
 fun AuthScreenPreview() {

@@ -4,7 +4,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.filter
-import androidx.paging.map
 import com.example.pokedex.core.mvi.BaseViewModel
 import com.example.pokedex.domain.model.Pokemon
 import com.example.pokedex.domain.repository.PokemonRepository
@@ -21,6 +20,12 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
 
+/**
+ * Produces debounced, query-aware Paging data and list control state.
+ *
+ * Search changes replace the active repository flow through `flatMapLatest`. Type filtering is
+ * applied to the resulting pages, and the stream is cached in [viewModelScope].
+ */
 @HiltViewModel
 class PokemonListViewModel
     @Inject
@@ -33,6 +38,7 @@ class PokemonListViewModel
             loadTypes()
         }
 
+        /** Paging stream derived from the current search query and selected type. */
         @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
         val pagedPokemonFlow: Flow<PagingData<Pokemon>> =
             combine(
@@ -46,10 +52,10 @@ class PokemonListViewModel
             ) { query, selectedType ->
                 query to selectedType
             }.flatMapLatest { (query, selectedType) ->
-                repository.getPokemonPaged(query).map { pagingData ->
+                repository.getPokemonPaged(query = query).map { pagingData ->
                     if (selectedType != null) {
                         pagingData.filter { pokemon ->
-                            pokemon.types.any { it.equals(selectedType, ignoreCase = true) }
+                            pokemon.types.any { it.equals(other = selectedType, ignoreCase = true) }
                         }
                     } else {
                         pagingData

@@ -8,7 +8,10 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 /**
- * AppFunctions for the Pokedex app.
+ * Agent-callable Pokedex workflows backed by [PokemonRepository].
+ *
+ * Each function opts into KDoc-derived descriptions, so its documentation is part of the
+ * machine-readable contract exposed to callers.
  */
 class PokedexAppFunctions
     @Inject
@@ -16,12 +19,13 @@ class PokedexAppFunctions
         private val pokemonRepository: PokemonRepository,
     ) {
         /**
-         * Search for a Pokemon by name.
-         * Required workflow: Call this before "toggleFavorite" to obtain valid Pokemon IDs.
+         * Searches for Pokémon by full or partial name.
          *
-         * @param appFunctionContext The execution context.
-         * @param query The name or partial name of the Pokemon to search for.
-         * @return A list of [PokemonResult] matching the query, or empty if not found.
+         * Call this function before [toggleFavorite] to obtain a valid numeric Pokémon ID.
+         *
+         * @param appFunctionContext execution context supplied by the AppFunctions runtime.
+         * @param query full or partial Pokémon name.
+         * @return at most ten matching [PokemonResult] values, or an empty list after failure or no match.
          */
         @AppFunction(isDescribedByKDoc = true)
         suspend fun searchPokemon(
@@ -40,13 +44,14 @@ class PokedexAppFunctions
             }
 
         /**
-         * Toggle the favorite status of a Pokemon.
-         * Required workflow: Call "searchPokemon" first to obtain valid Pokemon IDs.
+         * Sets the favorite status of a Pokémon.
          *
-         * @param appFunctionContext The execution context.
-         * @param pokemonId The numeric ID of the Pokemon.
-         * @param isFavorite Whether to mark as favorite (true) or remove from favorites (false).
-         * @return True if successful, false otherwise.
+         * Call [searchPokemon] first instead of guessing an identifier.
+         *
+         * @param appFunctionContext execution context supplied by the AppFunctions runtime.
+         * @param pokemonId positive numeric Pokémon identifier.
+         * @param isFavorite `true` to add the favorite, `false` to remove it.
+         * @return `true` after persistence succeeds; `false` for invalid IDs or repository failures.
          */
         @AppFunction(isDescribedByKDoc = true)
         suspend fun toggleFavorite(

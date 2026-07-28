@@ -31,6 +31,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.pokedex.core.designsystem.components.PokemonCard
 import com.example.pokedex.theme.LocalDimensions
 
+/**
+ * Displays favorite Pokémon from [FavoriteViewModel] in an adaptive grid.
+ *
+ * @param onBackClick callback for the top-app-bar navigation action.
+ * @param onNavigateToDetail callback receiving the selected Pokémon ID.
+ * @param viewModel Hilt-provided state holder.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FavoriteScreen(

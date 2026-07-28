@@ -2,15 +2,13 @@ package com.example.pokedex.appfunctions
 
 import androidx.appfunctions.AppFunctionSerializable
 
-/**
- * A Pokemon returned by the AppFunctions.
- */
+/** Compact, serializable Pokémon projection returned to AppFunctions callers. */
 @AppFunctionSerializable(isDescribedByKDoc = true)
 data class PokemonResult(
-    /** The unique numeric ID of the Pokemon. */
+    /** Unique numeric PokeAPI identifier. */
     val id: Int,
-    /** The name of the Pokemon. */
+    /** Canonical Pokémon name. */
     val name: String,
-    /** Whether the Pokemon is a favorite. */
+    /** Whether the user currently marks the Pokémon as a favorite. */
     val isFavorite: Boolean,
 )

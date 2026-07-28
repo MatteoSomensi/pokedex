@@ -17,6 +17,17 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 
+/**
+ * Coordinates PokeAPI pages with the Room-backed Paging 3 source.
+ *
+ * An empty query loads the remote collection directly. A non-empty query filters a shared catalog
+ * supplied by [fetchAllPokemon], then fetches details only for the requested page. Pokémon records
+ * and [PokemonRemoteKey] values are committed in the same Room transaction, and existing favorite
+ * flags survive refreshes.
+ *
+ * @param query Search text normalized independently for each pager.
+ * @param fetchAllPokemon Lazily supplies the complete lightweight catalog used for remote search.
+ */
 @OptIn(ExperimentalPagingApi::class)
 class PokemonRemoteMediator(
     private val api: PokeApiService,

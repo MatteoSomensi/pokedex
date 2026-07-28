@@ -1,6 +1,8 @@
 package com.example.pokedex.di
 
+import android.content.Context
 import com.example.pokedex.core.util.Constants
+import com.example.pokedex.data.BuildConfig
 import com.example.pokedex.data.remote.PokeApiService
 import com.example.pokedex.data.remote.auth.AuthInterceptor
 import com.example.pokedex.data.remote.auth.SecureSessionManager
@@ -9,6 +11,7 @@ import com.example.pokedex.data.remote.auth.TokenAuthenticator
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -19,8 +22,10 @@ import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import javax.inject.Singleton
 
 /**
- * This object is responsible for NetworkModule logic.
- * Part of the Clean Architecture structure.
+ * Builds the app-wide serialization and HTTP stack.
+ *
+ * Unknown JSON fields are tolerated for forward compatibility. Authentication is attached through
+ * OkHttp, and basic request logging is enabled only in debug builds.
  */
 @Module
 @InstallIn(SingletonComponent::class)
@@ -36,7 +41,7 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideSessionManager(
-        @dagger.hilt.android.qualifiers.ApplicationContext context: android.content.Context,
+        @ApplicationContext context: Context,
     ): SessionManager = SecureSessionManager(context)
 
     @Provides
@@ -51,7 +56,7 @@ object NetworkModule {
                 .addInterceptor(authInterceptor)
                 .authenticator(tokenAuthenticator)
 
-        if (com.example.pokedex.data.BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG) {
             val logging =
                 HttpLoggingInterceptor().apply {
                     level = HttpLoggingInterceptor.Level.BASIC

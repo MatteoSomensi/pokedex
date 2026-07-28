@@ -29,6 +29,7 @@ okhttp = "5.4.0"
 kotlinxSerializationJson = "1.11.0"
 detekt = "1.23.8"
 ktlint = "14.2.0"
+dokka = "2.2.0"
 credentials = "1.6.0"
 googleid = "1.2.0"
 paging = "3.5.0"
@@ -144,6 +145,7 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 google-services = { id = "com.google.gms.google-services", version.ref = "googleServicesPlugin" }
 firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebaseCrashlytics" }
 roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }

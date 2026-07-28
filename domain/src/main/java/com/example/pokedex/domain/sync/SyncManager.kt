@@ -2,18 +2,13 @@ package com.example.pokedex.domain.sync
 
 import kotlinx.coroutines.flow.Flow
 
-/**
- * Interface representing the current state of a sync operation.
- */
+/** Domain boundary for requesting and observing persistent data synchronization. */
 interface SyncManager {
     /**
-     * A flow that emits true when a synchronization process is currently running,
-     * and false otherwise.
+     * Emits `true` while any work carrying the synchronization tag is running.
      */
     val isSyncing: Flow<Boolean>
 
-    /**
-     * Triggers a manual synchronization process.
-     */
+    /** Enqueues one unique manual synchronization request when no equivalent work is active. */
     fun requestSync()
 }

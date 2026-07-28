@@ -4,8 +4,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 
 /**
- * Updates the state using the receiver (this), avoiding the need to use "it"
- * e.g. uiState.updateState { copy(isLoading = true) }
+ * Atomically updates the value using the current state as the receiver of [reducer].
+ *
+ * Example: `uiState.updateState { copy(isLoading = true) }`.
  */
 inline fun <T> MutableStateFlow<T>.updateState(reducer: T.() -> T) {
     update { it.reducer() }

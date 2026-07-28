@@ -5,8 +5,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 /**
- * This class is responsible for Dimensions logic.
- * Part of the Clean Architecture structure.
+ * Immutable size and spacing tokens consumed by the Pokedex design system.
+ *
+ * [PokedexTheme] provides compact defaults and a larger token set for windows at least 600 dp
+ * wide. Components should consume these values through [LocalDimensions] instead of introducing
+ * unrelated literals.
  */
 data class Dimensions(
     val paddingSmall: Dp = 8.dp,
@@ -27,4 +30,5 @@ data class Dimensions(
     val imageSizeProfile: Dp = 100.dp,
 )
 
+/** Composition-local access to the current adaptive [Dimensions]. */
 val LocalDimensions = staticCompositionLocalOf { Dimensions() }

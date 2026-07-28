@@ -12,6 +12,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
+/** Provides singleton Firebase SDK entry points used by authentication and observability adapters. */
 @Module
 @InstallIn(SingletonComponent::class)
 object FirebaseModule {

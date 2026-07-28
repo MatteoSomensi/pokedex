@@ -1,91 +1,91 @@
 # Pokedex — Android Swiss Army Knife
 
-Pokedex è un progetto Android didattico e un template personale riutilizzabile. L'applicazione è
-volutamente più articolata del dominio Pokémon che rappresenta: lo scopo è raccogliere, in un unico
-repository, pattern e strumenti utili per costruire applicazioni Android moderne.
+Pokedex is an educational Android project and a reusable personal template. The application is
+intentionally more sophisticated than its Pokémon domain requires: its purpose is to keep modern
+Android patterns, integrations, and development tools together in one practical repository.
 
-Il progetto mostra come combinare:
+The project demonstrates how to combine:
 
-- architettura multi-modulo e separazione tra UI, contratti di dominio e implementazioni;
-- UI dichiarativa con Jetpack Compose, Material 3 e layout adattivi;
-- stato unidirezionale in stile MVI/UDF;
-- cache offline con Room, Paging 3 e `RemoteMediator`;
-- dependency injection con Hilt;
-- autenticazione e osservabilità con Firebase;
-- lavoro persistente con WorkManager;
-- test JVM, test UI locali e strumentati, screenshot test e test di performance;
-- Navigation 3, deep link, app widget Glance e AppFunctions;
-- build logic condivisa, version catalog, lint e continuous integration.
+- multi-module architecture and separation between UI, domain contracts, and implementations;
+- declarative UI with Jetpack Compose, Material 3, and adaptive layouts;
+- unidirectional state management inspired by MVI and UDF;
+- offline caching with Room, Paging 3, and `RemoteMediator`;
+- dependency injection with Hilt;
+- authentication and observability with Firebase;
+- persistent background work with WorkManager;
+- JVM, local UI, instrumented UI, screenshot, and performance tests;
+- Navigation 3, deep links, Glance widgets, and AppFunctions;
+- shared build logic, a version catalog, static analysis, and continuous integration.
 
-> Questo repository è prima di tutto un laboratorio. Alcune integrazioni sono intenzionalmente
-> dimostrative o sperimentali; la sezione [Stato reale e limiti del template](#stato-reale-e-limiti-del-template)
-> distingue ciò che è già robusto da ciò che va completato prima di usare il progetto in produzione.
+> This repository is primarily a learning laboratory. Some integrations are intentionally
+> demonstrative or experimental. [Template status and limitations](#template-status-and-limitations)
+> distinguishes completed infrastructure from work that is still required before production use.
 
-## Indice
+## Table of contents
 
-- [Funzionalità](#funzionalità)
-- [Stack tecnico](#stack-tecnico)
-- [Architettura](#architettura)
-- [Moduli e dipendenze](#moduli-e-dipendenze)
-- [Flusso dello stato e MVI](#flusso-dello-stato-e-mvi)
-- [Data layer e strategia offline](#data-layer-e-strategia-offline)
-- [Navigazione e UI adattiva](#navigazione-e-ui-adattiva)
-- [Design system, accessibilità e localizzazione](#design-system-accessibilità-e-localizzazione)
+- [Features](#features)
+- [Technology stack](#technology-stack)
+- [Architecture](#architecture)
+- [Modules and dependencies](#modules-and-dependencies)
+- [State flow and MVI](#state-flow-and-mvi)
+- [Data layer and offline strategy](#data-layer-and-offline-strategy)
+- [Navigation and adaptive UI](#navigation-and-adaptive-ui)
+- [Design system, accessibility, and localization](#design-system-accessibility-and-localization)
 - [Dependency injection](#dependency-injection)
-- [Servizi di piattaforma](#servizi-di-piattaforma)
-- [Strategia di test](#strategia-di-test)
+- [Platform services](#platform-services)
+- [Testing strategy](#testing-strategy)
 - [Performance](#performance)
-- [Qualità del codice e CI/CD](#qualità-del-codice-e-cicd)
-- [KDoc](#kdoc)
-- [Configurazione e avvio](#configurazione-e-avvio)
-- [Come usare il repository come template](#come-usare-il-repository-come-template)
-- [Stato reale e limiti del template](#stato-reale-e-limiti-del-template)
-- [Documentazione ufficiale](#documentazione-ufficiale)
+- [Code quality and CI/CD](#code-quality-and-cicd)
+- [KDoc and API documentation](#kdoc-and-api-documentation)
+- [Setup and running the app](#setup-and-running-the-app)
+- [Using the repository as a template](#using-the-repository-as-a-template)
+- [Template status and limitations](#template-status-and-limitations)
+- [Official documentation](#official-documentation)
 
-## Funzionalità
+## Features
 
-- elenco Pokémon paginato;
-- ricerca per nome o identificativo;
-- filtro per tipo;
-- dettaglio con statistiche, altezza, peso, immagine e verso;
-- preferiti persistiti localmente;
-- autenticazione email/password e Google Sign-In;
-- navigazione adattiva bottom bar/navigation rail;
-- layout list-detail su finestre ampie;
-- deep link `pokedex://pokemon/{id}`;
-- sincronizzazione periodica dei primi Pokémon e prefetch delle immagini;
-- widget Glance che mostra un Pokémon preferito;
-- AppFunctions per cercare Pokémon e modificare i preferiti tramite agenti compatibili;
-- tema chiaro/scuro, dynamic color e risorse inglesi/italiane;
-- Analytics, Crashlytics e Remote Config dietro astrazioni di dominio.
+- paginated Pokémon list;
+- search by name or numeric identifier;
+- filtering by Pokémon type;
+- detail screen with statistics, height, weight, image, and cry playback;
+- locally persisted favorites;
+- email/password authentication and Google Sign-In;
+- adaptive bottom navigation or navigation rail;
+- list-detail presentation on wider windows;
+- `pokedex://pokemon/{id}` deep links;
+- periodic synchronization and image prefetching;
+- a Glance widget that displays a favorite Pokémon;
+- AppFunctions for searching and changing favorites through compatible agents;
+- light/dark themes, dynamic color, and English/Italian resources;
+- Analytics, Crashlytics, and Remote Config behind domain abstractions.
 
-## Stack tecnico
+## Technology stack
 
-| Area | Tecnologie |
+| Area | Technologies |
 |---|---|
-| Linguaggio e build | Kotlin, Kotlin DSL, Gradle Wrapper, AGP, KSP, Version Catalog |
+| Language and build | Kotlin, Kotlin DSL, Gradle Wrapper, AGP, KSP, Version Catalog |
 | UI | Jetpack Compose, Material 3, Coil |
-| Architettura UI | ViewModel, Coroutines, `StateFlow`, `Flow`, MVI/UDF |
-| Navigazione | Navigation 3, chiavi serializzabili, Scenes list-detail |
-| Persistenza | Room, DAO, PagingSource |
-| Rete | Retrofit, OkHttp, Kotlinx Serialization |
-| Paginazione | Paging 3, `Pager`, `RemoteMediator`, Paging Compose |
+| UI architecture | ViewModel, Coroutines, `StateFlow`, `Flow`, MVI/UDF |
+| Navigation | Navigation 3, serializable keys, list-detail scenes |
+| Persistence | Room, DAO, PagingSource |
+| Networking | Retrofit, OkHttp, Kotlinx Serialization |
+| Pagination | Paging 3, `Pager`, `RemoteMediator`, Paging Compose |
 | Dependency injection | Hilt/Dagger |
 | Background work | WorkManager, `CoroutineWorker`, Hilt Worker |
-| Identità e cloud | Credential Manager, Google ID, Firebase Auth, Analytics, Crashlytics, Remote Config |
-| Superfici Android | Glance App Widgets, AppFunctions |
-| Test | JUnit 4/5, MockK, Coroutines Test, Turbine, Robolectric, Compose UI Test, Roborazzi, Compose Preview Screenshot Testing |
+| Identity and cloud | Credential Manager, Google ID, Firebase Auth, Analytics, Crashlytics, Remote Config |
+| Android surfaces | Glance App Widgets, AppFunctions |
+| Testing | JUnit 4/5, MockK, Coroutines Test, Turbine, Robolectric, Compose UI Test, Roborazzi, Compose Preview Screenshot Testing |
 | Performance | Macrobenchmark, UI Automator, Baseline Profiles, ProfileInstaller |
-| Qualità | Android Lint, ktlint, Detekt, GitHub Actions |
+| Quality | Android Lint, ktlint, Detekt, GitHub Actions |
 
-Le versioni sono centralizzate in
-[`gradle/libs.versions.toml`](gradle/libs.versions.toml). I moduli Android condividono la
-configurazione tramite convention plugin in [`build-logic`](build-logic/).
+Dependency versions are centralized in
+[`gradle/libs.versions.toml`](gradle/libs.versions.toml). Android modules share configuration through
+convention plugins in [`build-logic`](build-logic/).
 
-## Architettura
+## Architecture
 
-Il progetto applica una Clean Architecture pragmatica insieme alle raccomandazioni Android su
-separation of concerns, single source of truth e unidirectional data flow.
+The project applies a pragmatic Clean Architecture approach together with the Android
+recommendations for separation of concerns, a single source of truth, and unidirectional data flow.
 
 ```mermaid
 flowchart LR
@@ -97,49 +97,49 @@ flowchart LR
     IMPL --> ROOM[(Room)]
     IMPL --> API[PokeAPI / Firebase]
     WORK[WorkManager] --> CONTRACT
-    HILT[Hilt graph] -.fornisce.-> VM
-    HILT -.fornisce.-> IMPL
-    HILT -.fornisce.-> WORK
+    HILT[Hilt graph] -.provides.-> VM
+    HILT -.provides.-> IMPL
+    HILT -.provides.-> WORK
 ```
 
-### Responsabilità dei layer
+### Layer responsibilities
 
-**UI/presentation**
+**UI and presentation**
 
-- rende uno `UiState` immutabile;
-- inoltra eventi o callback al `ViewModel`;
-- osserva gli effetti one-shot, per esempio navigazione o riproduzione audio;
-- non crea direttamente repository, database o client di rete.
+- render an immutable `UiState`;
+- forward user and system events to a `ViewModel`;
+- consume one-shot effects such as navigation or audio playback;
+- never construct repositories, databases, or network clients directly.
 
 **Domain**
 
-- definisce i modelli usati dall'app;
-- espone i contratti `PokemonRepository`, `AuthRepository`, `SyncManager`,
-  `AnalyticsLogger` e `FeatureFlagManager`;
-- non conosce Retrofit, Room, Firebase o classi Android;
-- permette alla UI di dipendere da astrazioni anziché da implementazioni.
+- defines application models;
+- exposes `PokemonRepository`, `AuthRepository`, `SyncManager`, `AnalyticsLogger`, and
+  `FeatureFlagManager`;
+- does not know about Retrofit, Room, Firebase, or Android framework classes;
+- lets presentation code depend on abstractions rather than concrete implementations.
 
-Il modulo `:domain` usa `androidx.paging:paging-common` per esporre `PagingData`: è quindi privo di
-Android framework, ma non completamente indipendente dalle librerie AndroidX.
+The `:domain` module uses `androidx.paging:paging-common` to expose `PagingData`. It is free from the
+Android framework, but it is not completely independent from AndroidX libraries.
 
 **Data**
 
-- implementa i repository;
-- coordina rete, database, cache e mapping tra DTO, entity e modelli di dominio;
-- contiene DAO, database Room, `RemoteMediator`, worker, client HTTP e adapter Firebase;
-- espone le implementazioni al resto dell'app tramite binding Hilt.
+- implements domain repositories;
+- coordinates the network, database, caches, and model mappings;
+- contains DAOs, the Room database, `RemoteMediator`, workers, HTTP clients, and Firebase adapters;
+- exposes implementations through Hilt bindings.
 
 **Application**
 
-- avvia Hilt e WorkManager;
-- compone i moduli;
-- possiede la root navigation e le integrazioni strettamente legate all'app;
-- produce l'APK/AAB finale.
+- initializes Hilt and WorkManager;
+- composes all modules;
+- owns root navigation and app-level platform integrations;
+- produces the final APK or AAB.
 
-Questa struttura segue il principio di dependency inversion: UI e logica di alto livello vedono
-interfacce nel dominio, mentre `:data` fornisce le implementazioni concrete.
+This structure applies dependency inversion: high-level UI code sees domain interfaces, while
+`:data` supplies their concrete implementations.
 
-## Moduli e dipendenze
+## Modules and dependencies
 
 ```mermaid
 flowchart TD
@@ -179,75 +179,74 @@ flowchart TD
     BENCH -.targetProjectPath.-> APP
 ```
 
-| Modulo | Responsabilità |
+| Module | Responsibility |
 |---|---|
-| `:app` | Entry point, `Application`, `MainActivity`, Navigation 3, deep link, widget, AppFunctions e composizione finale |
-| `:core` | Primitive MVI, coroutine dispatcher, scope applicativo, risorse condivise e utility UI |
-| `:core:designsystem` | Tema, colori, tipografia, dimensioni, pesi, animazioni e componenti Compose condivisi |
-| `:domain` | Modelli e contratti indipendenti dalle implementazioni |
-| `:data` | Retrofit/OkHttp, Room, Paging, repository, Firebase, WorkManager e moduli Hilt |
-| `:features:pokemon_list` | Elenco, ricerca, filtro, paginazione e relativi test |
-| `:features:pokemon_detail` | Dettaglio, preferiti e riproduzione del verso |
-| `:features:auth` | Login, registrazione, profilo e Google Sign-In con Credential Manager |
-| `:features:favorite:api` | Contratto di navigazione pubblico della feature preferiti |
-| `:features:favorite:impl` | UI e ViewModel dei preferiti |
-| `:macrobenchmark` | Test di startup/scroll e generazione Baseline Profile |
-| `build-logic` | Convention plugin per uniformare SDK, Java/Kotlin, Compose e Hilt |
+| `:app` | Application entry point, root Navigation 3 graph, deep links, widget, AppFunctions, and final composition |
+| `:core` | MVI primitives, coroutine dispatchers, application scope, shared resources, and UI utilities |
+| `:core:designsystem` | Theme, colors, typography, dimensions, weights, animations, and shared Compose components |
+| `:domain` | Models and contracts that do not depend on concrete implementations |
+| `:data` | Retrofit/OkHttp, Room, Paging, repositories, Firebase, WorkManager, and Hilt modules |
+| `:features:pokemon_list` | List, search, filters, pagination, and related tests |
+| `:features:pokemon_detail` | Detail presentation, favorite changes, and cry playback |
+| `:features:auth` | Login, registration, profile, and Google Sign-In |
+| `:features:favorite:api` | Public navigation contract for the favorites feature |
+| `:features:favorite:impl` | Favorites UI and ViewModel |
+| `:macrobenchmark` | Startup/scroll benchmarks and Baseline Profile generation |
+| `build-logic` | Convention plugins that align SDK, Java/Kotlin, Compose, and Hilt configuration |
 
-La cartella `features/` raggruppa i moduli per responsabilità senza modificare il loro ruolo
-architetturale. La suddivisione `:features:favorite:api`/`:features:favorite:impl` mostra inoltre
-come separare un contratto stabile dalla sua implementazione. Non è obbligatorio replicare questa
-granularità per ogni feature: nei progetti piccoli il costo di troppi moduli può superare il
-beneficio.
+The `features/` directory groups feature modules without changing their architectural role.
+`:features:favorite:api` and `:features:favorite:impl` also demonstrate how to separate a stable
+contract from its implementation. This level of granularity is not mandatory for every feature:
+module overhead can outweigh the benefit in smaller projects.
 
-## Flusso dello stato e MVI
+## State flow and MVI
 
-Le feature lista e dettaglio usano le primitive definite in `:core`:
+The list and detail features use the primitives defined in `:core`:
 
-- `UiState`: fotografia immutabile di ciò che la UI deve mostrare;
-- `UiEvent`: intenzione dell'utente o evento di sistema;
-- `UiEffect`: azione one-shot che non appartiene allo stato persistente;
-- `BaseViewModel<S, E, F>`: riduce gli eventi in stato ed effetti.
+- `UiState`: an immutable snapshot of everything required to render the UI;
+- `UiEvent`: a user intention or system event;
+- `UiEffect`: a one-shot action that does not belong in persistent state;
+- `BaseViewModel<S, E, F>`: processes events and produces state or effects.
 
 ```mermaid
 sequenceDiagram
-    participant User as Utente
+    participant User
     participant UI as Composable
     participant VM as ViewModel
     participant Repo as Repository
 
-    User->>UI: interazione
+    User->>UI: interaction
     UI->>VM: UiEvent
-    VM->>Repo: operazione
+    VM->>Repo: operation
     Repo-->>VM: Result / Flow
-    VM-->>UI: nuovo UiState
-    opt azione one-shot
+    VM-->>UI: new UiState
+    opt one-shot action
         VM-->>UI: UiEffect
     end
 ```
 
-Implementazione:
+Implementation details:
 
-- lo stato è esposto come `StateFlow`;
-- gli eventi entrano in un `MutableSharedFlow`;
-- gli effetti sono inviati su un `Channel` ed esposti come `Flow`;
-- `setState` applica una funzione riduttrice allo stato corrente;
-- `viewModelScope` lega le coroutine al ciclo di vita del `ViewModel`.
+- state is exposed as `StateFlow`;
+- events enter through a `MutableSharedFlow`;
+- effects are sent through a `Channel` and exposed as `Flow`;
+- `setState` applies an atomic reducer to the current state;
+- `viewModelScope` binds asynchronous work to the ViewModel lifecycle.
 
-La feature auth adotta lo stesso principio UDF, ma usa direttamente un `MutableStateFlow` anziché
-ereditare da `BaseViewModel`. È una scelta utile nel template: mostra che il pattern va applicato
-solo dove riduce complessità, senza trasformare la classe base in un vincolo universale.
+The authentication feature follows the same UDF principle but uses a `MutableStateFlow` directly
+instead of extending `BaseViewModel`. This is deliberate: the template shows that a pattern should
+reduce complexity, not become a universal inheritance requirement.
 
-Per mantenere i composable testabili, è preferibile separare:
+To keep composables testable, prefer separating:
 
-- un composable route/stateful che recupera il `ViewModel` e raccoglie i `Flow`;
-- un composable screen/stateless che riceve stato e callback.
+- a stateful route composable that obtains the ViewModel and collects flows;
+- a stateless screen composable that receives state and callbacks.
 
-## Data layer e strategia offline
+## Data layer and offline strategy
 
-### Elenco paginato
+### Paginated list
 
-Il flusso principale segue il pattern network + database di Paging 3:
+The main list follows the Paging 3 network-and-database pattern:
 
 ```mermaid
 flowchart LR
@@ -256,273 +255,267 @@ flowchart LR
     SOURCE --> DB[(Room: source of truth)]
     MEDIATOR[PokemonRemoteMediator] --> API[PokeAPI]
     API --> MEDIATOR
-    MEDIATOR -->|transazione| DB
+    MEDIATOR -->|transaction| DB
 ```
 
-1. la UI raccoglie `PagingData<Pokemon>`;
-2. il `Pager` legge sempre gli elementi dal `PagingSource` generato dal DAO;
-3. quando servono altri dati, `PokemonRemoteMediator` interroga la rete;
-4. dettagli e remote key vengono salvati in una transazione Room;
-5. Room invalida il `PagingSource` e la UI riceve i dati aggiornati.
+1. The UI collects `PagingData<Pokemon>`.
+2. `Pager` always reads visible items from the DAO-generated `PagingSource`.
+3. When more data is required, `PokemonRemoteMediator` queries the network.
+4. Details and remote keys are written in one Room transaction.
+5. Room invalidates the `PagingSource`, and the UI receives the updated data.
 
-Per questo percorso Room è la single source of truth: il `RemoteMediator` non consegna direttamente
-la risposta HTTP alla UI.
+For this path, Room is the single source of truth. `RemoteMediator` does not send HTTP responses
+directly to the UI.
 
-### Ricerca, filtro e dettaglio
+### Search, filters, and detail
 
-- la ricerca è normalizzata e debounced nel `ViewModel`;
-- il repository mantiene in memoria l'indice globale restituito dalla PokeAPI e scarica i dettagli
-  richiesti;
-- il filtro per tipo viene applicato al `PagingData`;
-- il dettaglio è local-first: restituisce la entity Room se presente, altrimenti usa la rete e la
-  persiste;
-- lo stato `isFavorite` viene preservato quando un elemento remoto aggiorna la cache.
+- search input is normalized and debounced in the ViewModel;
+- the repository keeps the global PokeAPI index in memory and downloads requested details;
+- type filtering is applied to `PagingData`;
+- detail loading is local-first: Room is returned when available, otherwise the network result is
+  persisted;
+- the local `isFavorite` value is preserved when remote data updates a cached Pokémon.
 
-### Sincronizzazione
+### Synchronization
 
-`SyncWorker` usa WorkManager per:
+`SyncWorker` uses WorkManager to:
 
-- aggiornare periodicamente un sottoinsieme di Pokémon;
-- rispettare il vincolo di connettività;
-- salvare i dati attraverso il repository;
-- precaricare le immagini con Coil;
-- restituire `retry()` in caso di errore recuperabile.
+- periodically refresh a limited Pokémon set;
+- run only when network connectivity is available;
+- persist data through the repository;
+- prefetch images with Coil;
+- return `retry()` after recoverable failures.
 
-`WorkManagerSyncManager` espone inoltre una sincronizzazione manuale unica e un `Flow<Boolean>` con
-lo stato del lavoro.
+`WorkManagerSyncManager` also exposes a unique manual synchronization request and a `Flow<Boolean>`
+that reports whether tagged work is currently running.
 
-## Navigazione e UI adattiva
+## Navigation and adaptive UI
 
-La root navigation usa Navigation 3:
+Root navigation uses Navigation 3:
 
-- ogni destinazione è un `NavKey` serializzabile;
-- il back stack è una lista osservabile controllata dall'app;
-- `NavDisplay` associa le chiavi ai contenuti;
-- l'autenticazione determina la destinazione iniziale;
-- un listener Firebase riporta alla schermata auth quando la sessione termina;
-- il deep link `pokedex://pokemon/{id}` apre il dettaglio immediatamente o dopo il login.
+- each destination is a serializable `NavKey`;
+- the app explicitly owns the observable back stack;
+- `NavDisplay` resolves keys into content;
+- authentication determines the initial destination;
+- a Firebase listener returns to authentication after session termination;
+- `pokedex://pokemon/{id}` opens a detail immediately or after successful login.
 
-`NavigationSuiteScaffold` sceglie la navigazione più adatta allo spazio disponibile. La strategia
-`ListDetailSceneStrategy` mostra lista e dettaglio insieme quando la finestra lo permette e torna
-alla navigazione a singolo pannello su finestre compatte.
+`NavigationSuiteScaffold` selects navigation appropriate for the available space.
+`ListDetailSceneStrategy` shows list and detail together when the window allows it, and returns to a
+single-pane layout on compact windows.
 
-La decisione è basata sulla finestra corrente, non sul nome del dispositivo: questo rende il layout
-compatibile anche con split screen, foldable e desktop windowing.
+The decision is based on the current app window, not a device name. This also supports split screen,
+foldables, and desktop windowing.
 
-## Design system, accessibilità e localizzazione
+## Design system, accessibility, and localization
 
-Il modulo `:core:designsystem` centralizza:
+`:core:designsystem` centralizes:
 
-- color scheme chiaro e scuro;
-- dynamic color da Android 12;
-- tipografia;
-- token di spaziatura, dimensione, peso e animazione;
-- componenti riutilizzabili come `PokemonCard`;
-- `CompositionLocal` per distribuire i token senza parametri ripetitivi.
+- light and dark color schemes;
+- Android 12+ dynamic color;
+- typography;
+- spacing, size, weight, and animation tokens;
+- reusable components such as `PokemonCard`;
+- `CompositionLocal` values for distributing tokens without repetitive parameters.
 
-`PokedexTheme` applica token dimensionali differenti sopra e sotto i 600 dp. La root activity usa
-edge-to-edge; le singole schermate devono quindi consumare correttamente gli inset di sistema.
+`PokedexTheme` currently selects different dimension tokens below and above 600 dp. The root
+activity is edge-to-edge, so individual screens must consume system insets correctly.
 
-### Regole di design per estendere il template
+### Rules for extending the design
 
-1. Usare i token del design system, non valori `dp`, colori o durate sparsi nelle feature.
-2. Hoistare lo stato: i componenti riutilizzabili ricevono dati e callback.
-3. Preferire componenti Material 3, personalizzandoli attraverso il tema.
-4. Progettare per la dimensione della finestra e verificare almeno larghezze compact, medium ed
-   expanded.
-5. Aggiungere preview per tema chiaro/scuro, font scale elevata e dimensioni significative.
-6. Usare semantic matcher nei test; ricorrere a `testTag` solo quando la semantica non identifica
-   chiaramente il nodo.
-7. Fornire `contentDescription` alle immagini informative e lasciare `null` per quelle puramente
-   decorative.
-8. Mantenere target touch adeguati e verificare TalkBack, contrasto e ridimensionamento testo.
+1. Use design-system tokens instead of scattered `dp`, color, or duration literals.
+2. Hoist state: reusable components receive values and callbacks.
+3. Prefer Material 3 components and customize them through the theme.
+4. Design for the available window and verify compact, medium, and expanded widths.
+5. Add previews for light/dark themes, increased font scale, and meaningful window sizes.
+6. Prefer semantic matchers in tests; use `testTag` only when semantics cannot identify a node
+   clearly.
+7. Provide content descriptions for informative images and use `null` for decorative images.
+8. Preserve appropriate touch targets and verify TalkBack, contrast, and text scaling.
 
-Le risorse condivise hanno varianti inglesi e italiane e il manifest supporta RTL. Alcune stringhe
-della navigazione e del widget sono ancora hardcoded: prima di considerare completa la
-localizzazione vanno spostate nelle risorse e testate in entrambe le lingue.
+Shared resources contain English and Italian variants, and the manifest enables RTL support. Some
+navigation and widget strings are still hardcoded. They must be moved to resources and tested in
+each locale before localization can be considered complete.
 
 ## Dependency injection
 
-Hilt costruisce il grafo delle dipendenze e ne gestisce gli scope:
+Hilt builds the dependency graph and manages component lifetimes:
 
-- `@HiltAndroidApp` inizializza il container applicativo;
-- `@AndroidEntryPoint` abilita l'injection nella `MainActivity`;
-- `@HiltViewModel` fornisce repository e configurazione ai ViewModel;
-- `@Binds` collega interfacce di dominio e implementazioni data;
-- `@Provides` costruisce tipi di librerie esterne come Room, Retrofit e Firebase;
-- `HiltWorkerFactory` permette l'injection nel `SyncWorker`;
-- un Hilt entry point rende il repository disponibile al widget Glance.
+- `@HiltAndroidApp` initializes the application container;
+- `@AndroidEntryPoint` enables injection in `MainActivity`;
+- `@HiltViewModel` supplies repositories and configuration to ViewModels;
+- `@Binds` maps domain interfaces to data implementations;
+- `@Provides` constructs third-party types such as Room, Retrofit, and Firebase;
+- `HiltWorkerFactory` enables injection in `SyncWorker`;
+- a Hilt entry point exposes the repository to the Glance widget.
 
-Nei test, la dipendenza diretta da interfacce permette di usare fake o mock deterministici. Per test
-strumentati dell'intero grafo si può aggiungere `hilt-android-testing` e sostituire i binding di
-produzione con fake o database in-memory.
+Depending on interfaces makes test doubles straightforward. Full graph tests can add
+`hilt-android-testing` and replace production bindings with fakes or an in-memory database.
 
-## Servizi di piattaforma
+## Platform services
 
-### Autenticazione e sessione
+### Authentication and HTTP session
 
-- Firebase Auth gestisce email/password e token Google;
-- Credential Manager realizza il flusso Google Sign-In;
-- `AuthRepository` nasconde Firebase al livello presentation;
-- `SessionManager`, `AuthInterceptor` e `TokenAuthenticator` mostrano come strutturare
-  l'autenticazione HTTP.
+- Firebase Auth handles email/password and Google credentials;
+- Credential Manager implements Google Sign-In;
+- `AuthRepository` hides Firebase from presentation code;
+- `SessionManager`, `AuthInterceptor`, and `TokenAuthenticator` demonstrate the structure of
+  authenticated HTTP calls.
 
-La PokeAPI pubblica usata dal progetto non offre un endpoint di refresh token: l'authenticator è
-quindi uno scheletro didattico e `refreshToken()` restituisce attualmente `null`.
+The public PokeAPI used by the project has no token-refresh endpoint. The authenticator is therefore
+an educational scaffold, and `refreshToken()` currently returns `null`.
 
-### Osservabilità e configurazione remota
+### Observability and remote configuration
 
-`AnalyticsLogger` e `FeatureFlagManager` sono contratti di dominio. Le implementazioni Firebase
-possono registrare eventi, proprietà utente, eccezioni non fatali e leggere feature flag senza
-accoppiare ViewModel e UI agli SDK cloud.
+`AnalyticsLogger` and `FeatureFlagManager` are domain contracts. Firebase implementations can log
+events, user properties, non-fatal exceptions, and feature flags without coupling UI or ViewModels
+to the cloud SDKs.
 
-Firebase Messaging è presente nel bundle delle dipendenze, ma non esiste ancora un flusso di push
-notification nel codice.
+Firebase Messaging is included in the dependency bundle, but no push-notification workflow is
+implemented yet.
 
 ### App widget
 
-`PokedexWidget` usa Glance per mostrare un preferito letto dal repository. Glance usa il runtime di
-Compose, ma produce `RemoteViews` e offre un insieme di composable distinto dalla UI Compose
-normale. Il widget usa per ora un'immagine statica: per mostrare immagini remote è necessario
-scaricarle fuori dalla composizione e fornire un bitmap locale.
+`PokedexWidget` uses Glance to display a favorite read through the repository. Glance uses the
+Compose runtime but produces `RemoteViews` and has a composable set distinct from regular Compose
+UI. The widget currently uses a static image. Remote images require downloading outside the
+composition and supplying a local bitmap.
 
 ### AppFunctions
 
-`PokedexAppFunctions` espone due operazioni al sistema:
+`PokedexAppFunctions` exposes:
 
 - `searchPokemon(query)`;
 - `toggleFavorite(pokemonId, isFavorite)`.
 
-AppFunctions è una API sperimentale disponibile sui dispositivi supportati. Le KDoc delle funzioni
-sono parte del contratto: `isDescribedByKDoc = true` permette agli agenti di capire scopo,
-parametri, risultato e ordine corretto delle chiamate.
+AppFunctions is experimental and available only on supported devices. Function KDoc is part of the
+machine-readable contract: `isDescribedByKDoc = true` lets an agent understand purpose, parameters,
+results, and the required call sequence.
 
-## Strategia di test
+## Testing strategy
 
-La strategia segue una piramide: molti test locali veloci, meno test di integrazione e UI, pochissimi
-test end-to-end e di performance.
+The strategy follows a testing pyramid: many fast local tests, fewer integration and UI tests, and
+very few end-to-end and performance tests.
 
-### Suite presenti
+### Existing suites
 
-| Tipo | Source set / modulo | Cosa verifica | Ambiente |
+| Type | Source set / module | What it verifies | Environment |
 |---|---|---|---|
-| Unit test | `src/test`, `:data` | repository, fallback locale/remoto, `RemoteMediator`, worker | JVM, con MockK/Coroutines Test; Robolectric dove serve Android |
-| ViewModel test | `src/test`, `:features:pokemon_list` | stato, eventi ed effetti | JVM, JUnit 5, Turbine |
-| UI behavior test locale | `src/test`, `:features:pokemon_list` | rendering Compose con stato controllato | Robolectric |
-| Screenshot test Roborazzi | `src/test`, `:features:pokemon_list` | regressioni visive della schermata | JVM/Robolectric |
-| Preview screenshot test | `src/screenshotTest` | regressioni visive di una preview/componente | LayoutLib, plugin ufficiale sperimentale |
-| UI test strumentato | `src/androidTest`, `:features:pokemon_list` | contenuto Compose su device/emulatore | AndroidJUnitRunner |
-| Macrobenchmark | `:macrobenchmark` | startup e frame timing durante lo scroll | device/emulatore separato dal processo app |
-| Baseline Profile | `:macrobenchmark` → `:app` | critical user journey da precompilare | device compatibile |
+| Unit test | `src/test`, `:data` | repository orchestration, local/remote fallback, `RemoteMediator`, worker | JVM; Robolectric where Android APIs are required |
+| ViewModel test | `src/test`, `:features:pokemon_list` | state, events, and effects | JVM, JUnit 5, Turbine |
+| Local UI behavior test | `src/test`, `:features:pokemon_list` | Compose rendering with controlled state | Robolectric |
+| Roborazzi screenshot test | `src/test`, `:features:pokemon_list` | screen-level visual regression | JVM/Robolectric |
+| Preview screenshot test | `src/screenshotTest` | preview/component visual regression | LayoutLib, experimental official plugin |
+| Instrumented UI test | `src/androidTest`, `:features:pokemon_list` | Compose content on a device or emulator | AndroidJUnitRunner |
+| Macrobenchmark | `:macrobenchmark` | startup and frame timing while scrolling | separate device-side process |
+| Baseline Profile | `:macrobenchmark` → `:app` | critical user journeys to precompile | compatible device |
 
-### Unit test
+### Unit tests
 
-Un unit test verifica una singola unità di logica senza dipendenze reali lente o instabili.
+A unit test verifies one unit of logic without real slow or unstable dependencies.
 
-- repository e ViewModel ricevono mock/fake;
-- `runTest` controlla il tempo virtuale delle coroutine;
-- Turbine osserva `Flow` e sequenze di emissioni;
-- i dispatcher sono iniettati, così il test non dipende da `Dispatchers.IO` reale;
-- Activity, composable puramente dichiarativi e moduli DI non sono buoni candidati per unit test.
+- repositories and ViewModels receive mocks or fakes;
+- `runTest` controls coroutine virtual time;
+- Turbine observes flows and emission sequences;
+- injected dispatchers prevent tests from depending on the real `Dispatchers.IO`;
+- Activities, declarative composables, and DI modules are generally low-value unit-test targets.
 
 ```bash
-# Tutti i test locali di tutti i moduli
+# All local tests in all modules
 ./gradlew test
 
-# Variante debug
+# Debug variant
 ./gradlew testDebugUnitTest
 
-# Solo il modulo della lista
+# List feature only
 ./gradlew :features:pokemon_list:testDebugUnitTest
 ```
 
-### Integration test
+### Integration tests
 
-Un integration test verifica la collaborazione tra più componenti reali, per esempio:
+An integration test verifies collaboration between multiple real components, for example:
 
-- repository + Room in-memory;
-- `RemoteMediator` + DAO + transazioni Room;
-- Worker + WorkManager TestDriver + repository fake;
-- grafo Hilt di test + feature.
+- repository plus an in-memory Room database;
+- `RemoteMediator`, DAO, and Room transactions;
+- Worker, WorkManager TestDriver, and a fake repository;
+- a test Hilt graph and one feature.
 
-I test repository correnti coprono bene l'orchestrazione con collaboratori sostituiti, ma non
-validano ancora il vero motore SQLite. Il prossimo test ad alto valore è un test strumentato di
-`PokemonDao`/`PokedexDatabase` con Room in-memory; Android raccomanda il device perché la versione di
-SQLite del dispositivo può differire da quella host. Quando verranno introdotte migrazioni, vanno
-aggiunti anche i migration test con schema esportato.
+Current repository tests cover orchestration with replaced collaborators, but they do not validate
+the real SQLite engine. A high-value next test is an instrumented `PokemonDao`/`PokedexDatabase`
+test backed by an in-memory Room database. Android recommends running database tests on a device
+because device SQLite can differ from the host implementation. The project already has migrations,
+so schema export and migration tests should also be added.
 
-### UI behavior test
+### UI behavior tests
 
-I test Compose interrogano l'albero semantico, eseguono azioni e verificano il risultato. Un test
-robusto dovrebbe:
+Compose tests query the semantics tree, perform actions, and assert the result. A robust test should:
 
-- impostare uno stato deterministico;
-- cercare nodi per testo, ruolo, descrizione o altra semantica;
-- eseguire click, input o scroll;
-- verificare lo stato visibile risultante;
-- coprire loading, contenuto, vuoto ed errore;
-- verificare il ripristino dello stato dopo ricreazione;
-- non dipendere dalla rete reale.
+- install deterministic state;
+- locate nodes by text, role, description, or another semantic property;
+- perform clicks, input, or scrolling;
+- assert the resulting visible state;
+- cover loading, content, empty, and error states;
+- verify state restoration after recreation;
+- avoid the real network.
 
 ```bash
-# Richiede un device o emulatore connesso
+# Requires a connected device or emulator
 ./gradlew :features:pokemon_list:connectedDebugAndroidTest
 
-# Tutti gli androidTest disponibili
+# Every available androidTest suite
 ./gradlew connectedAndroidTest
 ```
 
-### Screenshot test
+### Screenshot tests
 
-Gli screenshot test validano l'aspetto, non il comportamento.
+Screenshot tests validate appearance, not behavior.
 
 Roborazzi:
 
 ```bash
-# Confronta con le immagini approvate
+# Compare against approved references
 ./gradlew :features:pokemon_list:verifyRoborazziDebug
 
-# Rigenera intenzionalmente le reference
+# Intentionally regenerate references
 ./gradlew :features:pokemon_list:recordRoborazziDebug
 ```
 
 Compose Preview Screenshot Testing:
 
 ```bash
-# Valida le preview contro le reference
+# Validate previews against references
 ./gradlew :features:pokemon_list:validateDebugScreenshotTest
 
-# Aggiorna intenzionalmente le reference
+# Intentionally update references
 ./gradlew :features:pokemon_list:updateDebugScreenshotTest
 ```
 
-Le reference Roborazzi vivono in `features/pokemon_list/src/test/screenshots`; quelle del plugin
-ufficiale in `features/pokemon_list/src/screenshotTestDebug/reference`. Un aggiornamento delle
-reference è una modifica funzionale da revisionare visivamente, non un modo per rendere verde un
-test.
+Roborazzi references live in `features/pokemon_list/src/test/screenshots`. Official preview
+screenshot references live in `features/pokemon_list/src/screenshotTestDebug/reference`. Updating
+references is a visual change that must be reviewed, not a shortcut for making a test pass.
 
-Per rendere la suite adattiva, aggiungere casi screen-level per larghezze compact, medium ed expanded,
-tema chiaro/scuro e font scale 1.5, oltre a variazioni mirate dei componenti condivisi.
+The adaptive screenshot matrix should eventually include compact, medium, and expanded widths,
+light/dark themes, font scale 1.5, and targeted variants of shared components.
 
-### End-to-end e navigation test
+### End-to-end and navigation tests
 
-Un vero E2E attraversa l'app come un utente e usa implementazioni quanto più vicine possibile alla
-produzione. Deve rimanere raro perché è più lento e fragile.
+A functional E2E test drives the app like a user and uses implementations close to production. E2E
+tests should remain rare because they are slower and more fragile.
 
-Percorsi consigliati:
+Recommended journeys:
 
-1. login → lista → ricerca → dettaglio → preferito;
-2. apertura deep link da utente autenticato e non autenticato;
-3. back handling e passaggio tra tab;
-4. persistenza offline dopo un primo caricamento;
-5. logout e pulizia del back stack.
+1. login → list → search → detail → favorite;
+2. deep link while authenticated and unauthenticated;
+3. back handling and switching primary destinations;
+4. offline persistence after an initial online load;
+5. logout and back-stack cleanup.
 
-La suite attuale non contiene ancora questi E2E funzionali. UI Automator è già disponibile nel
-modulo macrobenchmark, ma oggi viene usato per performance e generazione profili.
+The current suite does not contain these functional E2E journeys. UI Automator is already available
+in `:macrobenchmark`, but it is currently used for performance and profile generation.
 
-### Cosa eseguire in CI
+### CI test commands
 
-Una pipeline completa dovrebbe eseguire, in ordine:
+A complete host-side CI stage should execute:
 
 ```bash
 ./gradlew ktlintCheck detekt lintDebug
@@ -532,127 +525,123 @@ Una pipeline completa dovrebbe eseguire, in ordine:
 ./gradlew assembleDebug
 ```
 
-I test strumentati, gli E2E e i benchmark richiedono inoltre emulatori, Gradle Managed Devices o
-device dedicati. La CI corrente compila gli androidTest e i preview screenshot test, ma non li
-esegue su device e non esegue ancora `validateDebugScreenshotTest`.
+Instrumented tests, E2E tests, and benchmarks additionally require emulators, Gradle Managed
+Devices, or dedicated hardware. The current workflow compiles device and preview screenshot tests,
+but it does not execute device tests or `validateDebugScreenshotTest`.
 
 ## Performance
 
-Il modulo `:macrobenchmark` misura l'app dall'esterno, in un processo separato:
+`:macrobenchmark` measures the application externally in a separate process:
 
-- startup con `StartupTimingMetric`;
-- fluidità dello scroll con `FrameTimingMetric`;
-- critical user journey con UI Automator;
-- generazione del Baseline Profile.
+- startup through `StartupTimingMetric`;
+- scroll fluidity through `FrameTimingMetric`;
+- a critical user journey driven by UI Automator;
+- Baseline Profile generation.
 
 ```bash
-# Richiede un device/emulatore idoneo
+# Requires a suitable device or emulator
 ./gradlew :macrobenchmark:connectedNonMinifiedReleaseAndroidTest
 
-# Genera e copia il profilo nella variante dell'app
+# Generate and copy the profile into the app variant
 ./gradlew :app:generateBaselineProfile
 ```
 
-Un Baseline Profile indica ad ART i percorsi da compilare ahead-of-time e migliora startup e
-interazioni critiche già dal primo avvio. Non equivale a un benchmark: il profilo ottimizza, mentre
-Macrobenchmark misura. Per verificare il beneficio bisogna confrontare build equivalenti con e senza
-profilo, preferibilmente su hardware fisico stabile.
+A Baseline Profile tells ART which code paths to compile ahead of time, improving startup and
+critical interactions from the first run. It is not a benchmark: a profile optimizes, while
+Macrobenchmark measures. Validate its benefit by comparing equivalent builds with and without the
+profile, preferably on stable physical hardware.
 
-## Qualità del codice e CI/CD
+## Code quality and CI/CD
 
 ```bash
-# Formattazione
+# Formatting
 ./gradlew ktlintCheck
 ./gradlew ktlintFormat
 
-# Analisi statica Kotlin
+# Kotlin static analysis
 ./gradlew detekt
 
-# Analisi Android
+# Android analysis
 ./gradlew lintDebug
 
-# Build
+# Build artifacts
 ./gradlew assembleDebug
 ./gradlew bundleRelease
 ```
 
-I baseline Detekt esistenti rappresentano debito tecnico accettato: non devono diventare un luogo in
-cui nascondere automaticamente nuove violazioni.
+Existing Detekt baselines represent accepted technical debt. They should not become a place to hide
+new violations automatically.
 
-GitHub Actions contiene:
+GitHub Actions contains:
 
-- una pipeline CI che esegue style check, analisi statica, unit test, verifica Roborazzi,
-  compilazione dei test Android/screenshot, build macrobenchmark, lint e APK debug;
-- una pipeline CD attivata dai tag `v*`, che ricostruisce `google-services.json`, produce e firma
-  l'AAB e carica l'artefatto;
-- uno step Play Store predisposto ma commentato.
+- CI for style checks, static analysis, local tests, Roborazzi verification, compilation of device
+  and preview screenshot tests, macrobenchmark APKs, Android Lint, and a debug APK;
+- tag-triggered CD for reconstructing `google-services.json`, building and signing an AAB, and
+  uploading the artifact;
+- a prepared but commented Play Store deployment step.
 
-## KDoc
+## KDoc and API documentation
 
-La KDoc non deve ripetere il nome della classe. In un template didattico deve spiegare soprattutto
-decisioni e contratti che il tipo non rende evidenti.
+KDoc should not repeat a class name. In an educational template, it should explain decisions and
+contracts that are not obvious from the type signature.
 
-### Cosa documentare
+### What to document
 
-- API pubbliche tra moduli;
-- invarianti e ownership dello stato;
-- thread, dispatcher e comportamento di cancellazione;
-- caching, fallback, retry ed effetti collaterali;
-- formati, unità di misura e valori limite;
-- errori attesi e significato dei `Result`;
-- workflow richiesti da AppFunctions;
-- estensioni pensate per essere riusate.
+- public APIs used across module boundaries;
+- invariants and state ownership;
+- thread, dispatcher, and cancellation behavior;
+- caching, fallback, retry, and side effects;
+- formats, measurement units, and boundary values;
+- expected failures and the meaning of `Result`;
+- required AppFunctions workflows;
+- reusable extension contracts.
 
-Usare `@param`, `@property`, `@return`, `@throws`, `@see` e link `[Tipo]` quando aggiungono
-informazione reale. Per API interne e codice autoesplicativo è spesso migliore un buon nome rispetto
-a una KDoc generica.
+Use `@param`, `@property`, `@return`, `@throws`, `@see`, and `[Type]` links when they add real
+information. For internal and self-explanatory code, a precise name is often better than a generic
+comment.
 
-### Stato attuale
+### Documentation generation
 
-La documentazione è parziale:
+The repository uses Dokka to generate an aggregated HTML reference for the public Kotlin API:
 
-- contratti di dominio, networking, sync, analytics e AppFunctions hanno già KDoc utile;
-- molte API pubbliche di navigazione, design system, database e feature non sono documentate;
-- alcune KDoc sono boilerplate (“responsible for ... logic”) e non descrivono invarianti o side
-  effect;
-- lingua italiana e inglese sono mischiate;
-- non è configurato Dokka, quindi non viene generato né verificato un sito di API documentation.
+```bash
+./gradlew :dokkaGenerate
+```
 
-Priorità consigliata: contratti `domain` → primitive `core` → API tra feature → data source con
-comportamenti non ovvi → componenti del design system. Le KDoc delle AppFunctions hanno priorità
-massima perché vengono consumate anche dagli agenti.
+Generated output belongs under `build/dokka/` and is not committed. KDoc and this README are written
+in English so source comments, generated reference pages, and project documentation use one
+consistent language.
 
-## Configurazione e avvio
+## Setup and running the app
 
-### Prerequisiti
+### Prerequisites
 
-- Android Studio compatibile con AGP dichiarato nel version catalog;
-- JDK 21 per allinearsi al wrapper/daemon e al target Java del modulo `:domain`;
-- Android SDK corrispondente a `compileSdk = 37`;
-- un emulatore o device API 24+ per l'app;
-- un progetto Firebase personale per usare davvero autenticazione e osservabilità.
+- an Android Studio version compatible with the AGP version in the catalog;
+- JDK 21 to align with the Gradle daemon and the `:domain` Java target;
+- the Android SDK required by `compileSdk = 37`;
+- an API 24+ emulator or device for the app;
+- a personal Firebase project for real authentication and observability.
 
-I moduli Android compilano bytecode Java/Kotlin 17; `:domain` dichiara attualmente Java 21.
+Android modules produce Java/Kotlin 17 bytecode. `:domain` currently declares Java 21.
 
 ### Firebase
 
-1. Creare un'app Android Firebase con package `com.example.pokedex`.
-2. Copiare il proprio file in `app/google-services.json`.
-3. Abilitare Authentication email/password e Google.
-4. Configurare Analytics, Crashlytics e Remote Config se si vogliono provare le relative
-   integrazioni.
-5. Se `default_web_client_id` non viene generato dal file Google Services, passare
-   `WEB_CLIENT_ID` come proprietà Gradle locale:
+1. Create a Firebase Android app with package `com.example.pokedex`.
+2. Copy your configuration to `app/google-services.json`.
+3. Enable email/password and Google authentication.
+4. Configure Analytics, Crashlytics, and Remote Config if you want to exercise those integrations.
+5. If Google Services does not generate `default_web_client_id`, provide `WEB_CLIENT_ID` through a
+   local Gradle property:
 
 ```properties
 # ~/.gradle/gradle.properties
 WEB_CLIENT_ID=your-web-client-id.apps.googleusercontent.com
 ```
 
-`google-services.json`, `local.properties` e i keystore sono ignorati da Git: non committare
-credenziali o materiale di firma.
+`google-services.json`, `local.properties`, and keystores are ignored by Git. Do not commit
+credentials or signing material.
 
-### Build e run
+### Build and run
 
 ```bash
 git clone <repository-url>
@@ -660,9 +649,9 @@ cd pokedex
 ./gradlew assembleDebug
 ```
 
-Aprire quindi il progetto in Android Studio ed eseguire la configurazione `:app`.
+Open the project in Android Studio and run the `:app` configuration.
 
-Per provare un deep link:
+To exercise a deep link:
 
 ```bash
 adb shell am start \
@@ -671,81 +660,77 @@ adb shell am start \
   com.example.pokedex
 ```
 
-## Come usare il repository come template
+## Using the repository as a template
 
-Per aggiungere una feature:
+To add a feature:
 
-1. creare un modulo Android library e applicare `pokedex.android.feature`;
-2. dipendere da `:domain` e `:core`, evitando dipendenze dirette da `:data`;
-3. definire state, event ed effect solo se la complessità giustifica MVI;
-4. creare una route stateful e una screen stateless;
-5. aggiungere una `NavKey` serializzabile e registrarla nell'`entryProvider`;
-6. aggiungere eventuali contratti al dominio e implementarli in `:data`;
-7. fornire i binding Hilt;
-8. aggiungere unit test della logica, UI behavior test e preview/screenshot significative;
-9. verificare compact/medium/expanded, dark mode, font scale e accessibilità;
-10. aggiornare README e KDoc delle API tra moduli.
+1. create an Android library below `features/` and apply `pokedex.android.feature`;
+2. depend on `:domain` and `:core`, avoiding a direct dependency on `:data`;
+3. define state, events, and effects only when the complexity justifies MVI;
+4. create a stateful route and a stateless screen;
+5. add a serializable `NavKey` and register it in the root `entryProvider`;
+6. add domain contracts and implement them in `:data` when required;
+7. provide Hilt bindings;
+8. add logic tests, UI behavior tests, and meaningful previews/screenshots;
+9. verify compact/medium/expanded widths, dark mode, font scale, and accessibility;
+10. update this README and the KDoc of cross-module APIs.
 
-Per sostituire il dominio Pokémon:
+To replace the Pokémon domain:
 
-- mantenere `:core`, `build-logic` e l'impianto test;
-- sostituire modelli e repository in `:domain`;
-- sostituire API, entity, DAO e mapping in `:data`;
-- rinominare package/application ID e configurare un nuovo progetto Firebase;
-- eliminare le integrazioni non utili: un coltellino svizzero funziona meglio quando si portano solo
-  gli strumenti necessari.
+- keep `:core`, `build-logic`, and the testing infrastructure;
+- replace models and repositories in `:domain`;
+- replace API DTOs, entities, DAOs, and mappings in `:data`;
+- rename packages/application ID and configure a new Firebase project;
+- remove integrations that are not useful for the new product.
 
-## Stato reale e limiti del template
+A Swiss Army knife is most effective when each project carries only the tools it needs.
 
-Questi punti sono intenzionali o ancora da completare:
+## Template status and limitations
 
-- la Clean Architecture è pragmatica: `:core:designsystem` dipende da `:domain` per `PokemonCard`;
-  per un design system totalmente generico il componente va spostato nella feature o reso
-  indipendente dal modello di dominio;
-- la lista è paginata con Paging 3/`RemoteMediator`, non con infinite scroll custom;
-- il dettaglio local-first non ha una policy di scadenza della cache;
-- filtro per tipo e ricerca globale sono implementazioni didattiche, non un motore query scalabile;
-- `SessionManager.refreshToken()` è uno stub perché PokeAPI non offre auth;
-- Firebase Messaging è dipendenza non ancora usata;
-- AppFunctions e Compose Preview Screenshot Testing sono API sperimentali;
-- il widget usa un asset statico invece dell'immagine remota;
-- alcune stringhe sono ancora hardcoded;
-- mancano test Room su SQLite reale, migration test, navigation test ed E2E funzionali;
-- la CI compila ma non esegue i test che richiedono device;
-- KDoc e documentazione API non hanno ancora enforcement Dokka;
-- i target Java della CI e del modulo `:domain` vanno mantenuti allineati quando si modifica la
-  toolchain.
+- Clean Architecture is pragmatic: `:core:designsystem` depends on `:domain` for `PokemonCard`. Move
+  that component into a feature or decouple it from the domain model for a generic design system.
+- The list uses Paging 3 and `RemoteMediator`; it is not a custom infinite-scroll implementation.
+- Local-first detail loading has no cache-expiration policy.
+- Type filtering and global search are educational implementations, not a scalable query engine.
+- `SessionManager.refreshToken()` is a stub because PokeAPI has no authentication.
+- Firebase Messaging is included but unused.
+- AppFunctions and Compose Preview Screenshot Testing are experimental.
+- The widget displays a static asset rather than the remote Pokémon image.
+- Some UI strings remain hardcoded.
+- Room-on-device tests, migration tests, navigation tests, and functional E2E tests are missing.
+- CI compiles but does not execute suites that require a device.
+- Java targets in CI and `:domain` must remain aligned when changing the toolchain.
 
-## Documentazione ufficiale
+## Official documentation
 
-Le scelte descritte in questo README derivano principalmente da queste fonti:
+The explanations and design choices in this README are based primarily on these sources.
 
-### Architettura e modularizzazione
+### Architecture and modularization
 
 - [Guide to app architecture](https://developer.android.com/topic/architecture)
-- [UI layer e unidirectional data flow](https://developer.android.com/topic/architecture/ui-layer)
+- [UI layer and unidirectional data flow](https://developer.android.com/topic/architecture/ui-layer)
 - [Data layer](https://developer.android.com/topic/architecture/data-layer)
 - [Guide to Android app modularization](https://developer.android.com/topic/modularization)
 - [Common modularization patterns](https://developer.android.com/topic/modularization/patterns)
 
-### Dati, dependency injection e background work
+### Data, dependency injection, and background work
 
-- [Paging da rete e database con RemoteMediator](https://developer.android.com/topic/libraries/architecture/paging/v3-network-db)
+- [Paging from network and database with RemoteMediator](https://developer.android.com/topic/libraries/architecture/paging/v3-network-db)
 - [Room](https://developer.android.com/training/data-storage/room)
-- [Dependency injection con Hilt](https://developer.android.com/training/dependency-injection/hilt-android)
-- [WorkManager e persistent work](https://developer.android.com/develop/background-work/background-tasks/persistent)
+- [Dependency injection with Hilt](https://developer.android.com/training/dependency-injection/hilt-android)
+- [WorkManager and persistent work](https://developer.android.com/develop/background-work/background-tasks/persistent)
 
-### UI, navigazione e design
+### UI, navigation, and design
 
 - [Navigation 3](https://developer.android.com/guide/navigation/navigation-3)
-- [Navigation 3 Scenes](https://developer.android.com/guide/navigation/navigation-3/scenes)
+- [Navigation 3 scenes](https://developer.android.com/guide/navigation/navigation-3/scenes)
 - [Build adaptive apps](https://developer.android.com/develop/ui/compose/build-adaptive-apps)
 - [Window size classes](https://developer.android.com/develop/adaptive-apps/guides/use-window-size-classes)
 - [Design systems in Compose](https://developer.android.com/develop/ui/compose/designsystems)
 - [Material 3 in Compose](https://developer.android.com/develop/ui/compose/designsystems/material3)
-- [Semantics e accessibilità](https://developer.android.com/develop/ui/compose/accessibility/semantics)
+- [Semantics and accessibility](https://developer.android.com/develop/ui/compose/accessibility/semantics)
 
-### Test e performance
+### Testing and performance
 
 - [Fundamentals of testing Android apps](https://developer.android.com/training/testing/fundamentals)
 - [What to test in Android](https://developer.android.com/training/testing/fundamentals/what-to-test)
@@ -756,12 +741,14 @@ Le scelte descritte in questo README derivano principalmente da queste fonti:
 - [Macrobenchmark](https://developer.android.com/topic/performance/benchmarking/macrobenchmark-overview)
 - [Create Baseline Profiles](https://developer.android.com/topic/performance/baselineprofiles/create-baselineprofile)
 
-### Superfici e integrazioni
+### API documentation and platform surfaces
 
+- [Dokka introduction](https://kotlinlang.org/docs/dokka-introduction.html)
+- [Dokka Gradle plugin](https://kotlinlang.org/docs/dokka-gradle.html)
 - [Jetpack Glance](https://developer.android.com/develop/ui/compose/glance)
 - [Create an app widget with Glance](https://developer.android.com/develop/ui/compose/glance/create-app-widget)
 - [AppFunctions overview](https://developer.android.com/ai/appfunctions)
-- [Firebase documentation](https://firebase.google.com/docs/android/setup)
+- [Firebase Android setup](https://firebase.google.com/docs/android/setup)
 
-PokeAPI è il servizio dimostrativo usato per i dati:
+PokeAPI provides the demonstration data:
 [PokeAPI documentation](https://pokeapi.co/docs/v2).

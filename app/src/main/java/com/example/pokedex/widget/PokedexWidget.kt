@@ -30,6 +30,12 @@ import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.flow.first
 
+/**
+ * Glance app widget that renders the first locally stored favorite Pokémon.
+ *
+ * Data is obtained through a Hilt entry point because Glance widgets are not constructor-injected
+ * Android entry points. The current implementation uses a static image and reads only one favorite.
+ */
 class PokedexWidget : GlanceAppWidget() {
     override suspend fun provideGlance(
         context: Context,
@@ -59,6 +65,11 @@ class PokedexWidget : GlanceAppWidget() {
     }
 }
 
+/**
+ * Renders widget content for [pokemon], or a generic empty state when it is `null`.
+ *
+ * This function uses Glance composables, which are not interchangeable with regular Compose UI.
+ */
 @Composable
 fun PokedexWidgetContent(pokemon: Pokemon?) {
     Column(

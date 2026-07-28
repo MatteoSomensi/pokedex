@@ -3,6 +3,12 @@ package com.example.pokedex.core.ui
 import android.content.res.Configuration
 import androidx.compose.ui.tooling.preview.Preview
 
+/**
+ * Generates light and dark previews for phone, tablet, and foldable configurations.
+ *
+ * Applying this annotation to sample composables provides quick theme and basic adaptation checks
+ * without duplicating [Preview] configurations.
+ */
 @Retention(AnnotationRetention.BINARY)
 @Target(
     AnnotationTarget.ANNOTATION_CLASS,
