@@ -33,6 +33,7 @@ import com.google.firebase.auth.FirebaseAuth
 private data object PokedexListDetailScene
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
+@SuppressWarnings("CyclomaticComplexMethod", "LongMethod", "FunctionNaming")
 @Composable
 fun MainNavigation(
     deepLinkUri: android.net.Uri? = null,
@@ -85,90 +86,153 @@ fun MainNavigation(
             directive = paneScaffoldDirective,
         )
 
-    NavDisplay(
-        backStack = backStack,
-        onBack = { backStack.removeLastOrNull() },
-        sceneStrategies = listOf(listDetailStrategy),
-        entryProvider =
-            entryProvider {
-                entry<PokemonList>(
-                    metadata =
-                        ListDetailSceneStrategy.listPane(
-                            sceneKey = PokedexListDetailScene,
-                            detailPlaceholder = { PokemonDetailPlaceholder() },
-                        ),
-                ) {
-                    PokemonListScreen(
-                        onNavigateToDetail = { pokemonId ->
-                            if (backStack.lastOrNull() != PokemonDetail(id = pokemonId)) {
-                                backStack.add(PokemonDetail(id = pokemonId))
-                            }
-                        },
-                        onNavigateToProfile = {
-                            if (backStack.lastOrNull() != Profile) {
-                                backStack.add(element = Profile)
-                            }
-                        },
-                        onNavigateToFavorites = {
-                            if (backStack.lastOrNull() != Favorite) {
-                                backStack.add(Favorite)
-                            }
-                        },
+    val isNavBarVisible =
+        remember(backStack) {
+            val last = backStack.lastOrNull()
+            last != null && last != Auth && last != Profile
+        }
+
+    androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold(
+        navigationSuiteItems = {
+            item(
+                selected = backStack.lastOrNull() is PokemonList || backStack.lastOrNull() is PokemonDetail,
+                onClick = {
+                    if (backStack.lastOrNull() !is PokemonList && backStack.lastOrNull() !is PokemonDetail) {
+                        backStack.add(PokemonList)
+                    }
+                },
+                icon = {
+                    androidx.compose.material3.Icon(
+                        androidx.compose.material.icons.Icons.Default.Home,
+                        contentDescription = "Home",
                     )
-                }
-                entry<PokemonDetail>(
-                    metadata =
-                        ListDetailSceneStrategy.detailPane(
-                            sceneKey = PokedexListDetailScene,
-                        ),
-                ) {
-                    PokemonDetailScreen(
-                        pokemonId = it.id,
-                        onBackClick = { backStack.removeLastOrNull() },
-                        showBackButton = LocalListDetailSceneScope.current == null,
+                },
+                label = { Text("Home") },
+            )
+            item(
+                selected = backStack.lastOrNull() is Favorite,
+                onClick = {
+                    if (backStack.lastOrNull() !is Favorite) {
+                        backStack.add(Favorite)
+                    }
+                },
+                icon = {
+                    androidx.compose.material3.Icon(
+                        androidx.compose.material.icons.Icons.Default.Favorite,
+                        contentDescription = "Favorites",
                     )
-                }
-                entry<Favorite>(
-                    metadata =
-                        ListDetailSceneStrategy.listPane(
-                            sceneKey = PokedexListDetailScene,
-                            detailPlaceholder = { PokemonDetailPlaceholder() },
-                        ),
-                ) {
-                    FavoriteScreen(
-                        onBackClick = { backStack.removeLastOrNull() },
-                        onNavigateToDetail = { pokemonId ->
-                            if (backStack.lastOrNull() != PokemonDetail(id = pokemonId)) {
-                                backStack.add(PokemonDetail(id = pokemonId))
-                            }
-                        },
+                },
+                label = { Text("Favorites") },
+            )
+            item(
+                selected = backStack.lastOrNull() is Profile,
+                onClick = {
+                    if (backStack.lastOrNull() !is Profile) {
+                        backStack.add(Profile)
+                    }
+                },
+                icon = {
+                    androidx.compose.material3.Icon(
+                        androidx.compose.material.icons.Icons.Default.AccountCircle,
+                        contentDescription = "Profile",
                     )
-                }
-                entry<Auth> {
-                    AuthRoute(
-                        onAuthSuccess = {
-                            backStack.clear()
-                            backStack.add(element = PokemonList)
-                            deepLinkUri?.toPokemonId()?.let { pokemonId ->
-                                backStack.add(PokemonDetail(id = pokemonId))
-                            }
-                            if (deepLinkUri != null) {
-                                onDeepLinkConsumed()
-                            }
-                        },
-                    )
-                }
-                entry<Profile> {
-                    ProfileScreen(
-                        onNavigateBack = { backStack.removeLastOrNull() },
-                        onNavigateToAuth = {
-                            backStack.clear()
-                            backStack.add(element = Auth)
-                        },
-                    )
-                }
+                },
+                label = { Text("Profile") },
+            )
+        },
+        layoutType =
+            if (isNavBarVisible) {
+                androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
+                    .calculateFromAdaptiveInfo(windowAdaptiveInfo)
+            } else {
+                androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType.None
             },
-    )
+    ) {
+        NavDisplay(
+            backStack = backStack,
+            onBack = { backStack.removeLastOrNull() },
+            sceneStrategies = listOf(listDetailStrategy),
+            entryProvider =
+                entryProvider {
+                    entry<PokemonList>(
+                        metadata =
+                            ListDetailSceneStrategy.listPane(
+                                sceneKey = PokedexListDetailScene,
+                                detailPlaceholder = { PokemonDetailPlaceholder() },
+                            ),
+                    ) {
+                        PokemonListScreen(
+                            onNavigateToDetail = { pokemonId ->
+                                if (backStack.lastOrNull() != PokemonDetail(id = pokemonId)) {
+                                    backStack.add(PokemonDetail(id = pokemonId))
+                                }
+                            },
+                            onNavigateToProfile = {
+                                if (backStack.lastOrNull() != Profile) {
+                                    backStack.add(element = Profile)
+                                }
+                            },
+                            onNavigateToFavorites = {
+                                if (backStack.lastOrNull() != Favorite) {
+                                    backStack.add(Favorite)
+                                }
+                            },
+                        )
+                    }
+                    entry<PokemonDetail>(
+                        metadata =
+                            ListDetailSceneStrategy.detailPane(
+                                sceneKey = PokedexListDetailScene,
+                            ),
+                    ) {
+                        PokemonDetailScreen(
+                            pokemonId = it.id,
+                            onBackClick = { backStack.removeLastOrNull() },
+                            showBackButton = LocalListDetailSceneScope.current == null,
+                        )
+                    }
+                    entry<Favorite>(
+                        metadata =
+                            ListDetailSceneStrategy.listPane(
+                                sceneKey = PokedexListDetailScene,
+                                detailPlaceholder = { PokemonDetailPlaceholder() },
+                            ),
+                    ) {
+                        FavoriteScreen(
+                            onBackClick = { backStack.removeLastOrNull() },
+                            onNavigateToDetail = { pokemonId ->
+                                if (backStack.lastOrNull() != PokemonDetail(id = pokemonId)) {
+                                    backStack.add(PokemonDetail(id = pokemonId))
+                                }
+                            },
+                        )
+                    }
+                    entry<Auth> {
+                        AuthRoute(
+                            onAuthSuccess = {
+                                backStack.clear()
+                                backStack.add(element = PokemonList)
+                                deepLinkUri?.toPokemonId()?.let { pokemonId ->
+                                    backStack.add(PokemonDetail(id = pokemonId))
+                                }
+                                if (deepLinkUri != null) {
+                                    onDeepLinkConsumed()
+                                }
+                            },
+                        )
+                    }
+                    entry<Profile> {
+                        ProfileScreen(
+                            onNavigateBack = { backStack.removeLastOrNull() },
+                            onNavigateToAuth = {
+                                backStack.clear()
+                                backStack.add(element = Auth)
+                            },
+                        )
+                    }
+                },
+        )
+    }
 }
 
 private fun android.net.Uri.toPokemonId(): Int? {

@@ -19,15 +19,12 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -63,6 +60,7 @@ import com.example.pokedex.theme.LocalWeights
 import com.example.pokedex.theme.PokedexTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
+@SuppressWarnings("FunctionNaming")
 @Composable
 fun PokemonListScreen(
     onNavigateToDetail: (Int) -> Unit,
@@ -87,19 +85,16 @@ fun PokemonListScreen(
         state = state,
         pagedPokemon = pagedPokemon,
         onEvent = viewModel::setEvent,
-        onNavigateToProfile = onNavigateToProfile,
-        onNavigateToFavorites = onNavigateToFavorites,
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
+@SuppressWarnings("LongMethod", "FunctionNaming")
 @Composable
 fun PokemonListScreenContent(
     state: PokemonListState,
     pagedPokemon: LazyPagingItems<Pokemon>,
     onEvent: (PokemonListEvent) -> Unit,
-    onNavigateToProfile: () -> Unit,
-    onNavigateToFavorites: () -> Unit,
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
@@ -109,12 +104,7 @@ fun PokemonListScreenContent(
             TopAppBar(
                 title = { Text(text = stringResource(id = R.string.app_name)) },
                 actions = {
-                    IconButton(onClick = onNavigateToFavorites) {
-                        Icon(imageVector = Icons.Default.Favorite, contentDescription = "Preferiti")
-                    }
-                    IconButton(onClick = onNavigateToProfile) {
-                        Icon(imageVector = Icons.Default.AccountCircle, contentDescription = "Profile")
-                    }
+                    // Actions (Profile e Favorites) moved to NavigationSuiteScaffold
                 },
                 colors =
                     TopAppBarDefaults.topAppBarColors(

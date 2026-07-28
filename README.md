@@ -42,8 +42,8 @@ modules:
 1. **Infinite Scrolling**: Custom pagination implementation leveraging Jetpack Compose
    `LazyGridState` to load more Pokemon as the user scrolls.
 2. **Search & Filter**: Real-time search and filtering by Pokemon type.
-3. **Adaptive UI**: Supports both light and dark themes, leveraging `CompositionLocal` for dynamic
-   dimension scaling.
+3. **Adaptive UI & Navigation**: Supports both light and dark themes, leveraging `CompositionLocal` for dynamic
+   dimension scaling. Implements **NavigationSuiteScaffold** for responsive navigation (Bottom Bar on phones, Navigation Rail on tablets) and **ListDetailSceneStrategy** via Jetpack Navigation 3 for multi-pane layouts on large screens.
 4. **Offline-First Architecture**: Utilizes Room database to cache network responses, allowing the
    app to work seamlessly without an active internet connection.
 5. **Observability & Cloud Config**: Integrated with Firebase Crashlytics to catch non-fatal errors, Firebase Analytics for user journey tracking, and Remote Config for dynamic feature flagging without app updates.
