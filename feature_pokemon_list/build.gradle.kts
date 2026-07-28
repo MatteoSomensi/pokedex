@@ -1,5 +1,6 @@
 plugins {
     id("pokedex.android.feature")
+    alias(libs.plugins.screenshot)
 }
 
 android {
@@ -9,6 +10,7 @@ android {
             isIncludeAndroidResources = true
         }
     }
+    experimentalProperties["android.experimental.enableScreenshotTest"] = true
 }
 
 dependencies {
@@ -36,4 +38,7 @@ dependencies {
     testImplementation(libs.coroutines.test)
     testImplementation(libs.turbine)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+    
+    screenshotTestImplementation(libs.screenshot.validation.api)
+    screenshotTestImplementation("androidx.compose.ui:ui-tooling")
 }
