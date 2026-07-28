@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -66,8 +67,10 @@ fun ProfileScreenContent(
     onLogout: () -> Unit
 ) {
     val dimensions = LocalDimensions.current
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             TopAppBar(
                 title = { Text(text = stringResource(id = R.string.profile_title)) },
@@ -83,7 +86,8 @@ fun ProfileScreenContent(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                     navigationIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                )
+                ),
+                scrollBehavior = scrollBehavior
             )
         }
     ) { paddingValues ->
@@ -91,7 +95,6 @@ fun ProfileScreenContent(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues = paddingValues)
-                .safeDrawingPadding()
                 .padding(all = dimensions.paddingLarge)
                 .verticalScroll(state = rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,

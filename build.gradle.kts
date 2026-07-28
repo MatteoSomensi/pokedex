@@ -15,8 +15,6 @@ plugins {
 }
 
 subprojects {
-    pluginManager.withPlugin("org.jetbrains.kotlin.android") {
-        apply(plugin = "io.gitlab.arturbosch.detekt")
-        apply(plugin = "org.jlleitschuh.gradle.ktlint")
-    }
+    apply(plugin = "io.gitlab.arturbosch.detekt")
+    apply(plugin = "org.jlleitschuh.gradle.ktlint")
 }

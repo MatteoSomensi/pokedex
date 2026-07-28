@@ -10,6 +10,7 @@ import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import coil.imageLoader
 import coil.ImageLoader
 import coil.request.ImageRequest
 import com.example.pokedex.domain.repository.PokemonRepository
@@ -63,22 +64,18 @@ class SyncWorker @AssistedInject constructor(
                 }
 
                 if (imageUrls.isNotEmpty()) {
-                    val imageLoader = ImageLoader(applicationContext)
-                    try {
-                        imageUrls.chunked(IMAGE_PREFETCH_CONCURRENCY).forEach { chunk ->
-                            coroutineScope {
-                                chunk.map { imageUrl ->
-                                    async {
-                                        val request = ImageRequest.Builder(applicationContext)
-                                            .data(imageUrl)
-                                            .build()
-                                        imageLoader.execute(request)
-                                    }
-                                }.awaitAll()
-                            }
+                    val imageLoader = applicationContext.imageLoader
+                    imageUrls.chunked(IMAGE_PREFETCH_CONCURRENCY).forEach { chunk ->
+                        coroutineScope {
+                            chunk.map { imageUrl ->
+                                async {
+                                    val request = ImageRequest.Builder(applicationContext)
+                                        .data(imageUrl)
+                                        .build()
+                                    imageLoader.execute(request)
+                                }
+                            }.awaitAll()
                         }
-                    } finally {
-                        imageLoader.shutdown()
                     }
                 }
                 

@@ -1,6 +1,7 @@
 package com.example.pokedex.data.remote.auth
 
 import android.content.Context
+import androidx.core.content.edit
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -49,19 +50,12 @@ class SecureSessionManager @Inject constructor(
     }
 
     override fun refreshToken(): String? {
-        // In a real application, make a network call to the refresh endpoint.
-        // For demonstration, we just generate a new token and save it.
-        val newToken = "secure_refreshed_token_${System.currentTimeMillis()}"
-        sharedPreferences.edit().putString("access_token", newToken).apply()
-        return newToken
+        // No token endpoint is configured for the public PokeAPI client.
+        // Returning null prevents retrying a 401 with a fabricated credential.
+        return null
     }
 
     override fun clearSession() {
-        sharedPreferences.edit().remove("access_token").apply()
-    }
-
-    // Temporary helper to simulate login setting the token
-    fun setAccessToken(token: String) {
-        sharedPreferences.edit().putString("access_token", token).apply()
+        sharedPreferences.edit { remove("access_token") }
     }
 }

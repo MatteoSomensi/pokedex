@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -43,7 +44,10 @@ fun FavoriteScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
     Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             TopAppBar(
                 title = { Text("Preferiti") },
@@ -56,26 +60,25 @@ fun FavoriteScreen(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                     navigationIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                )
+                ),
+                scrollBehavior = scrollBehavior
             )
         }
     ) { padding ->
         val dimensions = LocalDimensions.current
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
+            modifier = Modifier.fillMaxSize()
         ) {
             if (uiState.isLoading) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             } else if (!uiState.error.isNullOrBlank()) {
                 Text(
                     text = uiState.error!!,
-                    modifier = Modifier.align(Alignment.Center)
+                    modifier = Modifier.align(Alignment.Center).padding(padding)
                 )
             } else if (uiState.favorites.isEmpty()) {
                 Column(
-                    modifier = Modifier.align(Alignment.Center),
+                    modifier = Modifier.align(Alignment.Center).padding(padding),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Icon(
@@ -94,7 +97,7 @@ fun FavoriteScreen(
                     columns = GridCells.Adaptive(minSize = dimensions.gridCellMinSize),
                     contentPadding = PaddingValues(
                         start = dimensions.paddingMedium,
-                        top = dimensions.paddingMedium,
+                        top = dimensions.paddingMedium + padding.calculateTopPadding(),
                         end = dimensions.paddingMedium,
                         bottom = dimensions.paddingMedium + padding.calculateBottomPadding()
                     ),

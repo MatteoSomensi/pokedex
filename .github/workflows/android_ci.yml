@@ -66,6 +66,13 @@ jobs:
       - name: Run Roborazzi Screenshot Tests
         run: ./gradlew verifyRoborazziDebug --no-daemon
 
+      - name: Compile Instrumented and Preview Screenshot Tests
+        run: >
+          ./gradlew
+          :feature_pokemon_list:compileDebugAndroidTestKotlin
+          :feature_pokemon_list:compileDebugScreenshotTestKotlin
+          --no-daemon
+
       - name: Run Android Lint
         run: ./gradlew lintDebug --no-daemon
 

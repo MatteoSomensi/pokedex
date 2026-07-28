@@ -14,6 +14,10 @@ android {
     experimentalProperties["android.experimental.enableScreenshotTest"] = true
 }
 
+roborazzi {
+    outputDir.set(layout.projectDirectory.dir("src/test/screenshots"))
+}
+
 dependencies {
     implementation(project(":domain"))
     implementation(project(":core"))

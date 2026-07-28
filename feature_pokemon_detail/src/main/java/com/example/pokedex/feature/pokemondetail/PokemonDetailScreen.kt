@@ -175,9 +175,7 @@ fun PokemonDetailScreen(
         }
     ) { paddingValues ->
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = paddingValues.calculateTopPadding())
+            modifier = Modifier.fillMaxSize()
         ) {
             when {
                 state.isLoading -> {
@@ -187,7 +185,7 @@ fun PokemonDetailScreen(
                 state.errorMessage != null -> {
                     Text(
                         text = state.errorMessage!!.asString(),
-                        modifier = Modifier.align(alignment = Alignment.Center)
+                        modifier = Modifier.align(alignment = Alignment.Center).padding(paddingValues)
                     )
                 }
 
@@ -225,7 +223,7 @@ fun PokemonDetailContent(
             .padding(
                 start = dimensions.paddingLarge,
                 end = dimensions.paddingLarge,
-                top = dimensions.paddingLarge,
+                top = dimensions.paddingLarge + paddingValues.calculateTopPadding(),
                 bottom = dimensions.paddingLarge + paddingValues.calculateBottomPadding()
             ),
         horizontalAlignment = Alignment.CenterHorizontally

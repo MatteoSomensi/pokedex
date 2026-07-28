@@ -23,6 +23,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.material.icons.Icons
 import com.example.pokedex.core.designsystem.components.PokemonCard
 import androidx.compose.material.icons.filled.AccountCircle
@@ -61,6 +62,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
+import androidx.paging.compose.itemContentType
 import coil.compose.AsyncImage
 import com.example.pokedex.core.R
 import com.example.pokedex.core.ui.DevicePreviews
@@ -109,7 +112,10 @@ fun PokemonListScreenContent(
     onNavigateToProfile: () -> Unit,
     onNavigateToFavorites: () -> Unit
 ) {
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
     Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             TopAppBar(
                 title = { Text(text = stringResource(id = R.string.app_name)) },
@@ -125,7 +131,8 @@ fun PokemonListScreenContent(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                     actionIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                )
+                ),
+                scrollBehavior = scrollBehavior
             )
         }
     ) { paddingValues ->
@@ -238,7 +245,8 @@ fun PokemonListScreenContent(
                         ) {
                             items(
                                 count = pagedPokemon.itemCount,
-                                key = { index -> pagedPokemon.peek(index)?.id ?: "placeholder_$index" }
+                                key = pagedPokemon.itemKey { it.id },
+                                contentType = pagedPokemon.itemContentType { "Pokemon" }
                             ) { index ->
                                 val pokemon = pagedPokemon[index]
                                 if (pokemon != null) {
