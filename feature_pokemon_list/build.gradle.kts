@@ -1,6 +1,7 @@
 plugins {
     id("pokedex.android.feature")
     alias(libs.plugins.screenshot)
+    alias(libs.plugins.roborazzi)
 }
 
 android {

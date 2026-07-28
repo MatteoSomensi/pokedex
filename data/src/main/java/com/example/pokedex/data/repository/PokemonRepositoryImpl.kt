@@ -52,14 +52,7 @@ class PokemonRepositoryImpl @Inject constructor(
 
     @OptIn(ExperimentalPagingApi::class)
     override fun getPokemonPaged(query: String): kotlinx.coroutines.flow.Flow<PagingData<Pokemon>> {
-        val pagingSourceFactory = if (query.isNotBlank()) {
-            val q = query.trim().lowercase()
-            val factory: () -> androidx.paging.PagingSource<Int, PokemonEntity> = { dao.searchPokemonPagingSource(q) }
-            factory
-        } else {
-            val factory: () -> androidx.paging.PagingSource<Int, PokemonEntity> = { dao.getPokemonPagingSource() }
-            factory
-        }
+        val normalizedQuery = query.trim().lowercase()
 
         return Pager(
             config = PagingConfig(
@@ -70,9 +63,9 @@ class PokemonRepositoryImpl @Inject constructor(
             remoteMediator = PokemonRemoteMediator(
                 api = api,
                 db = db,
-                query = query
+                query = normalizedQuery
             ),
-            pagingSourceFactory = pagingSourceFactory
+            pagingSourceFactory = { dao.getPokemonPagingSource(normalizedQuery) }
         ).flow.map { pagingData ->
             pagingData.map { it.toDomain() }
         }

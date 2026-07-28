@@ -15,13 +15,16 @@ import com.example.pokedex.data.local.entity.TypeEntity
 @JvmSuppressWildcards
 interface PokemonDao {
 
-    @Query("SELECT * FROM pokemon ORDER BY id ASC")
-    fun getPokemonPagingSource(): androidx.paging.PagingSource<Int, PokemonEntity>
-
-    @Query("SELECT * FROM pokemon WHERE name LIKE '%' || :query || '%' OR CAST(id AS TEXT) = :query ORDER BY id ASC")
-    fun searchPokemonPagingSource(
-        query: String
-    ): androidx.paging.PagingSource<Int, PokemonEntity>
+    @Query(
+        """
+        SELECT pokemon.* FROM pokemon
+        INNER JOIN pokemon_remote_keys
+            ON pokemon.id = pokemon_remote_keys.pokemonId
+        WHERE pokemon_remote_keys.`query` = :query
+        ORDER BY pokemon.id ASC
+        """
+    )
+    fun getPokemonPagingSource(query: String): androidx.paging.PagingSource<Int, PokemonEntity>
 
     @Query("DELETE FROM pokemon WHERE isFavorite = 0")
     suspend fun clearNonFavoritePokemon(): Int

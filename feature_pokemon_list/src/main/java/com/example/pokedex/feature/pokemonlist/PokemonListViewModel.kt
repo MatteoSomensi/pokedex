@@ -10,8 +10,10 @@ import com.example.pokedex.domain.model.Pokemon
 import com.example.pokedex.domain.repository.PokemonRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
@@ -29,10 +31,18 @@ class PokemonListViewModel @Inject constructor(
         loadTypes()
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val pagedPokemonFlow: Flow<PagingData<Pokemon>> = uiState
-        .map { it.searchQuery to it.selectedType }
-        .distinctUntilChanged()
+    @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
+    val pagedPokemonFlow: Flow<PagingData<Pokemon>> = combine(
+        uiState
+            .map { it.searchQuery.trim() }
+            .distinctUntilChanged()
+            .debounce(SEARCH_DEBOUNCE_MILLIS),
+        uiState
+            .map { it.selectedType }
+            .distinctUntilChanged()
+    ) { query, selectedType ->
+        query to selectedType
+    }
         .flatMapLatest { (query, selectedType) ->
             repository.getPokemonPaged(query).map { pagingData ->
                 if (selectedType != null) {
@@ -43,12 +53,13 @@ class PokemonListViewModel @Inject constructor(
                     pagingData
                 }
             }
-        }.cachedIn(viewModelScope)
+        }
         .combine(repository.observeFavoritePokemonIds()) { pagingData, favoriteIds ->
             pagingData.map { pokemon ->
                 pokemon.copy(isFavorite = favoriteIds.contains(pokemon.id))
             }
         }
+        .cachedIn(viewModelScope)
 
     private fun loadTypes() {
         viewModelScope.launch {
@@ -70,5 +81,9 @@ class PokemonListViewModel @Inject constructor(
                 setState { copy(selectedType = event.type) }
             }
         }
+    }
+
+    private companion object {
+        const val SEARCH_DEBOUNCE_MILLIS = 300L
     }
 }

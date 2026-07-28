@@ -16,6 +16,7 @@ import com.example.pokedex.domain.repository.PokemonRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import com.example.pokedex.core.coroutines.DispatcherProvider
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
 
@@ -55,14 +56,18 @@ class SyncWorker @AssistedInject constructor(
             if (result.isSuccess) {
                 val pokemonList = result.getOrNull() ?: emptyList()
                 val imageLoader = ImageLoader(applicationContext)
-                
-                pokemonList.forEach { pokemon ->
-                    if (pokemon.imageUrl.isNotEmpty()) {
-                        val request = ImageRequest.Builder(applicationContext)
-                            .data(pokemon.imageUrl)
-                            .build()
-                        imageLoader.execute(request)
+
+                try {
+                    pokemonList.forEach { pokemon ->
+                        if (pokemon.imageUrl.isNotEmpty()) {
+                            val request = ImageRequest.Builder(applicationContext)
+                                .data(pokemon.imageUrl)
+                                .build()
+                            imageLoader.execute(request)
+                        }
                     }
+                } finally {
+                    imageLoader.shutdown()
                 }
                 
                 Log.d(TAG, "Sync work finished successfully. Synced ${pokemonList.size} Pokémon.")
@@ -71,6 +76,8 @@ class SyncWorker @AssistedInject constructor(
                 Log.e(TAG, "Error fetching data during sync", result.exceptionOrNull())
                 Result.retry()
             }
+        } catch (exception: CancellationException) {
+            throw exception
         } catch (e: Exception) {
             Log.e(TAG, "Exception during sync work", e)
             Result.retry()
@@ -79,7 +86,9 @@ class SyncWorker @AssistedInject constructor(
 
     companion object {
         private const val TAG = "SyncWorker"
-        const val WORK_NAME = "PokemonDataSyncWork"
+        const val PERIODIC_WORK_NAME = "PokemonPeriodicDataSyncWork"
+        const val MANUAL_WORK_NAME = "PokemonManualDataSyncWork"
+        const val SYNC_TAG = "PokemonDataSync"
 
         /**
          * Schedules a periodic sync to run in the background.
@@ -94,11 +103,12 @@ class SyncWorker @AssistedInject constructor(
 
             val syncRequest = PeriodicWorkRequestBuilder<SyncWorker>(1, TimeUnit.DAYS)
                 .setConstraints(constraints)
+                .addTag(SYNC_TAG)
                 .build()
 
             val workManager = WorkManager.getInstance(context)
             workManager.enqueueUniquePeriodicWork(
-                WORK_NAME,
+                PERIODIC_WORK_NAME,
                 ExistingPeriodicWorkPolicy.KEEP,
                 syncRequest
             )

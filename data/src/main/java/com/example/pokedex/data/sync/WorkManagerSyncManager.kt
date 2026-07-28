@@ -2,6 +2,8 @@ package com.example.pokedex.data.sync
 
 import android.content.Context
 import androidx.work.ExistingWorkPolicy
+import androidx.work.Constraints
+import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
@@ -20,17 +22,22 @@ class WorkManagerSyncManager @Inject constructor(
     private val workManager = WorkManager.getInstance(context)
 
     override val isSyncing: Flow<Boolean> = workManager
-        .getWorkInfosForUniqueWorkFlow(SyncWorker.WORK_NAME)
+        .getWorkInfosByTagFlow(SyncWorker.SYNC_TAG)
         .map { workInfos ->
-            workInfos.any { it.state == WorkInfo.State.RUNNING || it.state == WorkInfo.State.ENQUEUED }
+            workInfos.any { it.state == WorkInfo.State.RUNNING }
         }
 
     override fun requestSync() {
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
         val syncRequest = OneTimeWorkRequestBuilder<SyncWorker>()
+            .setConstraints(constraints)
+            .addTag(SyncWorker.SYNC_TAG)
             .build()
 
         workManager.enqueueUniqueWork(
-            SyncWorker.WORK_NAME,
+            SyncWorker.MANUAL_WORK_NAME,
             ExistingWorkPolicy.KEEP,
             syncRequest
         )

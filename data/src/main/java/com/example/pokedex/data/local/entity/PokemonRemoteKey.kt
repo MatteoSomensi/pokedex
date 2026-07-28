@@ -1,12 +1,14 @@
 package com.example.pokedex.data.local.entity
 
 import androidx.room.Entity
-import androidx.room.PrimaryKey
 
-@Entity(tableName = "pokemon_remote_keys")
+@Entity(
+    tableName = "pokemon_remote_keys",
+    primaryKeys = ["pokemonId", "query"]
+)
 data class PokemonRemoteKey(
-    @PrimaryKey
     val pokemonId: Int,
+    val query: String,
     val prevOffset: Int?,
     val nextOffset: Int?
 )

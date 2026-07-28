@@ -11,6 +11,8 @@ import com.example.pokedex.data.local.entity.PokemonEntity
 import com.example.pokedex.data.local.entity.PokemonRemoteKey
 import com.example.pokedex.data.remote.PokeApiService
 import com.example.pokedex.data.remote.model.PokemonDetailResponse
+import com.example.pokedex.data.remote.model.PokemonResultItem
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -19,12 +21,13 @@ import kotlinx.coroutines.coroutineScope
 class PokemonRemoteMediator(
     private val api: PokeApiService,
     private val db: PokedexDatabase,
-    private val query: String = ""
+    query: String = ""
 ) : RemoteMediator<Int, PokemonEntity>() {
 
-    override suspend fun initialize(): RemoteMediator.InitializeAction {
-        return RemoteMediator.InitializeAction.LAUNCH_INITIAL_REFRESH
-    }
+    private val normalizedQuery = query.trim().lowercase()
+    private var searchablePokemon: List<PokemonResultItem>? = null
+
+    override suspend fun initialize(): InitializeAction = InitializeAction.LAUNCH_INITIAL_REFRESH
 
     override suspend fun load(
         loadType: LoadType,
@@ -35,102 +38,108 @@ class PokemonRemoteMediator(
                 LoadType.REFRESH -> 0
                 LoadType.PREPEND -> return MediatorResult.Success(endOfPaginationReached = true)
                 LoadType.APPEND -> {
-                    val remoteKeys = getRemoteKeyForLastItem(state)
-                    val nextOffset = remoteKeys?.nextOffset
-                        ?: return MediatorResult.Success(endOfPaginationReached = remoteKeys != null)
-                    nextOffset
+                    val remoteKey = getRemoteKeyForLastItem(state)
+                    remoteKey?.nextOffset
+                        ?: return MediatorResult.Success(
+                            endOfPaginationReached = remoteKey != null
+                        )
                 }
             }
-
-            val limit = state.config.pageSize
-
-            val isSearch = query.isNotBlank()
-            
-            // In a real Pokedex API search is not paginated optimally by offset/limit if filtering locally.
-            // But we will use the standard getPokemonList for empty query.
-            val apiResponse = if (isSearch) {
-                // To keep it simple, we don't paginate remote searches (PokeAPI doesn't support query natively).
-                // If it's a search, we just return endOfPaginationReached.
-                return MediatorResult.Success(endOfPaginationReached = true)
-            } else {
-                api.getPokemonList(limit = limit, offset = offset)
+            val limit = when (loadType) {
+                LoadType.REFRESH -> state.config.initialLoadSize
+                else -> state.config.pageSize
             }
-
-            val pokemonDtos = apiResponse.results
-            
-            val detailedPokemons = coroutineScope {
-                pokemonDtos.map { basicDto ->
-                    val id = basicDto.url.trimEnd('/').substringAfterLast("/").toInt()
-                    async {
-                        try {
-                            api.getPokemonDetail(id.toString())
-                        } catch (e: Exception) {
-                            null
-                        }
-                    }
-                }.awaitAll().filterNotNull()
+            val pokemonItems = loadPokemonItems(offset = offset, limit = limit)
+            val detailedPokemon = coroutineScope {
+                pokemonItems.map { item ->
+                    async { api.getPokemonDetail(item.name) }
+                }.awaitAll()
             }
-
-            val endOfPaginationReached = pokemonDtos.isEmpty() || detailedPokemons.size < limit
+            val endOfPaginationReached = pokemonItems.size < limit
 
             db.withTransaction {
                 if (loadType == LoadType.REFRESH) {
-                    db.remoteKeyDao().clearRemoteKeys()
-                    if (!isSearch) {
-                        db.pokemonDao().clearNonFavoritePokemon()
+                    db.remoteKeyDao().clearRemoteKeys(normalizedQuery)
+                }
+
+                val prevOffset = (offset - limit).takeIf { it >= 0 }
+                val nextOffset = (offset + pokemonItems.size)
+                    .takeUnless { endOfPaginationReached }
+                db.remoteKeyDao().insertAll(
+                    detailedPokemon.map { pokemon ->
+                        PokemonRemoteKey(
+                            pokemonId = pokemon.id,
+                            query = normalizedQuery,
+                            prevOffset = prevOffset,
+                            nextOffset = nextOffset
+                        )
                     }
-                }
+                )
 
-                val prevOffset = if (offset == 0) null else offset - limit
-                val nextOffset = if (endOfPaginationReached) null else offset + limit
-
-                val keys = detailedPokemons.map {
-                    PokemonRemoteKey(
-                        pokemonId = it.id,
-                        prevOffset = prevOffset,
-                        nextOffset = nextOffset
-                    )
+                val entities = detailedPokemon.map { response ->
+                    val entity = response.toLocalEntity()
+                    val isFavorite = db.pokemonDao().getPokemonById(entity.id)?.isFavorite == true
+                    entity.copy(isFavorite = isFavorite)
                 }
-                
-                db.remoteKeyDao().insertAll(keys)
-
-                val entities = detailedPokemons.map { it.toLocalEntity() }
-                // Preserve favorite status if it exists
-                val finalEntities = entities.map { newEntity ->
-                    val existing = db.pokemonDao().getPokemonById(newEntity.id)
-                    if (existing?.isFavorite == true) {
-                        newEntity.copy(isFavorite = true)
-                    } else {
-                        newEntity
-                    }
-                }
-                db.pokemonDao().insertAll(finalEntities)
+                db.pokemonDao().insertAll(entities)
             }
 
             MediatorResult.Success(endOfPaginationReached = endOfPaginationReached)
-
-        } catch (e: Exception) {
-            MediatorResult.Error(e)
+        } catch (exception: CancellationException) {
+            throw exception
+        } catch (exception: Exception) {
+            MediatorResult.Error(exception)
         }
     }
 
-    private suspend fun getRemoteKeyForLastItem(state: PagingState<Int, PokemonEntity>): PokemonRemoteKey? {
-        return state.pages.lastOrNull { it.data.isNotEmpty() }?.data?.lastOrNull()
-            ?.let { pokemon ->
-                db.remoteKeyDao().remoteKeysPokemonId(pokemon.id)
+    private suspend fun loadPokemonItems(offset: Int, limit: Int): List<PokemonResultItem> {
+        if (normalizedQuery.isBlank()) {
+            return api.getPokemonList(limit = limit, offset = offset).results
+        }
+
+        val allPokemon = searchablePokemon ?: api
+            .getPokemonList(limit = MAX_POKEMON_LIMIT, offset = 0)
+            .results
+            .also { searchablePokemon = it }
+        return allPokemon
+            .asSequence()
+            .filter { item ->
+                item.name.lowercase().contains(normalizedQuery) ||
+                    item.idFromUrl() == normalizedQuery
             }
+            .drop(offset)
+            .take(limit)
+            .toList()
     }
+
+    private suspend fun getRemoteKeyForLastItem(
+        state: PagingState<Int, PokemonEntity>
+    ): PokemonRemoteKey? {
+        val lastItem = state.pages.lastOrNull { it.data.isNotEmpty() }?.data?.lastOrNull()
+        return lastItem?.let { pokemon ->
+            db.remoteKeyDao().remoteKey(pokemon.id, normalizedQuery)
+        }
+    }
+
+    private fun PokemonResultItem.idFromUrl(): String =
+        url.trimEnd('/').substringAfterLast('/')
 
     private fun PokemonDetailResponse.toLocalEntity(): PokemonEntity {
         return PokemonEntity(
             id = id,
             name = name,
-            imageUrl = "${Constants.POKE_IMAGE_BASE_URL}${id}.png",
-            types = types.joinToString(",") { it.type.name.replaceFirstChar { char -> char.uppercase() } },
+            imageUrl = "${Constants.POKE_IMAGE_BASE_URL}$id.png",
+            types = types.joinToString(",") {
+                it.type.name.replaceFirstChar(Char::uppercase)
+            },
             height = height,
             weight = weight,
             stats = stats.joinToString(";") { "${it.stat.name}:${it.baseStat}" },
             isFavorite = false
         )
+    }
+
+    private companion object {
+        const val MAX_POKEMON_LIMIT = 1500
     }
 }
