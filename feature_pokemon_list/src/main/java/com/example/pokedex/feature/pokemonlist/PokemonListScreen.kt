@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,6 +21,8 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import com.example.pokedex.core.designsystem.components.PokemonCard
 import androidx.compose.material.icons.filled.AccountCircle
@@ -196,11 +199,13 @@ fun PokemonListScreenContent(
                         val dimensions = LocalDimensions.current
                         val gridState = rememberLazyGridState()
 
-                        val shouldLoadMore by remember {
+                        val shouldLoadMore by remember(state.filteredPokemonList) {
                             derivedStateOf {
                                 val lastVisibleItem =
                                     gridState.layoutInfo.visibleItemsInfo.lastOrNull()
-                                lastVisibleItem != null && lastVisibleItem.index >= gridState.layoutInfo.totalItemsCount - 5
+                                val isNearEnd = lastVisibleItem != null && lastVisibleItem.index >= gridState.layoutInfo.totalItemsCount - 5
+                                // Carichiamo la pagina successiva se stiamo scorrendo verso il fondo OPPURE se il filtro è così restrittivo che la lista è vuota (ma ci sono ancora elementi da caricare dal server)
+                                isNearEnd || (state.filteredPokemonList.isEmpty() && !state.isEndReached)
                             }
                         }
 
@@ -209,6 +214,21 @@ fun PokemonListScreenContent(
                                 onEvent(PokemonListEvent.LoadNextPage)
                             }
                         }
+
+                        if (state.filteredPokemonList.isEmpty() && !state.isFetchingNextPage && state.isEndReached) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .verticalScroll(rememberScrollState()),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "Nessun Pokémon trovato con i filtri attuali.",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        } else {
 
                         LazyVerticalGrid(
                             state = gridState,
@@ -260,6 +280,7 @@ fun PokemonListScreenContent(
                                     }
                                 }
                             }
+                        }
                         }
                     }
                 }
