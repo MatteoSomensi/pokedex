@@ -42,7 +42,8 @@ benchmarkMacroJunit4 = "1.4.1"
 uiautomator = "2.4.0"
 profileinstaller = "1.4.1"
 securityCrypto = "1.1.0"
-appfunctions = "1.0.0-alpha10"
+# @pin alpha10 is not published for appfunctions-service
+appfunctions = "1.0.0-alpha09"
 glance = "1.1.1"
 screenshot = "0.0.1-alpha16"
 [libraries]

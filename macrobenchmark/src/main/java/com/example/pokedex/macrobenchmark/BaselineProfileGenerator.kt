@@ -15,11 +15,20 @@ class BaselineProfileGenerator {
     fun generate() {
         baselineProfileRule.collect(
             packageName = "com.example.pokedex",
+            maxIterations = 5,
         ) {
             // This block defines the app's critical user journey. Here we are interested in
-            // optimizing for app startup.
+            // optimizing for app startup and list scrolling.
             pressHome()
             startActivityAndWait()
+            
+            // Wait for the Pokemon list to be displayed
+            val pokemonList = device.findObject(androidx.test.uiautomator.By.res("pokemon_list"))
+            if (pokemonList != null) {
+                pokemonList.setGestureMargin(device.displayWidth / 5)
+                pokemonList.scroll(androidx.test.uiautomator.Direction.DOWN, 1f)
+                device.waitForIdle()
+            }
         }
     }
 }

@@ -235,7 +235,7 @@ fun PokemonListScreenContent(
                                 ),
                             horizontalArrangement = Arrangement.spacedBy(space = dimensions.paddingMedium),
                             verticalArrangement = Arrangement.spacedBy(space = dimensions.paddingMedium),
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier.fillMaxSize().androidx.compose.ui.platform.testTag("pokemon_list"),
                         ) {
                             items(
                                 count = pagedPokemon.itemCount,

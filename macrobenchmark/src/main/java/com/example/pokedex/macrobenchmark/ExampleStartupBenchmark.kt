@@ -14,14 +14,22 @@ class ExampleStartupBenchmark {
     val benchmarkRule = MacrobenchmarkRule()
 
     @Test
-    fun startup() =
+    fun startupAndScroll() =
         benchmarkRule.measureRepeated(
             packageName = "com.example.pokedex",
-            metrics = listOf(StartupTimingMetric()),
+            metrics = listOf(StartupTimingMetric(), androidx.benchmark.macro.FrameTimingMetric()),
             iterations = 5,
             startupMode = StartupMode.COLD,
         ) {
             pressHome()
             startActivityAndWait()
+            
+            // Scroll the list to measure frame timing (jank)
+            val pokemonList = device.findObject(androidx.test.uiautomator.By.res("pokemon_list"))
+            if (pokemonList != null) {
+                pokemonList.setGestureMargin(device.displayWidth / 5)
+                pokemonList.scroll(androidx.test.uiautomator.Direction.DOWN, 1f)
+                device.waitForIdle()
+            }
         }
 }

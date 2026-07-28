@@ -5,6 +5,7 @@ plugins {
     id("pokedex.android.hilt")
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.google.services)
+    alias(libs.plugins.androidx.baselineprofile)
 }
 
 android {
@@ -86,4 +87,5 @@ dependencies {
     ksp(libs.androidx.hilt.compiler)
 
     implementation(libs.androidx.profileinstaller)
+    "baselineProfile"(project(":macrobenchmark"))
 }
