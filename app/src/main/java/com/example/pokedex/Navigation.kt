@@ -48,9 +48,12 @@ fun MainNavigation() {
                         onBackClick = { backStack.removeLastOrNull() }
                     )
                 }
-                entry<Favorite> {
+                entry<Favorite>(
+                    metadata = ListDetailScene.listPane()
+                ) {
                     FavoriteScreen(
-                        onBackClick = { backStack.removeLastOrNull() }
+                        onBackClick = { backStack.removeLastOrNull() },
+                        onNavigateToDetail = { pokemonId -> backStack.add(PokemonDetail(id = pokemonId)) }
                     )
                 }
                 entry<Auth> {

@@ -36,7 +36,11 @@ import com.example.pokedex.theme.PokedexTheme
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun PokemonCard(pokemon: Pokemon, onClick: () -> Unit) {
+fun PokemonCard(
+    pokemon: Pokemon, 
+    onClick: () -> Unit,
+    onFavoriteClick: (() -> Unit)? = null
+) {
     val dimensions = LocalDimensions.current
     Card(
         modifier = Modifier
@@ -89,15 +93,29 @@ fun PokemonCard(pokemon: Pokemon, onClick: () -> Unit) {
             }
 
             if (pokemon.isFavorite) {
-                Icon(
-                    imageVector = Icons.Default.Favorite,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.error,
-                    modifier = Modifier
-                        .align(alignment = Alignment.TopEnd)
-                        .padding(all = dimensions.paddingSmall)
-                        .size(size = 24.dp)
-                )
+                if (onFavoriteClick != null) {
+                    androidx.compose.material3.IconButton(
+                        onClick = onFavoriteClick,
+                        modifier = Modifier.align(alignment = Alignment.TopEnd)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Favorite,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.size(size = 24.dp)
+                        )
+                    }
+                } else {
+                    Icon(
+                        imageVector = Icons.Default.Favorite,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.error,
+                        modifier = Modifier
+                            .align(alignment = Alignment.TopEnd)
+                            .padding(all = dimensions.paddingSmall)
+                            .size(size = 24.dp)
+                    )
+                }
             }
         }
     }
