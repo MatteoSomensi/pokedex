@@ -32,9 +32,7 @@ dependencies {
     // Coil (Image caching)
     implementation(libs.coil)
     // Testing
-    testImplementation("junit:junit:4.13.2")
-    testImplementation(libs.mockk)
-    testImplementation(libs.coroutines.test)
+    testImplementation(libs.bundles.test)
     testImplementation("androidx.work:work-testing:2.9.0")
     testImplementation("io.mockk:mockk-android:1.13.11") // To mock android classes if needed
     testImplementation("org.robolectric:robolectric:4.11.1")

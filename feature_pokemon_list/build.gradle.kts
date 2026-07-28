@@ -32,13 +32,11 @@ dependencies {
     testImplementation(libs.roborazzi.junit.rule)
     testImplementation(libs.junit.jupiter.api)
     testRuntimeOnly(libs.junit.jupiter.engine)
-    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.10.2")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.10.2")
-    testImplementation(libs.mockk)
-    testImplementation(libs.coroutines.test)
-    testImplementation(libs.turbine)
+    testRuntimeOnly(libs.junit.vintage.engine)
+    testRuntimeOnly(libs.junit.platform.launcher)
+    testImplementation(libs.bundles.test)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     
     screenshotTestImplementation(libs.screenshot.validation.api)
-    screenshotTestImplementation("androidx.compose.ui:ui-tooling")
+    screenshotTestImplementation(libs.androidx.ui.tooling)
 }
