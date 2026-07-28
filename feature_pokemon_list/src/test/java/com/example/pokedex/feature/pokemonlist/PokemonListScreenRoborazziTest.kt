@@ -39,7 +39,8 @@ class PokemonListScreenRoborazziTest {
                 PokemonListScreenContent(
                     state = mockState,
                     onEvent = {},
-                    onNavigateToProfile = {}
+                    onNavigateToProfile = {},
+                    onNavigateToFavorites = {}
                 )
             }
         }

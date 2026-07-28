@@ -3,10 +3,18 @@ package com.example.pokedex
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
+import androidx.compose.material3.adaptive.layout.calculatePaneScaffoldDirective
+import androidx.compose.material3.adaptive.navigation3.ListDetailSceneStrategy
+import androidx.compose.material3.adaptive.navigation3.LocalListDetailSceneScope
+import androidx.compose.material3.adaptive.navigation3.rememberListDetailSceneStrategy
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
@@ -20,11 +28,23 @@ import com.example.pokedex.feature.pokemondetail.PokemonDetailScreen
 import com.example.pokedex.feature.pokemonlist.PokemonListScreen
 import com.google.firebase.auth.FirebaseAuth
 
+private data object PokedexListDetailScene
+
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun MainNavigation() {
     val startDestination = if (FirebaseAuth.getInstance().currentUser != null) PokemonList else Auth
     val backStack = rememberNavBackStack(startDestination)
-    val listDetailStrategy = rememberListDetailSceneStrategy<NavKey>()
+    val windowAdaptiveInfo = currentWindowAdaptiveInfoV2()
+    val paneScaffoldDirective = remember(windowAdaptiveInfo) {
+        calculatePaneScaffoldDirective(windowAdaptiveInfo)
+            .copy(horizontalPartitionSpacerSize = 0.dp)
+    }
+    val listDetailStrategy = rememberListDetailSceneStrategy<NavKey>(
+        shouldHandleSinglePaneLayout = false,
+        directive = paneScaffoldDirective
+    )
+
     NavDisplay(
         backStack = backStack,
         onBack = { backStack.removeLastOrNull() },
@@ -32,7 +52,10 @@ fun MainNavigation() {
         entryProvider =
             entryProvider {
                 entry<PokemonList>(
-                    metadata = ListDetailScene.listPane()
+                    metadata = ListDetailSceneStrategy.listPane(
+                        sceneKey = PokedexListDetailScene,
+                        detailPlaceholder = { PokemonDetailPlaceholder() }
+                    )
                 ) {
                     PokemonListScreen(
                         onNavigateToDetail = { pokemonId -> 
@@ -53,15 +76,21 @@ fun MainNavigation() {
                     )
                 }
                 entry<PokemonDetail>(
-                    metadata = ListDetailScene.detailPane()
+                    metadata = ListDetailSceneStrategy.detailPane(
+                        sceneKey = PokedexListDetailScene
+                    )
                 ) {
                     PokemonDetailScreen(
                         pokemonId = it.id,
-                        onBackClick = { backStack.removeLastOrNull() }
+                        onBackClick = { backStack.removeLastOrNull() },
+                        showBackButton = LocalListDetailSceneScope.current == null
                     )
                 }
                 entry<Favorite>(
-                    metadata = ListDetailScene.listPane()
+                    metadata = ListDetailSceneStrategy.listPane(
+                        sceneKey = PokedexListDetailScene,
+                        detailPlaceholder = { PokemonDetailPlaceholder() }
+                    )
                 ) {
                     FavoriteScreen(
                         onBackClick = { backStack.removeLastOrNull() },
@@ -91,4 +120,14 @@ fun MainNavigation() {
                 }
             },
     )
+}
+
+@Composable
+private fun PokemonDetailPlaceholder() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(text = stringResource(id = R.string.list_detail_placeholder))
+    }
 }

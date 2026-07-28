@@ -16,6 +16,13 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -25,6 +32,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.pokedex.core.designsystem.components.PokemonCard
 import com.example.pokedex.domain.model.Pokemon
+import com.example.pokedex.theme.LocalDimensions
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,10 +51,16 @@ fun FavoriteScreen(
                     IconButton(onClick = onBackClick) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Indietro")
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                )
             )
         }
     ) { padding ->
+        val dimensions = LocalDimensions.current
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -60,14 +74,32 @@ fun FavoriteScreen(
                     modifier = Modifier.align(Alignment.Center)
                 )
             } else if (uiState.favorites.isEmpty()) {
-                Text(
-                    text = "Nessun Pokémon nei preferiti",
-                    modifier = Modifier.align(Alignment.Center)
-                )
+                Column(
+                    modifier = Modifier.align(Alignment.Center),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.FavoriteBorder,
+                        contentDescription = null,
+                        modifier = Modifier.padding(bottom = dimensions.paddingMedium),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = "Nessun Pokémon nei preferiti",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
             } else {
                 LazyVerticalGrid(
-                    columns = GridCells.Adaptive(150.dp),
-                    contentPadding = PaddingValues(16.dp),
+                    columns = GridCells.Adaptive(minSize = dimensions.gridCellMinSize),
+                    contentPadding = PaddingValues(
+                        start = dimensions.paddingMedium,
+                        top = dimensions.paddingMedium,
+                        end = dimensions.paddingMedium,
+                        bottom = dimensions.paddingMedium + padding.calculateBottomPadding()
+                    ),
+                    horizontalArrangement = Arrangement.spacedBy(space = dimensions.paddingMedium),
+                    verticalArrangement = Arrangement.spacedBy(space = dimensions.paddingMedium),
                     modifier = Modifier.fillMaxSize()
                 ) {
                     items(

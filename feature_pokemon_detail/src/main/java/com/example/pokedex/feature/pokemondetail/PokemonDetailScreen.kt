@@ -58,7 +58,6 @@ import androidx.compose.ui.res.painterResource
 import android.media.AudioAttributes
 import android.media.MediaPlayer
 import androidx.compose.ui.res.stringResource
-import com.example.pokedex.core.designsystem.LocalBackButtonVisibility
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -81,6 +80,7 @@ import com.example.pokedex.theme.PokedexTheme
 fun PokemonDetailScreen(
     pokemonId: Int,
     onBackClick: () -> Unit,
+    showBackButton: Boolean = true,
     viewModel: PokemonDetailViewModel = hiltViewModel<PokemonDetailViewModel>()
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -148,7 +148,7 @@ fun PokemonDetailScreen(
                     Text(text = state.pokemon?.name?.replaceFirstChar { it.uppercase() } ?: "")
                 },
                 navigationIcon = {
-                    if (LocalBackButtonVisibility.current) {
+                    if (showBackButton) {
                         IconButton(onClick = onBackClick) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
