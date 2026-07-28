@@ -23,6 +23,15 @@ android {
     buildFeatures {
         buildConfig = true
     }
+
+    buildTypes {
+        create("benchmark") {
+            initWith(getByName("release"))
+            matchingFallbacks += listOf("release")
+            isDebuggable = false
+            proguardFiles("benchmark-rules.pro")
+        }
+    }
 }
 
 
@@ -68,4 +77,6 @@ dependencies {
     // WorkManager
     implementation(libs.bundles.workmanager)
     ksp(libs.androidx.hilt.compiler)
+
+    implementation(libs.androidx.profileinstaller)
 }

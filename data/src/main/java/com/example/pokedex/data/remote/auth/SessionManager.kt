@@ -21,38 +21,49 @@ interface SessionManager {
     fun clearSession()
 }
 
+import android.content.Context
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
+import dagger.hilt.android.qualifiers.ApplicationContext
+
 /**
- * A dummy implementation for didactic purposes.
- * In a real app, this would use DataStore or EncryptedSharedPreferences.
+ * A secure implementation of SessionManager using EncryptedSharedPreferences.
  */
 @Singleton
-class DummySessionManager @Inject constructor() : SessionManager {
-    
-    private var dummyToken: String? = "dummy_initial_token"
+class SecureSessionManager @Inject constructor(
+    @ApplicationContext private val context: Context
+) : SessionManager {
 
-    /**
-     * Retrieves the dummy token.
-     * In a real application, this would read from DataStore synchronously.
-     *
-     * @return The current access token.
-     */
+    private val masterKey = MasterKey.Builder(context)
+        .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+        .build()
+
+    private val sharedPreferences = EncryptedSharedPreferences.create(
+        context,
+        "secure_session_prefs",
+        masterKey,
+        EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+        EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+    )
+
     override fun getAccessToken(): String? {
-        return dummyToken
+        return sharedPreferences.getString("access_token", null)
     }
 
-    /**
-     * Refreshes the dummy token by generating a new one.
-     * In a real application, this would make a synchronous network call to the refresh endpoint.
-     *
-     * @return The refreshed access token.
-     */
     override fun refreshToken(): String? {
-        println("Refreshing token...")
-        dummyToken = "dummy_refreshed_token_${System.currentTimeMillis()}"
-        return dummyToken
+        // In a real application, make a network call to the refresh endpoint.
+        // For demonstration, we just generate a new token and save it.
+        val newToken = "secure_refreshed_token_${System.currentTimeMillis()}"
+        sharedPreferences.edit().putString("access_token", newToken).apply()
+        return newToken
     }
 
     override fun clearSession() {
-        dummyToken = null
+        sharedPreferences.edit().remove("access_token").apply()
+    }
+
+    // Temporary helper to simulate login setting the token
+    fun setAccessToken(token: String) {
+        sharedPreferences.edit().putString("access_token", token).apply()
     }
 }

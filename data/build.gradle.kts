@@ -13,6 +13,7 @@ dependencies {
     implementation(project(":core"))
     implementation(libs.bundles.retrofit)
     implementation(libs.okhttp.logging)
+    implementation(libs.androidx.security.crypto)
     implementation(libs.kotlinx.serialization.json)
 
     // Room

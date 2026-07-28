@@ -14,7 +14,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import javax.inject.Singleton
 import com.example.pokedex.data.remote.auth.AuthInterceptor
-import com.example.pokedex.data.remote.auth.DummySessionManager
+import com.example.pokedex.data.remote.auth.SecureSessionManager
 import com.example.pokedex.data.remote.auth.SessionManager
 import com.example.pokedex.data.remote.auth.TokenAuthenticator
 
@@ -36,8 +36,8 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideSessionManager(): SessionManager {
-        return DummySessionManager()
+    fun provideSessionManager(@dagger.hilt.android.qualifiers.ApplicationContext context: android.content.Context): SessionManager {
+        return SecureSessionManager(context)
     }
 
     @Provides

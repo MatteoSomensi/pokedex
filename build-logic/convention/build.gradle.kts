@@ -20,6 +20,7 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
 dependencies {
     compileOnly("com.android.tools.build:gradle:9.1.1")
     compileOnly("org.jetbrains.kotlin:kotlin-gradle-plugin:2.4.10")
+    implementation("io.github.takahirom.roborazzi:roborazzi-gradle-plugin:1.42.0")
 }
 
 gradlePlugin {
@@ -43,6 +44,10 @@ gradlePlugin {
         register("androidCompose") {
             id = "pokedex.android.compose"
             implementationClass = "AndroidComposeConventionPlugin"
+        }
+        register("androidRoborazzi") {
+            id = "pokedex.android.roborazzi"
+            implementationClass = "AndroidRoborazziConventionPlugin"
         }
     }
 }
