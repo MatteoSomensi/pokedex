@@ -5,6 +5,7 @@ benManesVersions = "0.54.0"
 versionCatalogUpdate = "1.1.0"
 roborazzi = "1.70.0"
 firebaseBom = "34.16.0"
+firebaseCrashlytics = "3.0.2"
 androidxCore = "1.19.0"
 androidxLifecycle = "2.11.0"
 androidxActivity = "1.13.0"
@@ -107,6 +108,8 @@ firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.r
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
 firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging" }
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth" }
+firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }
+firebase-config = { group = "com.google.firebase", name = "firebase-config" }
 androidx-credentials = { module = "androidx.credentials:credentials", version.ref = "credentials" }
 androidx-credentials-play-services-auth = { module = "androidx.credentials:credentials-play-services-auth", version.ref = "credentials" }
 googleid = { module = "com.google.android.libraries.identity.googleid:googleid", version.ref = "googleid" }
@@ -141,6 +144,7 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
 google-services = { id = "com.google.gms.google-services", version.ref = "googleServicesPlugin" }
+firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebaseCrashlytics" }
 roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
 android-test = { id = "com.android.test", version.ref = "androidGradlePlugin" }
 androidx-baselineprofile = { id = "androidx.baselineprofile", version.ref = "benchmarkMacroJunit4" }
@@ -159,7 +163,10 @@ lifecycle = [
     "androidx-lifecycle-runtime-compose"
 ]
 firebase = [
-    "firebase-auth"
+    "firebase-auth",
+    "firebase-analytics",
+    "firebase-crashlytics",
+    "firebase-config"
 ]
 retrofit = [
     "retrofit",

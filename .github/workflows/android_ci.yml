@@ -73,6 +73,13 @@ jobs:
           :feature_pokemon_list:compileDebugScreenshotTestKotlin
           --no-daemon
 
+      - name: Build Macrobenchmark APKs
+        run: >
+          ./gradlew
+          :macrobenchmark:assembleBenchmarkBenchmark
+          :macrobenchmark:assembleBenchmarkRelease
+          --no-daemon
+
       - name: Run Android Lint
         run: ./gradlew lintDebug --no-daemon
 

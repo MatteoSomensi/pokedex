@@ -28,7 +28,7 @@ dependencies {
 
     // Auth Dependencies
     implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.auth)
+    implementation(libs.bundles.firebase)
     implementation(libs.kotlinx.coroutines.play.services)
 
     // WorkManager
