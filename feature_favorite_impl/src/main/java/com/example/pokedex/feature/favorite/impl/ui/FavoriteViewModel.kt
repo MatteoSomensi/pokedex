@@ -27,10 +27,18 @@ class FavoriteViewModel @Inject constructor(
     val uiState: StateFlow<FavoriteUiState> = _uiState.asStateFlow()
 
     init {
-        loadFavorites()
+        observeFavorites()
     }
 
-    fun loadFavorites() {
+    private fun observeFavorites() {
+        viewModelScope.launch {
+            repository.observeFavoritePokemonIds().collect {
+                loadFavorites()
+            }
+        }
+    }
+
+    private fun loadFavorites() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
             val result = repository.getFavoritePokemonList()
@@ -54,8 +62,8 @@ class FavoriteViewModel @Inject constructor(
 
     fun toggleFavorite(pokemon: Pokemon) {
         viewModelScope.launch {
+            // Selezionando il preferito dalla schermata Preferiti, lo rimuoviamo.
             repository.toggleFavoriteStatus(pokemon.id, false)
-            loadFavorites() // Refresh the list
         }
     }
 }
