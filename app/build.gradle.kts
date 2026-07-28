@@ -1,4 +1,5 @@
 plugins {
+    id("com.android.application")
     id("pokedex.android.application")
     id("com.google.devtools.ksp")
     id("pokedex.android.compose")
