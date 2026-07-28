@@ -1,6 +1,7 @@
 package com.example.pokedex.data.repository
 
 import com.example.pokedex.data.coroutines.TestDispatcherProvider
+import com.example.pokedex.data.local.PokedexDatabase
 import com.example.pokedex.data.local.dao.PokemonDao
 import com.example.pokedex.data.local.entity.PokemonEntity
 import com.example.pokedex.data.remote.PokeApiService
@@ -23,15 +24,18 @@ import org.junit.Test
 class PokemonRepositoryImplTest {
 
     private lateinit var api: PokeApiService
+    private lateinit var db: PokedexDatabase
     private lateinit var dao: PokemonDao
     private lateinit var repository: PokemonRepositoryImpl
 
     @Before
     fun setUp() {
         api = mockk()
+        db = mockk(relaxed = true)
         dao = mockk(relaxed = true)
         repository = PokemonRepositoryImpl(
             api = api,
+            db = db,
             dao = dao,
             dispatchers = TestDispatcherProvider()
         )

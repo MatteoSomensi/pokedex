@@ -39,31 +39,37 @@ fun MainNavigation(
     deepLinkUri: android.net.Uri? = null,
     onDeepLinkConsumed: () -> Unit = {}
 ) {
-    val startDestination = remember { if (FirebaseAuth.getInstance().currentUser != null) PokemonList else Auth }
+    val firebaseAuth = remember { FirebaseAuth.getInstance() }
+    val startDestination = remember {
+        if (firebaseAuth.currentUser != null) PokemonList else Auth
+    }
     val backStack = rememberNavBackStack(startDestination)
     
     DisposableEffect(Unit) {
-        val auth = FirebaseAuth.getInstance()
         val listener = FirebaseAuth.AuthStateListener { firebaseAuth ->
             if (firebaseAuth.currentUser == null && backStack.lastOrNull() != Auth) {
                 backStack.clear()
                 backStack.add(Auth)
             }
         }
-        auth.addAuthStateListener(listener)
+        firebaseAuth.addAuthStateListener(listener)
         onDispose {
-            auth.removeAuthStateListener(listener)
+            firebaseAuth.removeAuthStateListener(listener)
         }
     }
 
     LaunchedEffect(deepLinkUri) {
-        if (deepLinkUri != null && deepLinkUri.scheme == "pokedex" && deepLinkUri.host == "pokemon") {
-            val idString = deepLinkUri.lastPathSegment
-            val pokemonId = idString?.toIntOrNull()
-            if (pokemonId != null && backStack.lastOrNull() != PokemonDetail(id = pokemonId)) {
-                backStack.add(PokemonDetail(id = pokemonId))
+        deepLinkUri?.let { uri ->
+            val pokemonId = uri.toPokemonId()
+            if (pokemonId == null) {
+                onDeepLinkConsumed()
+            } else if (firebaseAuth.currentUser != null) {
+                val destination = PokemonDetail(id = pokemonId)
+                if (backStack.lastOrNull() != destination) {
+                    backStack.add(destination)
+                }
+                onDeepLinkConsumed()
             }
-            onDeepLinkConsumed()
         }
     }
     val windowAdaptiveInfo = currentWindowAdaptiveInfoV2()
@@ -137,6 +143,12 @@ fun MainNavigation(
                         onAuthSuccess = {
                             backStack.clear()
                             backStack.add(element = PokemonList)
+                            deepLinkUri?.toPokemonId()?.let { pokemonId ->
+                                backStack.add(PokemonDetail(id = pokemonId))
+                            }
+                            if (deepLinkUri != null) {
+                                onDeepLinkConsumed()
+                            }
                         }
                     )
                 }
@@ -151,6 +163,11 @@ fun MainNavigation(
                 }
             },
     )
+}
+
+private fun android.net.Uri.toPokemonId(): Int? {
+    if (scheme != "pokedex" || host != "pokemon") return null
+    return lastPathSegment?.toIntOrNull()?.takeIf { it > 0 }
 }
 
 @Composable

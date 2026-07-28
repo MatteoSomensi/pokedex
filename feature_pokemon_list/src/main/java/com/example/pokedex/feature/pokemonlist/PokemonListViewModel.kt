@@ -54,11 +54,6 @@ class PokemonListViewModel @Inject constructor(
                 }
             }
         }
-        .combine(repository.observeFavoritePokemonIds()) { pagingData, favoriteIds ->
-            pagingData.map { pokemon ->
-                pokemon.copy(isFavorite = favoriteIds.contains(pokemon.id))
-            }
-        }
         .cachedIn(viewModelScope)
 
     private fun loadTypes() {

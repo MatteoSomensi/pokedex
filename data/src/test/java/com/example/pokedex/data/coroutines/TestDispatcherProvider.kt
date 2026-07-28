@@ -5,6 +5,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 
+@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 class TestDispatcherProvider(
     private val testDispatcher: TestDispatcher = UnconfinedTestDispatcher()
 ) : DispatcherProvider {

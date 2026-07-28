@@ -37,4 +37,36 @@ class PokedexAppFunctions @Inject constructor(
             "Error searching for Pokemon $query."
         }
     }
+
+    /**
+     * Favorite or unfavorite a Pokemon.
+     *
+     * @param appFunctionContext The execution context.
+     * @param pokemonId The numeric Pokemon identifier.
+     * @param isFavorite Whether the Pokemon should be marked as favorite.
+     * @return A message describing the operation result.
+     */
+    @AppFunction(isDescribedByKDoc = true)
+    suspend fun toggleFavorite(
+        appFunctionContext: AppFunctionContext,
+        pokemonId: Int,
+        isFavorite: Boolean
+    ): String = withContext(Dispatchers.IO) {
+        if (pokemonId <= 0) {
+            return@withContext "Pokemon id must be greater than zero."
+        }
+
+        pokemonRepository.toggleFavoriteStatus(pokemonId, isFavorite).fold(
+            onSuccess = {
+                if (isFavorite) {
+                    "Pokemon $pokemonId added to favorites."
+                } else {
+                    "Pokemon $pokemonId removed from favorites."
+                }
+            },
+            onFailure = {
+                "Could not update favorite status for Pokemon $pokemonId."
+            }
+        )
+    }
 }

@@ -236,10 +236,10 @@ fun PokemonListScreenContent(
                             verticalArrangement = Arrangement.spacedBy(space = dimensions.paddingMedium),
                             modifier = Modifier.fillMaxSize()
                         ) {
-                            items(count = pagedPokemon.itemCount, key = { index -> 
-                                val id = pagedPokemon.peek(index)?.id ?: index
-                                id 
-                            }) { index ->
+                            items(
+                                count = pagedPokemon.itemCount,
+                                key = { index -> pagedPokemon.peek(index)?.id ?: "placeholder_$index" }
+                            ) { index ->
                                 val pokemon = pagedPokemon[index]
                                 if (pokemon != null) {
                                     PokemonCard(

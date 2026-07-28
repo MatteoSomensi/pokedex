@@ -63,7 +63,15 @@ class PokemonRepositoryImpl @Inject constructor(
             remoteMediator = PokemonRemoteMediator(
                 api = api,
                 db = db,
-                query = normalizedQuery
+                query = normalizedQuery,
+                fetchAllPokemon = {
+                    listMutex.withLock {
+                        if (globalListCache == null) {
+                            globalListCache = api.getPokemonList(limit = MAX_POKEMON_LIMIT, offset = 0).results
+                        }
+                        globalListCache!!
+                    }
+                }
             ),
             pagingSourceFactory = { dao.getPokemonPagingSource(normalizedQuery) }
         ).flow.map { pagingData ->

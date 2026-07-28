@@ -17,6 +17,9 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import com.example.pokedex.core.coroutines.DispatcherProvider
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
 
@@ -55,19 +58,28 @@ class SyncWorker @AssistedInject constructor(
             
             if (result.isSuccess) {
                 val pokemonList = result.getOrNull() ?: emptyList()
-                val imageLoader = ImageLoader(applicationContext)
+                val imageUrls = pokemonList.mapNotNull { pokemon ->
+                    pokemon.imageUrl.takeIf(String::isNotEmpty)
+                }
 
-                try {
-                    pokemonList.forEach { pokemon ->
-                        if (pokemon.imageUrl.isNotEmpty()) {
-                            val request = ImageRequest.Builder(applicationContext)
-                                .data(pokemon.imageUrl)
-                                .build()
-                            imageLoader.execute(request)
+                if (imageUrls.isNotEmpty()) {
+                    val imageLoader = ImageLoader(applicationContext)
+                    try {
+                        imageUrls.chunked(IMAGE_PREFETCH_CONCURRENCY).forEach { chunk ->
+                            coroutineScope {
+                                chunk.map { imageUrl ->
+                                    async {
+                                        val request = ImageRequest.Builder(applicationContext)
+                                            .data(imageUrl)
+                                            .build()
+                                        imageLoader.execute(request)
+                                    }
+                                }.awaitAll()
+                            }
                         }
+                    } finally {
+                        imageLoader.shutdown()
                     }
-                } finally {
-                    imageLoader.shutdown()
                 }
                 
                 Log.d(TAG, "Sync work finished successfully. Synced ${pokemonList.size} Pokémon.")
@@ -89,6 +101,7 @@ class SyncWorker @AssistedInject constructor(
         const val PERIODIC_WORK_NAME = "PokemonPeriodicDataSyncWork"
         const val MANUAL_WORK_NAME = "PokemonManualDataSyncWork"
         const val SYNC_TAG = "PokemonDataSync"
+        private const val IMAGE_PREFETCH_CONCURRENCY = 10
 
         /**
          * Schedules a periodic sync to run in the background.

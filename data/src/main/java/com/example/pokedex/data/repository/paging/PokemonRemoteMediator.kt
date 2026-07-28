@@ -21,11 +21,11 @@ import kotlinx.coroutines.coroutineScope
 class PokemonRemoteMediator(
     private val api: PokeApiService,
     private val db: PokedexDatabase,
-    query: String = ""
+    query: String = "",
+    private val fetchAllPokemon: suspend () -> List<PokemonResultItem>
 ) : RemoteMediator<Int, PokemonEntity>() {
 
     private val normalizedQuery = query.trim().lowercase()
-    private var searchablePokemon: List<PokemonResultItem>? = null
 
     override suspend fun initialize(): InitializeAction = InitializeAction.LAUNCH_INITIAL_REFRESH
 
@@ -76,10 +76,19 @@ class PokemonRemoteMediator(
                     }
                 )
 
+                val ids = detailedPokemon.map { it.id }
+                val favorites = if (ids.isEmpty()) {
+                    emptySet()
+                } else {
+                    db.pokemonDao().getPokemonByIds(ids)
+                        .filter { it.isFavorite }
+                        .map { it.id }
+                        .toSet()
+                }
+
                 val entities = detailedPokemon.map { response ->
                     val entity = response.toLocalEntity()
-                    val isFavorite = db.pokemonDao().getPokemonById(entity.id)?.isFavorite == true
-                    entity.copy(isFavorite = isFavorite)
+                    entity.copy(isFavorite = favorites.contains(entity.id))
                 }
                 db.pokemonDao().insertAll(entities)
             }
@@ -97,10 +106,7 @@ class PokemonRemoteMediator(
             return api.getPokemonList(limit = limit, offset = offset).results
         }
 
-        val allPokemon = searchablePokemon ?: api
-            .getPokemonList(limit = MAX_POKEMON_LIMIT, offset = 0)
-            .results
-            .also { searchablePokemon = it }
+        val allPokemon = fetchAllPokemon()
         return allPokemon
             .asSequence()
             .filter { item ->
@@ -137,9 +143,5 @@ class PokemonRemoteMediator(
             stats = stats.joinToString(";") { "${it.stat.name}:${it.baseStat}" },
             isFavorite = false
         )
-    }
-
-    private companion object {
-        const val MAX_POKEMON_LIMIT = 1500
     }
 }
