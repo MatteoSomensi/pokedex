@@ -35,9 +35,21 @@ fun MainNavigation() {
                     metadata = ListDetailScene.listPane()
                 ) {
                     PokemonListScreen(
-                        onNavigateToDetail = { pokemonId -> backStack.add(PokemonDetail(id = pokemonId)) },
-                        onNavigateToProfile = { backStack.add(element = Profile) },
-                        onNavigateToFavorites = { backStack.add(Favorite) }
+                        onNavigateToDetail = { pokemonId -> 
+                            if (backStack.lastOrNull() !is PokemonDetail) {
+                                backStack.add(PokemonDetail(id = pokemonId)) 
+                            }
+                        },
+                        onNavigateToProfile = { 
+                            if (backStack.lastOrNull() != Profile) {
+                                backStack.add(element = Profile) 
+                            }
+                        },
+                        onNavigateToFavorites = { 
+                            if (backStack.lastOrNull() != Favorite) {
+                                backStack.add(Favorite) 
+                            }
+                        }
                     )
                 }
                 entry<PokemonDetail>(
@@ -53,7 +65,11 @@ fun MainNavigation() {
                 ) {
                     FavoriteScreen(
                         onBackClick = { backStack.removeLastOrNull() },
-                        onNavigateToDetail = { pokemonId -> backStack.add(PokemonDetail(id = pokemonId)) }
+                        onNavigateToDetail = { pokemonId -> 
+                            if (backStack.lastOrNull() !is PokemonDetail) {
+                                backStack.add(PokemonDetail(id = pokemonId)) 
+                            }
+                        }
                     )
                 }
                 entry<Auth> {
