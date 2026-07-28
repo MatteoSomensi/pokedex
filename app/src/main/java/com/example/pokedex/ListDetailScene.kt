@@ -7,7 +7,7 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
@@ -20,8 +20,6 @@ import androidx.navigation3.runtime.metadata
 import androidx.navigation3.scene.Scene
 import androidx.navigation3.scene.SceneStrategy
 import androidx.navigation3.scene.SceneStrategyScope
-import androidx.window.core.layout.WindowSizeClass
-import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
 import com.example.pokedex.core.designsystem.LocalBackButtonVisibility
 
 data class ListDetailScene<T : Any>(
@@ -72,18 +70,18 @@ data class ListDetailScene<T : Any>(
 
 @Composable
 fun <T : Any> rememberListDetailSceneStrategy(): ListDetailSceneStrategy<T> {
-    val windowSizeClass = currentWindowAdaptiveInfoV2().windowSizeClass
+    val screenWidthDp = LocalConfiguration.current.screenWidthDp
 
-    return remember(windowSizeClass) {
-        ListDetailSceneStrategy(windowSizeClass)
+    return remember(screenWidthDp) {
+        ListDetailSceneStrategy(screenWidthDp)
     }
 }
 
-class ListDetailSceneStrategy<T : Any>(val windowSizeClass: WindowSizeClass) : SceneStrategy<T> {
+class ListDetailSceneStrategy<T : Any>(val screenWidthDp: Int) : SceneStrategy<T> {
 
     override fun SceneStrategyScope<T>.calculateScene(entries: List<NavEntry<T>>): Scene<T>? {
 
-        if (!windowSizeClass.isWidthAtLeastBreakpoint(WIDTH_DP_MEDIUM_LOWER_BOUND)) {
+        if (screenWidthDp < 450) {
             return null
         }
 
