@@ -50,9 +50,9 @@ dependencies {
     implementation(libs.androidx.glance.appwidget)
     implementation(libs.androidx.glance.material3)
 
-    implementation(project(":core"))
-    implementation(project(":domain"))
-    implementation(project(":data"))
+    implementation(project(":core:common"))
+    implementation(project(":core:domain"))
+    implementation(project(":core:data"))
     implementation(project(":features:pokemon_list"))
     implementation(project(":features:pokemon_detail"))
     implementation(project(":features:auth"))

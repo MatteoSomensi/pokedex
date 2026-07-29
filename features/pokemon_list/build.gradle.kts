@@ -19,8 +19,8 @@ roborazzi {
 }
 
 dependencies {
-    implementation(project(":domain"))
-    implementation(project(":core"))
+    implementation(project(":core:domain"))
+    implementation(project(":core:common"))
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.hilt.navigation.compose)

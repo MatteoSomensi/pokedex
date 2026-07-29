@@ -30,10 +30,10 @@ subprojects {
 val documentedProjects =
     listOf(
         project(":app"),
-        project(":core"),
+        project(":core:common"),
         project(":core:designsystem"),
-        project(":domain"),
-        project(":data"),
+        project(":core:domain"),
+        project(":core:data"),
         project(":features:auth"),
         project(":features:favorite:api"),
         project(":features:favorite:impl"),

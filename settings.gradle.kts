@@ -32,9 +32,9 @@ plugins {
 
 rootProject.name = "Pokedex"
 include(":app")
-include(":core")
-include(":domain")
-include(":data")
+include(":core:common")
+include(":core:domain")
+include(":core:data")
 include(":features:pokemon_list")
 include(":features:pokemon_detail")
 include(":features:auth")

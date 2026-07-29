@@ -12,8 +12,8 @@ android {
 }
 
 dependencies {
-    implementation(project(":domain"))
-    implementation(project(":core"))
+    implementation(project(":core:domain"))
+    implementation(project(":core:common"))
     implementation(libs.bundles.retrofit)
     implementation(libs.okhttp.logging)
     implementation(libs.androidx.security.crypto)

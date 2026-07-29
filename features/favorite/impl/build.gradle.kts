@@ -8,8 +8,8 @@ android {
 
 dependencies {
     implementation(project(":features:favorite:api"))
-    implementation(project(":domain"))
-    implementation(project(":core"))
+    implementation(project(":core:domain"))
+    implementation(project(":core:common"))
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.hilt.navigation.compose)
     val composeBom = platform(libs.androidx.compose.bom)

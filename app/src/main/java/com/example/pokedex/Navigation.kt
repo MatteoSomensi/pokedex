@@ -112,6 +112,7 @@ fun MainNavigation(
                 selected = backStack.lastOrNull() is PokemonList || backStack.lastOrNull() is PokemonDetail,
                 onClick = {
                     if (backStack.lastOrNull() !is PokemonList && backStack.lastOrNull() !is PokemonDetail) {
+                        backStack.clear()
                         backStack.add(PokemonList)
                     }
                 },
@@ -127,6 +128,8 @@ fun MainNavigation(
                 selected = backStack.lastOrNull() is Favorite,
                 onClick = {
                     if (backStack.lastOrNull() !is Favorite) {
+                        backStack.clear()
+                        backStack.add(PokemonList)
                         backStack.add(Favorite)
                     }
                 },
@@ -142,6 +145,8 @@ fun MainNavigation(
                 selected = backStack.lastOrNull() is Profile,
                 onClick = {
                     if (backStack.lastOrNull() !is Profile) {
+                        backStack.clear()
+                        backStack.add(PokemonList)
                         backStack.add(Profile)
                     }
                 },
@@ -182,11 +187,15 @@ fun MainNavigation(
                             },
                             onNavigateToProfile = {
                                 if (backStack.lastOrNull() != Profile) {
+                                    backStack.clear()
+                                    backStack.add(PokemonList)
                                     backStack.add(element = Profile)
                                 }
                             },
                             onNavigateToFavorites = {
                                 if (backStack.lastOrNull() != Favorite) {
+                                    backStack.clear()
+                                    backStack.add(PokemonList)
                                     backStack.add(Favorite)
                                 }
                             },

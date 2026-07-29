@@ -122,7 +122,7 @@ flowchart LR
 - does not know about Retrofit, Room, Firebase, or Android framework classes;
 - lets presentation code depend on abstractions rather than concrete implementations.
 
-The `:domain` module uses `androidx.paging:paging-common` to expose `PagingData`. It is free from the
+The `:core:domain` module uses `androidx.paging:paging-common` to expose `PagingData`. It is free from the
 Android framework, but it is not completely independent from AndroidX libraries.
 
 **Data**
@@ -140,17 +140,17 @@ Android framework, but it is not completely independent from AndroidX libraries.
 - produces the final APK or AAB.
 
 This structure applies dependency inversion: high-level UI code sees domain interfaces, while
-`:data` supplies their concrete implementations.
+`:core:data` supplies their concrete implementations.
 
 ## Modules and dependencies
 
 ```mermaid
 flowchart TD
     APP[:app]
-    CORE[:core]
+    CORE[:core:common]
     DS[:core:designsystem]
-    DOMAIN[:domain]
-    DATA[:data]
+    DOMAIN[:core:domain]
+    DATA[:core:data]
     LIST[:features:pokemon_list]
     DETAIL[:features:pokemon_detail]
     AUTH[:features:auth]
@@ -185,10 +185,10 @@ flowchart TD
 | Module | Responsibility |
 |---|---|
 | `:app` | Application entry point, root Navigation 3 graph, deep links, widget, AppFunctions, and final composition |
-| `:core` | MVI primitives, coroutine dispatchers, application scope, shared resources, and UI utilities |
+| `:core:common` | MVI primitives, coroutine dispatchers, application scope, shared resources, and UI utilities |
 | `:core:designsystem` | Theme, colors, typography, dimensions, weights, animations, and shared Compose components |
-| `:domain` | Models and contracts that do not depend on concrete implementations |
-| `:data` | Retrofit/OkHttp, Room, Paging, repositories, Firebase, WorkManager, and Hilt modules |
+| `:core:domain` | Models and contracts that do not depend on concrete implementations |
+| `:core:data` | Retrofit/OkHttp, Room, Paging, repositories, Firebase, WorkManager, and Hilt modules |
 | `:features:pokemon_list` | List, search, filters, pagination, and related tests |
 | `:features:pokemon_detail` | Detail presentation, favorite changes, and cry playback |
 | `:features:auth` | Login, registration, profile, and Google Sign-In |
@@ -204,7 +204,7 @@ module overhead can outweigh the benefit in smaller projects.
 
 ## State flow and MVI
 
-The list and detail features use the primitives defined in `:core`:
+The list and detail features use the primitives defined in `:core:common`:
 
 - `UiState`: an immutable snapshot of everything required to render the UI;
 - `UiEvent`: a user intention or system event;
@@ -409,7 +409,7 @@ very few end-to-end and performance tests.
 
 | Type | Source set / module | What it verifies | Environment |
 |---|---|---|---|
-| Unit test | `src/test`, `:data` | repository orchestration, local/remote fallback, `RemoteMediator`, worker | JVM; Robolectric where Android APIs are required |
+| Unit test | `src/test`, `:core:data` | repository orchestration, local/remote fallback, `RemoteMediator`, worker | JVM; Robolectric where Android APIs are required |
 | ViewModel test | `src/test`, `:features:pokemon_list` | state, events, and effects | JVM, JUnit 5, Turbine |
 | Local UI behavior test | `src/test`, `:features:pokemon_list` | Compose rendering with controlled state | Robolectric |
 | Roborazzi screenshot test | `src/test`, `:features:pokemon_list` | screen-level visual regression | JVM/Robolectric |
@@ -625,12 +625,12 @@ consistent language.
 ### Prerequisites
 
 - an Android Studio version compatible with the AGP version in the catalog;
-- JDK 21 to align with the Gradle daemon and the `:domain` Java target;
+- JDK 21 to align with the Gradle daemon and the `:core:domain` Java target;
 - the Android SDK required by `compileSdk = 37`;
 - an API 24+ emulator or device for the app;
 - a personal Firebase project for real authentication and observability.
 
-Android modules produce Java/Kotlin 17 bytecode. `:domain` currently declares Java 21.
+Android modules produce Java/Kotlin 17 bytecode. `:core:domain` currently declares Java 21.
 
 ### Firebase
 
@@ -673,11 +673,11 @@ adb shell am start \
 To add a feature:
 
 1. create an Android library below `features/` and apply `pokedex.android.feature`;
-2. depend on `:domain` and `:core`, avoiding a direct dependency on `:data`;
+2. depend on `:core:domain` and `:core:common`, avoiding a direct dependency on `:core:data`;
 3. define state, events, and effects only when the complexity justifies MVI;
 4. create a stateful route and a stateless screen;
 5. add a serializable `NavKey` and register it in the root `entryProvider`;
-6. add domain contracts and implement them in `:data` when required;
+6. add domain contracts and implement them in `:core:data` when required;
 7. provide Hilt bindings;
 8. add logic tests, UI behavior tests, and meaningful previews/screenshots;
 9. verify compact/medium/expanded widths, dark mode, font scale, and accessibility;
@@ -685,9 +685,9 @@ To add a feature:
 
 To replace the Pokémon domain:
 
-- keep `:core`, `build-logic`, and the testing infrastructure;
-- replace models and repositories in `:domain`;
-- replace API DTOs, entities, DAOs, and mappings in `:data`;
+- keep `:core:common`, `build-logic`, and the testing infrastructure;
+- replace models and repositories in `:core:domain`;
+- replace API DTOs, entities, DAOs, and mappings in `:core:data`;
 - rename packages/application ID and configure a new Firebase project;
 - remove integrations that are not useful for the new product.
 
@@ -695,7 +695,7 @@ A Swiss Army knife is most effective when each project carries only the tools it
 
 ## Template status and limitations
 
-- Clean Architecture is pragmatic: `:core:designsystem` depends on `:domain` for `PokemonCard`. Move
+- Clean Architecture is pragmatic: `:core:designsystem` depends on `:core:domain` for `PokemonCard`. Move
   that component into a feature or decouple it from the domain model for a generic design system.
 - The list uses Paging 3 and `RemoteMediator`; it is not a custom infinite-scroll implementation.
 - Local-first detail loading has no cache-expiration policy.
@@ -707,7 +707,7 @@ A Swiss Army knife is most effective when each project carries only the tools it
 - Some UI strings remain hardcoded.
 - Room-on-device tests, migration tests, navigation tests, and functional E2E tests are missing.
 - CI compiles but does not execute suites that require a device.
-- Java targets in CI and `:domain` must remain aligned when changing the toolchain.
+- Java targets in CI and `:core:domain` must remain aligned when changing the toolchain.
 
 ## Official documentation
 
