@@ -86,7 +86,7 @@ fun PokedexWidgetContent(pokemon: Pokemon?) {
     ) {
         if (pokemon != null) {
             Text(
-                text = context.getString(R.string.widget_favorite_title),
+                text = context.getString(com.example.pokedex.core.R.string.widget_favorite_title),
                 style =
                     TextStyle(
                         fontWeight = FontWeight.Bold,
@@ -118,7 +118,7 @@ fun PokedexWidgetContent(pokemon: Pokemon?) {
             )
             Spacer(modifier = GlanceModifier.height(dimensions.paddingSmall))
             Text(
-                text = context.getString(R.string.widget_default_title),
+                text = context.getString(com.example.pokedex.core.R.string.widget_default_title),
                 style =
                     TextStyle(
                         fontWeight = FontWeight.Bold,
@@ -126,7 +126,7 @@ fun PokedexWidgetContent(pokemon: Pokemon?) {
                     ),
             )
             Text(
-                text = context.getString(R.string.widget_default_subtitle),
+                text = context.getString(com.example.pokedex.core.R.string.widget_default_subtitle),
                 style =
                     TextStyle(
                         color = GlanceTheme.colors.onBackground,

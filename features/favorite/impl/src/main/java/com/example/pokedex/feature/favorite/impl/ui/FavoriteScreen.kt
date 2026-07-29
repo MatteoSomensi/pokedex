@@ -26,12 +26,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.pokedex.core.R
 import com.example.pokedex.core.designsystem.components.PokemonCard
 import com.example.pokedex.theme.LocalDimensions
-import androidx.compose.ui.res.stringResource
-import com.example.pokedex.core.R
 
 /**
  * Displays favorite Pokémon from [FavoriteViewModel] in an adaptive grid.

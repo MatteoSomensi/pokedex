@@ -53,13 +53,11 @@ class SecureSessionManager
 
         /**
          * Attempts to refresh the access token synchronously.
-         * 
+         *
          * No token endpoint is configured for the public PokeAPI client.
          * Returning null prevents retrying a 401 with a fabricated credential.
          */
-        override fun refreshToken(): String? {
-            return null
-        }
+        override fun refreshToken(): String? = null
 
         override fun clearSession() {
             sharedPreferences.edit { remove("access_token") }

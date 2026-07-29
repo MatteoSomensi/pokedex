@@ -2,6 +2,8 @@ package com.example.pokedex.feature.favorite.impl.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.pokedex.core.R
+import com.example.pokedex.core.util.UiText
 import com.example.pokedex.domain.model.Pokemon
 import com.example.pokedex.domain.repository.PokemonRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -11,8 +13,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import com.example.pokedex.core.util.UiText
-import com.example.pokedex.core.R
 
 /**
  * Immutable presentation state for the favorites destination.
@@ -70,7 +70,9 @@ class FavoriteViewModel
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            error = result.exceptionOrNull()?.message?.let { UiText.Dynamic(it) } ?: UiText.StringResource(R.string.error_loading),
+                            error =
+                                result.exceptionOrNull()?.message?.let { UiText.Dynamic(it) }
+                                    ?: UiText.StringResource(R.string.error_loading),
                         )
                     }
                 }
