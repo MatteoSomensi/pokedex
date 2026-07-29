@@ -11,6 +11,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.example.pokedex.core.util.UiText
+import com.example.pokedex.core.R
 
 /**
  * Immutable presentation state for the favorites destination.
@@ -21,7 +23,7 @@ import javax.inject.Inject
 data class FavoriteUiState(
     val isLoading: Boolean = false,
     val favorites: List<Pokemon> = emptyList(),
-    val error: String? = null,
+    val error: UiText? = null,
 )
 
 /**
@@ -68,7 +70,7 @@ class FavoriteViewModel
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            error = result.exceptionOrNull()?.message ?: "Loading error",
+                            error = result.exceptionOrNull()?.message?.let { UiText.Dynamic(it) } ?: UiText.StringResource(R.string.error_loading),
                         )
                     }
                 }

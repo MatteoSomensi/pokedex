@@ -67,10 +67,14 @@ class PokedexWidget : GlanceAppWidget() {
  * Renders widget content for [pokemon], or a generic empty state when it is `null`.
  *
  * This function uses Glance composables, which are not interchangeable with regular Compose UI.
+ * Since Glance doesn't natively support Coil/Glide for asynchronous URLs directly via standard
+ * composables easily, we show a static pokeball icon and the name for now. For URL images, a
+ * worker is needed to download and save them locally, or use an ImageProvider(Bitmap).
  */
 @Composable
 fun PokedexWidgetContent(pokemon: Pokemon?) {
     val dimensions = LocalDimensions.current
+    val context = androidx.glance.LocalContext.current
     Column(
         modifier =
             GlanceModifier
@@ -82,7 +86,7 @@ fun PokedexWidgetContent(pokemon: Pokemon?) {
     ) {
         if (pokemon != null) {
             Text(
-                text = "Your Favorite",
+                text = context.getString(R.string.widget_favorite_title),
                 style =
                     TextStyle(
                         fontWeight = FontWeight.Bold,
@@ -114,7 +118,7 @@ fun PokedexWidgetContent(pokemon: Pokemon?) {
             )
             Spacer(modifier = GlanceModifier.height(dimensions.paddingSmall))
             Text(
-                text = "Pokedex",
+                text = context.getString(R.string.widget_default_title),
                 style =
                     TextStyle(
                         fontWeight = FontWeight.Bold,
@@ -122,7 +126,7 @@ fun PokedexWidgetContent(pokemon: Pokemon?) {
                     ),
             )
             Text(
-                text = "Catch 'em all!",
+                text = context.getString(R.string.widget_default_subtitle),
                 style =
                     TextStyle(
                         color = GlanceTheme.colors.onBackground,

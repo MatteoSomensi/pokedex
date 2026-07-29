@@ -30,6 +30,8 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.pokedex.core.designsystem.components.PokemonCard
 import com.example.pokedex.theme.LocalDimensions
+import androidx.compose.ui.res.stringResource
+import com.example.pokedex.core.R
 
 /**
  * Displays favorite Pokémon from [FavoriteViewModel] in an adaptive grid.
@@ -53,12 +55,12 @@ fun FavoriteScreen(
         modifier = Modifier.nestedScroll(connection = scrollBehavior.nestedScrollConnection),
         topBar = {
             TopAppBar(
-                title = { Text("Preferiti") },
+                title = { Text(stringResource(id = R.string.filter_favorites)) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Indietro",
+                            contentDescription = stringResource(id = R.string.cd_back),
                         )
                     }
                 },
@@ -78,9 +80,9 @@ fun FavoriteScreen(
         ) {
             if (uiState.isLoading) {
                 CircularProgressIndicator(modifier = Modifier.align(alignment = Alignment.Center))
-            } else if (!uiState.error.isNullOrBlank()) {
+            } else if (uiState.error != null) {
                 Text(
-                    text = uiState.error!!,
+                    text = uiState.error!!.asString(),
                     modifier = Modifier.align(alignment = Alignment.Center).padding(paddingValues = padding),
                 )
             } else if (uiState.favorites.isEmpty()) {
@@ -95,7 +97,7 @@ fun FavoriteScreen(
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Text(
-                        text = "Nessun Pokémon nei preferiti",
+                        text = stringResource(id = R.string.favorite_empty_state),
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }

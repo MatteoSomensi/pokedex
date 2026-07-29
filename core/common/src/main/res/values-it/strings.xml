@@ -34,4 +34,10 @@
     <string name="cd_play_cry">Riproduci verso</string>
     <string name="error_playback">Impossibile riprodurre il verso di questo Pokémon</string>
 
+    <string name="error_loading">Errore caricamento</string>
+    <string name="widget_favorite_title">Il tuo Preferito</string>
+    <string name="widget_default_title">Pokedex</string>
+    <string name="widget_default_subtitle">Catturali tutti!</string>
+    <string name="favorite_empty_state">Nessun Pokémon nei preferiti</string>
+
 </resources>

@@ -34,4 +34,10 @@
     <string name="retry">Retry</string>
     <string name="filter_all">All</string>
 
+    <string name="error_loading">Loading error</string>
+    <string name="widget_favorite_title">Your Favorite</string>
+    <string name="widget_default_title">Pokedex</string>
+    <string name="widget_default_subtitle">Catch \'em all!</string>
+    <string name="favorite_empty_state">No favorite Pokémon</string>
+
 </resources>
