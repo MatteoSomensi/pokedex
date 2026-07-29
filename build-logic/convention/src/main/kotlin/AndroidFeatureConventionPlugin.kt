@@ -10,7 +10,6 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
             pluginManager.apply("pokedex.android.compose")
 
             dependencies {
-                // Dependencies should be added in build.gradle.kts instead of here
             }
         }
     }

@@ -47,11 +47,9 @@ class PokedexWidget : GlanceAppWidget() {
                     context.applicationContext,
                     PokedexWidgetEntryPoint::class.java,
                 ).pokemonRepository()
-        // Recuperiamo il set di preferiti dal database offline
         val favorites = repository.observeFavoritePokemonIds().first()
         val favoritePokemon =
             if (favorites.isNotEmpty()) {
-                // Prendiamo il primo preferito per mostrarlo (potrebbe anche essere random)
                 repository.getPokemonDetail(favorites.first()).getOrNull()
             } else {
                 null
@@ -84,7 +82,7 @@ fun PokedexWidgetContent(pokemon: Pokemon?) {
     ) {
         if (pokemon != null) {
             Text(
-                text = "Il tuo Preferito",
+                text = "Your Favorite",
                 style =
                     TextStyle(
                         fontWeight = FontWeight.Bold,
@@ -93,10 +91,6 @@ fun PokedexWidgetContent(pokemon: Pokemon?) {
             )
             Spacer(modifier = GlanceModifier.height(dimensions.paddingSmall))
 
-            // Dato che Glance non supporta nativamente Coil/Glide caricati da URL asincrono
-            // direttamente tramite composable standard in modo semplice,
-            // per ora mostriamo un'icona statica di pokeball e il nome.
-            // Per immagini da URL serve un worker che le scarica e le salva in locale, o un ImageProvider(Bitmap).
             Image(
                 provider = ImageProvider(R.drawable.ic_launcher_foreground),
                 contentDescription = null,
@@ -128,7 +122,7 @@ fun PokedexWidgetContent(pokemon: Pokemon?) {
                     ),
             )
             Text(
-                text = "Catturali tutti!",
+                text = "Catch 'em all!",
                 style =
                     TextStyle(
                         color = GlanceTheme.colors.onBackground,

@@ -85,7 +85,6 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
-    // WorkManager
     implementation(libs.bundles.workmanager)
     ksp(libs.androidx.hilt.compiler)
 

@@ -68,7 +68,7 @@ class FavoriteViewModel
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            error = result.exceptionOrNull()?.message ?: "Errore caricamento",
+                            error = result.exceptionOrNull()?.message ?: "Loading error",
                         )
                     }
                 }
@@ -78,7 +78,6 @@ class FavoriteViewModel
         /** Removes [pokemon] from favorites; the observed ID flow triggers the subsequent reload. */
         fun toggleFavorite(pokemon: Pokemon) {
             viewModelScope.launch {
-                // Selezionando il preferito dalla schermata Preferiti, lo rimuoviamo.
                 repository.toggleFavoriteStatus(pokemon.id, false)
             }
         }

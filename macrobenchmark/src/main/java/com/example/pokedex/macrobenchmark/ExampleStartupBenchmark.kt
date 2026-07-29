@@ -35,7 +35,6 @@ class ExampleStartupBenchmark {
             pressHome()
             startActivityAndWait()
 
-            // Scroll the list to measure frame timing (jank)
             val pokemonList = device.findObject(By.res("pokemon_list"))
             if (pokemonList != null) {
                 pokemonList.setGestureMargin(device.displayWidth / 5)

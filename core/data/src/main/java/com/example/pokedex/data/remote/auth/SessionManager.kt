@@ -52,8 +52,6 @@ class SecureSessionManager
         override fun getAccessToken(): String? = sharedPreferences.getString("access_token", null)
 
         override fun refreshToken(): String? {
-            // No token endpoint is configured for the public PokeAPI client.
-            // Returning null prevents retrying a 401 with a fabricated credential.
             return null
         }
 

@@ -20,7 +20,6 @@ class PokemonListScreenTest {
 
     @Test
     fun whenStateHasPokemon_thenTheyAreDisplayed() {
-        // Given
         val mockPokemon =
             listOf(
                 Pokemon(id = 1, name = "Bulbasaur", imageUrl = "", cryUrl = "", types = listOf("Grass")),
@@ -29,7 +28,6 @@ class PokemonListScreenTest {
         val mockState = PokemonListState()
         val pokemonFlow = flowOf(PagingData.from(mockPokemon))
 
-        // When
         composeTestRule.setContent {
             PokedexTheme {
                 val pagedPokemon = pokemonFlow.collectAsLazyPagingItems()
@@ -41,7 +39,6 @@ class PokemonListScreenTest {
             }
         }
 
-        // Then
         composeTestRule.onNodeWithText("Bulbasaur").assertIsDisplayed()
         composeTestRule.onNodeWithText("Ivysaur").assertIsDisplayed()
     }

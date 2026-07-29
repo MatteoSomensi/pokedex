@@ -42,7 +42,6 @@ class PokemonRepositoryImplTest {
     @Test
     fun `getPokemonList returns local data when not empty and not force refresh`() =
         runTest {
-            // Arrange
             val mockEntities =
                 listOf(
                     PokemonEntity(
@@ -58,10 +57,8 @@ class PokemonRepositoryImplTest {
                 )
             coEvery { dao.getPokemonList(any(), any()) } returns mockEntities
 
-            // Act
             val result = repository.getPokemonList(limit = 1, offset = 0, forceRefresh = false)
 
-            // Assert
             assertTrue(result.isSuccess)
             assertEquals(1, result.getOrNull()?.size)
             assertEquals("Bulbasaur", result.getOrNull()?.first()?.name)
@@ -71,7 +68,6 @@ class PokemonRepositoryImplTest {
     @Test
     fun `getPokemonList fetches from network when local is empty`() =
         runTest {
-            // Arrange
             coEvery { dao.getPokemonList(any(), any()) } returns emptyList()
             coEvery { dao.getPokemonById(any()) } returns null
             coEvery { api.getPokemonList(any(), any()) } returns
@@ -88,10 +84,8 @@ class PokemonRepositoryImplTest {
                     stats = emptyList(),
                 )
 
-            // Act
             val result = repository.getPokemonList(limit = 1, offset = 0, forceRefresh = false)
 
-            // Assert
             assertTrue(result.isSuccess)
             assertEquals(1, result.getOrNull()?.size)
             assertEquals("bulbasaur", result.getOrNull()?.first()?.name)

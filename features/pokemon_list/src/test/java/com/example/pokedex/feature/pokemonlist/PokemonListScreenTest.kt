@@ -25,7 +25,6 @@ class PokemonListScreenTest {
 
     @Test
     fun pokemonListScreen_defaultState_looksCorrect() {
-        // Arrange
         val mockState =
             PokemonListState(
                 availableTypes = listOf("Grass", "Fire", "Water"),
@@ -58,7 +57,6 @@ class PokemonListScreenTest {
 
         val flow = flowOf(PagingData.from(mockPokemon))
 
-        // Act
         composeTestRule.setContent {
             PokedexTheme {
                 val lazyPagingItems = flow.collectAsLazyPagingItems()
@@ -70,7 +68,6 @@ class PokemonListScreenTest {
             }
         }
 
-        // Assert
         composeTestRule.onRoot().captureRoboImage()
     }
 }

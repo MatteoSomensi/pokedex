@@ -14,7 +14,6 @@ android {
     }
 
     buildTypes {
-        // This build type sets nonMinified to true to allow debugging
         create("benchmark") {
             isDebuggable = true
             signingConfig = getByName("debug").signingConfig

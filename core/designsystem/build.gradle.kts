@@ -8,7 +8,7 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:domain")) // for Pokemon model
+    implementation(project(":core:domain"))
     val composeBom = platform(libs.androidx.compose.bom)
     implementation(composeBom)
     implementation(libs.androidx.compose.ui)

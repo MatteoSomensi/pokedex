@@ -319,6 +319,3 @@ fun PokemonCardPreview(
     }
 }
 
-// Previews of Paging3 are complex, omitting dummy LazyPagingItems creation for simplicity
-// in a real setup we would mock the flow or use a fake Pager.
-// PokemonListScreenContent(state = mockState, pagedPokemon = ..., onEvent = {}, ...)

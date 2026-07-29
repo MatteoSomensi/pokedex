@@ -33,7 +33,6 @@ class SyncWorkerTest {
     @Test
     fun `doWork returns success when repository fetch succeeds`() =
         runTest {
-            // Arrange
             val mockPokemon =
                 Pokemon(
                     id = 1,
@@ -67,17 +66,14 @@ class SyncWorkerTest {
                         },
                     ).build()
 
-            // Act
             val result = worker.doWork()
 
-            // Assert
             assertEquals(Result.success(), result)
         }
 
     @Test
     fun `doWork returns retry when repository fetch fails`() =
         runTest {
-            // Arrange
             coEvery {
                 pokemonRepository.getPokemonList(any(), any(), any())
             } returns kotlin.Result.failure(Exception("Network error"))
@@ -100,10 +96,8 @@ class SyncWorkerTest {
                         },
                     ).build()
 
-            // Act
             val result = worker.doWork()
 
-            // Assert
             assertEquals(Result.retry(), result)
         }
 }

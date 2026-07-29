@@ -27,12 +27,9 @@ class BaselineProfileGenerator {
             packageName = "com.example.pokedex",
             maxIterations = 5,
         ) {
-            // This block defines the app's critical user journey. Here we are interested in
-            // optimizing for app startup and list scrolling.
             pressHome()
             startActivityAndWait()
 
-            // Wait for the Pokemon list to be displayed
             val pokemonList = device.findObject(By.res("pokemon_list"))
             if (pokemonList != null) {
                 pokemonList.setGestureMargin(device.displayWidth / 5)
