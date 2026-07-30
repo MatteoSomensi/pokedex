@@ -7,20 +7,20 @@ plugins {
 group = "com.example.pokedex.buildlogic"
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
     compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_17)
+        jvmTarget.set(JvmTarget.JVM_21)
     }
 }
 
 dependencies {
-    compileOnly("com.android.tools.build:gradle:9.1.1")
-    compileOnly("org.jetbrains.kotlin:kotlin-gradle-plugin:2.4.10")
-    implementation("io.github.takahirom.roborazzi:roborazzi-gradle-plugin:1.42.0")
+    compileOnly(libs.android.gradle.plugin)
+    compileOnly(libs.kotlin.gradle.plugin)
+    implementation(libs.roborazzi.gradle.plugin)
 }
 
 gradlePlugin {

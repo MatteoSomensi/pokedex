@@ -5,11 +5,11 @@ plugins {
 
 android {
     namespace = "com.example.pokedex.macrobenchmark"
-    compileSdk = 35
+    compileSdk = 37
 
     defaultConfig {
         minSdk = 28
-        targetSdk = 35
+        targetSdk = 36
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 

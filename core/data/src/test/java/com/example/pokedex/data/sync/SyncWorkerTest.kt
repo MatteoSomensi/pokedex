@@ -10,6 +10,8 @@ import androidx.work.testing.TestListenableWorkerBuilder
 import com.example.pokedex.data.coroutines.TestDispatcherProvider
 import com.example.pokedex.domain.model.Pokemon
 import com.example.pokedex.domain.repository.PokemonRepository
+import com.example.pokedex.domain.result.AppError
+import com.example.pokedex.domain.result.AppResult
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
@@ -46,7 +48,7 @@ class SyncWorkerTest {
                 )
             coEvery {
                 pokemonRepository.getPokemonList(any(), any(), any())
-            } returns kotlin.Result.success(listOf(mockPokemon))
+            } returns AppResult.success(listOf(mockPokemon))
 
             val worker =
                 TestListenableWorkerBuilder<SyncWorker>(context)
@@ -76,7 +78,7 @@ class SyncWorkerTest {
         runTest {
             coEvery {
                 pokemonRepository.getPokemonList(any(), any(), any())
-            } returns kotlin.Result.failure(Exception("Network error"))
+            } returns AppResult.failure(AppError.Network, Exception("Network error"))
 
             val worker =
                 TestListenableWorkerBuilder<SyncWorker>(context)

@@ -9,9 +9,7 @@ import org.gradle.kotlin.dsl.getByType
 class AndroidRoborazziConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
-            pluginManager.withPlugin("com.android.base") {
-                pluginManager.apply("io.github.takahirom.roborazzi")
-            }
+            pluginManager.apply("io.github.takahirom.roborazzi")
 
             val extension = extensions.findByName("android")
             if (extension is ApplicationExtension) {

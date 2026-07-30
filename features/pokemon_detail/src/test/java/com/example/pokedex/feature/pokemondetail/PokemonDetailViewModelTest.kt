@@ -3,6 +3,7 @@ package com.example.pokedex.feature.pokemondetail
 import app.cash.turbine.test
 import com.example.pokedex.domain.model.Pokemon
 import com.example.pokedex.domain.repository.PokemonRepository
+import com.example.pokedex.domain.result.AppResult
 import com.example.pokedex.feature.pokemondetail.audio.PokemonCryPlayer
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -26,7 +27,7 @@ class PokemonDetailViewModelTest {
 
     @BeforeEach
     fun setUp() {
-        coEvery { repository.getPokemonDetail(POKEMON.id) } returns Result.success(POKEMON)
+        coEvery { repository.getPokemonDetail(POKEMON.id) } returns AppResult.success(POKEMON)
         coEvery { cryPlayer.play(any()) } returns Result.success(Unit)
         viewModel = PokemonDetailViewModel(repository = repository, cryPlayer = cryPlayer)
     }

@@ -3,12 +3,15 @@ package com.example.pokedex.feature.pokemonlist
 import androidx.compose.runtime.Composable
 import com.android.tools.screenshot.PreviewTest
 import com.example.pokedex.core.designsystem.components.PokemonCard
-import com.example.pokedex.core.ui.DevicePreviews
+import com.example.pokedex.core.designsystem.components.PokemonCardModel
+import com.example.pokedex.core.ui.AccessibilityPreviews
+import com.example.pokedex.core.ui.ScreenSizePreviews
 import com.example.pokedex.domain.model.Pokemon
 import com.example.pokedex.theme.PokedexTheme
 
 @PreviewTest
-@DevicePreviews
+@ScreenSizePreviews
+@AccessibilityPreviews
 @Composable
 fun PokemonCardPreview() {
     val dummyPokemon =
@@ -20,6 +23,16 @@ fun PokemonCardPreview() {
             types = listOf("grass", "poison"),
         )
     PokedexTheme {
-        PokemonCard(pokemon = dummyPokemon, onClick = {})
+        PokemonCard(
+            model =
+                PokemonCardModel(
+                    name = dummyPokemon.name,
+                    imageUrl = dummyPokemon.imageUrl,
+                    imageContentDescription = dummyPokemon.name,
+                    types = dummyPokemon.types,
+                    isFavorite = dummyPokemon.isFavorite,
+                ),
+            onClick = {},
+        )
     }
 }

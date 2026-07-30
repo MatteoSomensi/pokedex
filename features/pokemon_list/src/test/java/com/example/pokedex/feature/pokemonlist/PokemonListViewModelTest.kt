@@ -3,6 +3,7 @@ package com.example.pokedex.feature.pokemonlist
 import androidx.paging.PagingData
 import app.cash.turbine.test
 import com.example.pokedex.domain.repository.PokemonRepository
+import com.example.pokedex.domain.result.AppResult
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -26,7 +27,7 @@ class PokemonListViewModelTest {
 
     @BeforeEach
     fun setUp() {
-        coEvery { repository.getPokemonTypes() } returns Result.success(listOf("Grass", "Poison"))
+        coEvery { repository.getPokemonTypes() } returns AppResult.success(listOf("Grass", "Poison"))
         coEvery { repository.observeFavoritePokemonIds() } returns flowOf(setOf(1, 4))
         coEvery { repository.getPokemonPaged(any()) } returns flowOf(PagingData.empty())
 

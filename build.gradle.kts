@@ -1,3 +1,11 @@
+import org.gradle.api.DefaultTask
+import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
+import org.gradle.api.tasks.TaskAction
+import org.gradle.testing.jacoco.plugins.JacocoPluginExtension
+
 plugins {
     alias(libs.plugins.version.catalog.update)
     alias(libs.plugins.ben.manes.versions)
@@ -15,38 +23,95 @@ plugins {
     alias(libs.plugins.androidx.baselineprofile) apply false
     alias(libs.plugins.roborazzi) apply false
     alias(libs.plugins.screenshot) apply false
+    alias(libs.plugins.cyclonedx) apply false
+}
+
+abstract class VerifyModuleBoundariesTask : DefaultTask() {
+    @get:InputFiles
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    abstract val moduleBuildFiles: ConfigurableFileCollection
+
+    @TaskAction
+    fun verify() {
+        val violations = mutableListOf<String>()
+        moduleBuildFiles.files.forEach { buildFile ->
+            val normalizedPath = buildFile.path.replace('\\', '/')
+            val dependencies =
+                Regex("""project\("(:[^"]+)"\)""")
+                    .findAll(buildFile.readText())
+                    .map { match -> match.groupValues[1] }
+                    .toSet()
+
+            fun forbid(vararg prefixes: String) {
+                dependencies
+                    .filter { dependency -> prefixes.any(dependency::startsWith) }
+                    .forEach { dependency ->
+                        violations += "${buildFile.parentFile.name} must not depend on $dependency"
+                    }
+            }
+
+            when {
+                normalizedPath.endsWith("/core/domain/build.gradle.kts") ->
+                    forbid(":app", ":core:", ":features:")
+                normalizedPath.endsWith("/core/data/build.gradle.kts") ->
+                    forbid(":app", ":core:designsystem", ":features:")
+                normalizedPath.endsWith("/core/designsystem/build.gradle.kts") ->
+                    forbid(":app", ":core:data", ":core:domain", ":features:")
+            }
+        }
+
+        check(violations.isEmpty()) {
+            "Module boundary violations:\n${violations.joinToString(separator = "\n")}"
+        }
+    }
+}
+
+tasks.register<VerifyModuleBoundariesTask>("verifyModuleBoundaries") {
+    group = "verification"
+    description = "Fails when core modules cross the documented dependency boundaries."
+    moduleBuildFiles.from(
+        fileTree(layout.projectDirectory) {
+            include("core/*/build.gradle.kts")
+            include("features/*/build.gradle.kts")
+            include("features/*/*/build.gradle.kts")
+        },
+    )
 }
 
 subprojects {
     apply(plugin = "io.gitlab.arturbosch.detekt")
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
+    apply(plugin = "jacoco")
 
     extensions.configure<io.gitlab.arturbosch.detekt.extensions.DetektExtension> {
         baseline = file("$projectDir/detekt-baseline.xml")
     }
+    extensions.configure<JacocoPluginExtension> {
+        toolVersion = "0.8.13"
+    }
 }
 
-val documentedProjects =
+val documentedProjectPaths =
     listOf(
-        project(":app"),
-        project(":core:common"),
-        project(":core:designsystem"),
-        project(":core:domain"),
-        project(":core:data"),
-        project(":features:auth"),
-        project(":features:favorite:api"),
-        project(":features:favorite:impl"),
-        project(":features:pokemon_detail"),
-        project(":features:pokemon_list"),
-        project(":macrobenchmark"),
+        ":app",
+        ":core:common",
+        ":core:designsystem",
+        ":core:domain",
+        ":core:data",
+        ":features:auth",
+        ":features:favorite:api",
+        ":features:favorite:impl",
+        ":features:pokemon_detail",
+        ":features:pokemon_list",
+        ":macrobenchmark",
     )
 
-configure(documentedProjects) {
+configure(documentedProjectPaths.map(::project)) {
     apply(plugin = "org.jetbrains.dokka")
 }
 
 dependencies {
-    documentedProjects.forEach { documentedProject ->
-        dokka(documentedProject)
+    documentedProjectPaths.forEach { documentedProjectPath ->
+        dokka(project(documentedProjectPath))
     }
 }
