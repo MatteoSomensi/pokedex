@@ -175,8 +175,10 @@ flowchart TD
     FAVIMPL --> FAVAPI
     FAVIMPL --> CORE
     FAVIMPL --> DOMAIN
-    CORE --> DS
-    DS --> DOMAIN
+    LIST --> DS
+    DETAIL --> DS
+    AUTH --> DS
+    FAVIMPL --> DS
     DATA --> CORE
     DATA --> DOMAIN
     BENCH -.targetProjectPath.-> APP
@@ -199,8 +201,9 @@ flowchart TD
 
 The `features/` directory groups feature modules without changing their architectural role.
 `:features:favorite:api` and `:features:favorite:impl` also demonstrate how to separate a stable
-contract from its implementation. This level of granularity is not mandatory for every feature:
-module overhead can outweigh the benefit in smaller projects.
+contract from its implementation. `verifyApiContract` requires an explicit review when that public
+source contract changes. This level of granularity is not mandatory for every feature: module
+overhead can outweigh the benefit in smaller projects.
 
 ## State flow and MVI
 
@@ -221,7 +224,7 @@ sequenceDiagram
     User->>UI: interaction
     UI->>VM: UiEvent
     VM->>Repo: operation
-    Repo-->>VM: Result / Flow
+    Repo-->>VM: AppResult / Flow
     VM-->>UI: new UiState
     opt one-shot action
         VM-->>UI: UiEffect
@@ -341,9 +344,9 @@ activity is edge-to-edge, so individual screens must consume system insets corre
 7. Provide content descriptions for informative images and use `null` for decorative images.
 8. Preserve appropriate touch targets and verify TalkBack, contrast, and text scaling.
 
-Shared resources contain English and Italian variants, and the manifest enables RTL support. Some
-navigation and widget strings are still hardcoded. They must be moved to resources and tested in
-each locale before localization can be considered complete.
+Shared resources contain English and Italian variants, and the manifest enables RTL support.
+Localization is wired for both locales; native-speaker review and locale-specific screenshot
+coverage remain release activities.
 
 ## Dependency injection
 
@@ -379,8 +382,8 @@ an educational scaffold, and `refreshToken()` currently returns `null`.
 events, user properties, non-fatal exceptions, and feature flags without coupling UI or ViewModels
 to the cloud SDKs.
 
-Firebase Messaging is included in the dependency bundle, but no push-notification workflow is
-implemented yet.
+Push notifications are intentionally outside the current template: no Messaging dependency or
+half-configured notification workflow is shipped.
 
 ### App widget
 
@@ -410,11 +413,13 @@ very few end-to-end and performance tests.
 | Type | Source set / module | What it verifies | Environment |
 |---|---|---|---|
 | Unit test | `src/test`, `:core:data` | repository orchestration, local/remote fallback, `RemoteMediator`, worker | JVM; Robolectric where Android APIs are required |
+| HTTP contract test | `src/test`, `:core:data` | serialization, query parameters, tolerant JSON parsing | JVM, MockWebServer |
 | ViewModel test | `src/test`, `:features:pokemon_list` | state, events, and effects | JVM, JUnit 5, Turbine |
 | Local UI behavior test | `src/test`, `:features:pokemon_list` | Compose rendering with controlled state | Robolectric |
 | Roborazzi screenshot test | `src/test`, `:features:pokemon_list` | screen-level visual regression | JVM/Robolectric |
 | Preview screenshot test | `src/screenshotTest` | preview/component visual regression | LayoutLib, experimental official plugin |
-| Instrumented UI test | `src/androidTest`, `:features:pokemon_list` | Compose content on a device or emulator | AndroidJUnitRunner |
+| Room integration test | `src/androidTest`, `:core:data` | DAO behavior and migrations on Android SQLite | API 35 managed device |
+| Instrumented UI/E2E | `src/androidTest`, `:app`, `:features:pokemon_list` | Compose behavior and demo sign-in journey | AndroidJUnitRunner |
 | Macrobenchmark | `:macrobenchmark` | startup and frame timing while scrolling | separate device-side process |
 | Baseline Profile | `:macrobenchmark` → `:app` | critical user journeys to precompile | compatible device |
 
@@ -448,11 +453,8 @@ An integration test verifies collaboration between multiple real components, for
 - Worker, WorkManager TestDriver, and a fake repository;
 - a test Hilt graph and one feature.
 
-Current repository tests cover orchestration with replaced collaborators, but they do not validate
-the real SQLite engine. A high-value next test is an instrumented `PokemonDao`/`PokedexDatabase`
-test backed by an in-memory Room database. Android recommends running database tests on a device
-because device SQLite can differ from the host implementation. The project already has migrations,
-so schema export and migration tests should also be added.
+The data module validates DAOs against Android SQLite and validates the complete Room migration
+chain against exported schemas on an API 35 Gradle Managed Device.
 
 ### UI behavior tests
 
@@ -467,7 +469,11 @@ Compose tests query the semantics tree, perform actions, and assert the result. 
 - avoid the real network.
 
 ```bash
-# Requires a connected device or emulator
+# Gradle Managed Devices
+./gradlew :core:data:pixel2Api35DebugAndroidTest
+./gradlew :app:pixel2Api35DebugAndroidTest
+
+# Alternatively, use a connected device or emulator
 ./gradlew :features:pokemon_list:connectedDebugAndroidTest
 
 # Every available androidTest suite
@@ -502,8 +508,8 @@ Roborazzi references live in `features/pokemon_list/src/test/screenshots`. Offic
 screenshot references live in `features/pokemon_list/src/screenshotTestDebug/reference`. Updating
 references is a visual change that must be reviewed, not a shortcut for making a test pass.
 
-The adaptive screenshot matrix should eventually include compact, medium, and expanded widths,
-light/dark themes, font scale 1.5, and targeted variants of shared components.
+The preview screenshot matrix includes compact, medium, and expanded widths combined with short,
+medium, and tall heights, plus dark theme and font scale 1.5 variants.
 
 ### End-to-end and navigation tests
 
@@ -518,8 +524,8 @@ Recommended journeys:
 4. offline persistence after an initial online load;
 5. logout and back-stack cleanup.
 
-The current suite does not contain these functional E2E journeys. UI Automator is already available
-in `:macrobenchmark`, but it is currently used for performance and profile generation.
+The app suite contains a credential-free demo authentication journey. Further journeys remain
+appropriate additions when their required data can be made deterministic.
 
 ### CI test commands
 
@@ -533,9 +539,8 @@ A complete host-side CI stage should execute:
 ./gradlew assembleDebug
 ```
 
-Instrumented tests, E2E tests, and benchmarks additionally require emulators, Gradle Managed
-Devices, or dedicated hardware. The current workflow compiles device and preview screenshot tests,
-but it does not execute device tests or `validateDebugScreenshotTest`.
+CI executes Room and demo E2E tests on an API 35 Gradle Managed Device. Benchmarks still require a
+dedicated performance environment for meaningful numbers.
 
 ## Performance
 
@@ -582,10 +587,13 @@ new violations automatically.
 
 GitHub Actions contains:
 
-- CI for style checks, static analysis, local tests, Roborazzi verification, compilation of device
-  and preview screenshot tests, macrobenchmark APKs, Android Lint, and a debug APK;
+- CI for architecture/API contracts, style and static analysis, local tests, Roborazzi and preview
+  screenshot verification, API 35 managed-device tests, macrobenchmark APKs, Android Lint, an SBOM,
+  and a debug APK;
 - tag-triggered CD for reconstructing `google-services.json`, building and signing an AAB, and
   uploading the artifact;
+- dependency review, dependency graph submission, pinned action commits, Dependabot, and Gradle
+  checksum verification;
 - a prepared but commented Play Store deployment step.
 
 ## KDoc and API documentation
@@ -600,7 +608,7 @@ contracts that are not obvious from the type signature.
 - thread, dispatcher, and cancellation behavior;
 - caching, fallback, retry, and side effects;
 - formats, measurement units, and boundary values;
-- expected failures and the meaning of `Result`;
+- expected failures and the meaning of `AppResult`;
 - required AppFunctions workflows;
 - reusable extension contracts.
 
@@ -630,15 +638,19 @@ consistent language.
 - an API 24+ emulator or device for the app;
 - a personal Firebase project for real authentication and observability.
 
-Android modules produce Java/Kotlin 17 bytecode. `:core:domain` currently declares Java 21.
+All modules target Java/Kotlin 21.
 
 ### Firebase
+
+The default build uses deterministic demo adapters and requires no Firebase project. To exercise
+Firebase:
 
 1. Create a Firebase Android app with package `com.example.pokedex`.
 2. Copy your configuration to `app/google-services.json`.
 3. Enable email/password and Google authentication.
 4. Configure Analytics, Crashlytics, and Remote Config if you want to exercise those integrations.
-5. If Google Services does not generate `default_web_client_id`, provide `WEB_CLIENT_ID` through a
+5. Build with `-PFIREBASE_ENABLED=true`.
+6. If Google Services does not generate `default_web_client_id`, provide `WEB_CLIENT_ID` through a
    local Gradle property:
 
 ```properties
@@ -655,6 +667,9 @@ credentials or signing material.
 git clone <repository-url>
 cd pokedex
 ./gradlew assembleDebug
+
+# Optional real Firebase adapters
+./gradlew assembleDebug -PFIREBASE_ENABLED=true
 ```
 
 Open the project in Android Studio and run the `:app` configuration.
@@ -695,19 +710,15 @@ A Swiss Army knife is most effective when each project carries only the tools it
 
 ## Template status and limitations
 
-- Clean Architecture is pragmatic: `:core:designsystem` depends on `:core:domain` for `PokemonCard`. Move
-  that component into a feature or decouple it from the domain model for a generic design system.
+- Module boundaries are checked by `verifyModuleBoundaries`; the design system is domain-independent.
 - The list uses Paging 3 and `RemoteMediator`; it is not a custom infinite-scroll implementation.
 - Local-first detail loading has no cache-expiration policy.
 - Type filtering and global search are educational implementations, not a scalable query engine.
 - `SessionManager.refreshToken()` is a stub because PokeAPI has no authentication.
-- Firebase Messaging is included but unused.
 - AppFunctions and Compose Preview Screenshot Testing are experimental.
 - The widget displays a static asset rather than the remote Pokémon image.
-- Some UI strings remain hardcoded.
-- Room-on-device tests, migration tests, navigation tests, and functional E2E tests are missing.
-- CI compiles but does not execute suites that require a device.
-- Java targets in CI and `:core:domain` must remain aligned when changing the toolchain.
+- Navigation has a demo E2E journey; broader deep-link/back-stack coverage remains desirable.
+- Keep Java targets, the Gradle daemon criteria, and CI JDK aligned when changing the toolchain.
 
 ## Official documentation
 
