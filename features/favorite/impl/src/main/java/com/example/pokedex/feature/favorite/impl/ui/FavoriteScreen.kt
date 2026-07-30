@@ -31,6 +31,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.pokedex.core.R
 import com.example.pokedex.core.designsystem.components.PokemonCard
+import com.example.pokedex.core.designsystem.components.PokemonCardModel
 import com.example.pokedex.theme.LocalDimensions
 
 /**
@@ -120,7 +121,20 @@ fun FavoriteScreen(
                         key = { it.id },
                     ) { pokemon ->
                         PokemonCard(
-                            pokemon = pokemon,
+                            model =
+                                PokemonCardModel(
+                                    name = pokemon.name,
+                                    imageUrl = pokemon.imageUrl,
+                                    imageContentDescription =
+                                        stringResource(
+                                            id = R.string.cd_pokemon_image,
+                                            pokemon.name,
+                                        ),
+                                    types = pokemon.types,
+                                    isFavorite = pokemon.isFavorite,
+                                    favoriteContentDescription =
+                                        stringResource(id = R.string.cd_remove_favorite),
+                                ),
                             onClick = { onNavigateToDetail(pokemon.id) },
                             onFavoriteClick = { viewModel.toggleFavorite(pokemon = pokemon) },
                         )

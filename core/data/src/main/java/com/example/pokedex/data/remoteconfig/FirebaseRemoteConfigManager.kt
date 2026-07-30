@@ -1,6 +1,7 @@
 package com.example.pokedex.data.remoteconfig
 
 import android.util.Log
+import com.example.pokedex.domain.remoteconfig.FeatureFlag
 import com.example.pokedex.domain.remoteconfig.FeatureFlagManager
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigException
@@ -51,17 +52,17 @@ class FirebaseRemoteConfigManager
             }
         }
 
-        override fun isFeatureEnabled(flagKey: String): Flow<Boolean> = flags.map { it[flagKey] ?: false }
+        override fun isFeatureEnabled(flag: FeatureFlag): Flow<Boolean> =
+            flags.map { values ->
+                values[flag.key] ?: flag.defaultValue
+            }
 
-        override fun isFeatureEnabledSync(flagKey: String): Boolean = flags.value[flagKey] ?: false
+        override fun isFeatureEnabledSync(flag: FeatureFlag): Boolean = flags.value[flag.key] ?: flag.defaultValue
 
         private companion object {
             const val TAG = "FirebaseRemoteConfig"
 
             val DEFAULT_FLAGS =
-                mapOf(
-                    "enable_new_ui" to false,
-                    "show_ads" to false,
-                )
+                FeatureFlag.entries.associate { flag -> flag.key to flag.defaultValue }
         }
     }

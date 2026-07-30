@@ -166,7 +166,7 @@ fun PokemonDetailScreen(
                 state.errorMessage != null -> {
                     Text(
                         text = state.errorMessage!!.asString(),
-                        modifier = Modifier.align(alignment = Alignment.Center).padding(paddingValues),
+                        modifier = Modifier.align(alignment = Alignment.Center).padding(paddingValues = paddingValues),
                     )
                 }
 

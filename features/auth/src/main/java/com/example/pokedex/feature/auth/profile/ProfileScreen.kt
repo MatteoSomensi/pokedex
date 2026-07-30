@@ -117,7 +117,7 @@ fun ProfileScreenContent(
             Surface(
                 shape = CircleShape,
                 color = MaterialTheme.colorScheme.secondaryContainer,
-                modifier = Modifier.size(dimensions.imageSizeProfile),
+                modifier = Modifier.size(size = dimensions.imageSizeProfile),
             ) {
                 Icon(
                     imageVector = Icons.Default.Person,
@@ -127,7 +127,7 @@ fun ProfileScreenContent(
                 )
             }
 
-            Spacer(modifier = Modifier.height(dimensions.paddingLarge))
+            Spacer(modifier = Modifier.height(height = dimensions.paddingLarge))
 
             if (currentUser != null) {
                 if (!currentUser.displayName.isNullOrBlank()) {
@@ -137,7 +137,7 @@ fun ProfileScreenContent(
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onBackground,
                     )
-                    Spacer(modifier = Modifier.height(dimensions.paddingSmall))
+                    Spacer(modifier = Modifier.height(height = dimensions.paddingSmall))
                 }
 
                 Text(
@@ -153,7 +153,7 @@ fun ProfileScreenContent(
                 )
             }
 
-            Spacer(modifier = Modifier.height(dimensions.paddingExtraLarge))
+            Spacer(modifier = Modifier.height(height = dimensions.paddingExtraLarge))
 
             Button(
                 onClick = {

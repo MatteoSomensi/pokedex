@@ -1,6 +1,7 @@
 package com.example.pokedex.data.analytics
 
 import android.os.Bundle
+import com.example.pokedex.domain.analytics.AnalyticsEvent
 import com.example.pokedex.domain.analytics.AnalyticsLogger
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.crashlytics.FirebaseCrashlytics
@@ -23,13 +24,10 @@ class FirebaseAnalyticsLogger
         private val firebaseAnalytics: FirebaseAnalytics,
         private val firebaseCrashlytics: FirebaseCrashlytics,
     ) : AnalyticsLogger {
-        override fun logEvent(
-            eventName: String,
-            params: Map<String, Any>,
-        ) {
+        override fun logEvent(event: AnalyticsEvent) {
             val bundle =
                 Bundle().apply {
-                    params.forEach { (key, value) ->
+                    event.parameters.forEach { (key, value) ->
                         when (value) {
                             is String -> putString(key, value)
                             is Byte, is Short, is Int, is Long -> putLong(key, (value as Number).toLong())
@@ -39,7 +37,7 @@ class FirebaseAnalyticsLogger
                         }
                     }
                 }
-            firebaseAnalytics.logEvent(eventName, bundle)
+            firebaseAnalytics.logEvent(event.name.wireValue, bundle)
         }
 
         override fun setUserId(userId: String?) {

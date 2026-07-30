@@ -17,7 +17,7 @@ import com.example.pokedex.data.local.entity.TypeEntity
 @Database(
     entities = [PokemonEntity::class, TypeEntity::class, PokemonRemoteKey::class],
     version = 4,
-    exportSchema = false,
+    exportSchema = true,
 )
 abstract class PokedexDatabase : RoomDatabase() {
     /** Provides access to cached Pokémon, favorites, and types. */

@@ -50,6 +50,7 @@ import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
 import com.example.pokedex.core.R
 import com.example.pokedex.core.designsystem.components.PokemonCard
+import com.example.pokedex.core.designsystem.components.PokemonCardModel
 import com.example.pokedex.core.ui.DevicePreviews
 import com.example.pokedex.core.util.Constants
 import com.example.pokedex.domain.model.Pokemon
@@ -192,10 +193,16 @@ fun PokemonListScreenContent(
                             modifier = Modifier.align(alignment = Alignment.Center),
                             horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
-                            Text(text = "Errore: ${error.localizedMessage}")
+                            Text(
+                                text =
+                                    stringResource(
+                                        id = R.string.error_with_detail,
+                                        error.localizedMessage ?: stringResource(id = R.string.error_default),
+                                    ),
+                            )
                             Spacer(modifier = Modifier.height(height = dimensions.paddingSmall))
                             Button(onClick = { pagedPokemon.retry() }) {
-                                Text("Riprova")
+                                Text(stringResource(id = R.string.retry))
                             }
                         }
                     }
@@ -209,7 +216,7 @@ fun PokemonListScreenContent(
                             contentAlignment = Alignment.Center,
                         ) {
                             Text(
-                                text = "Nessun Pokémon trovato con i filtri attuali.",
+                                text = stringResource(id = R.string.pokemon_empty_state),
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
@@ -245,7 +252,18 @@ fun PokemonListScreenContent(
                                 val pokemon = pagedPokemon[index]
                                 if (pokemon != null) {
                                     PokemonCard(
-                                        pokemon = pokemon,
+                                        model =
+                                            PokemonCardModel(
+                                                name = pokemon.name,
+                                                imageUrl = pokemon.imageUrl,
+                                                imageContentDescription =
+                                                    stringResource(
+                                                        id = R.string.cd_pokemon_image,
+                                                        pokemon.name,
+                                                    ),
+                                                types = pokemon.types,
+                                                isFavorite = pokemon.isFavorite,
+                                            ),
                                         onClick = { onEvent(PokemonListEvent.OnPokemonClicked(pokemonId = pokemon.id)) },
                                     )
                                 }
@@ -274,7 +292,9 @@ fun PokemonListScreenContent(
                                         horizontalAlignment = Alignment.CenterHorizontally,
                                     ) {
                                         Text(
-                                            text = error.localizedMessage ?: "Errore di caricamento",
+                                            text =
+                                                error.localizedMessage
+                                                    ?: stringResource(id = R.string.error_loading),
                                             color = MaterialTheme.colorScheme.error,
                                         )
                                         Spacer(modifier = Modifier.height(height = dimensions.paddingSmall))
@@ -314,7 +334,17 @@ fun PokemonCardPreview(
 ) {
     PokedexTheme {
         Surface {
-            PokemonCard(pokemon = pokemon, onClick = {})
+            PokemonCard(
+                model =
+                    PokemonCardModel(
+                        name = pokemon.name,
+                        imageUrl = pokemon.imageUrl,
+                        imageContentDescription = pokemon.name,
+                        types = pokemon.types,
+                        isFavorite = pokemon.isFavorite,
+                    ),
+                onClick = {},
+            )
         }
     }
 }

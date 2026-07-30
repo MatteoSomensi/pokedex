@@ -70,9 +70,7 @@ class FavoriteViewModel
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            error =
-                                result.exceptionOrNull()?.message?.let { UiText.Dynamic(it) }
-                                    ?: UiText.StringResource(R.string.error_loading),
+                            error = UiText.StringResource(R.string.error_loading),
                         )
                     }
                 }

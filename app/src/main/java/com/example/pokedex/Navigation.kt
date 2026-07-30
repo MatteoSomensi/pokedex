@@ -19,13 +19,15 @@ import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
@@ -37,7 +39,6 @@ import com.example.pokedex.feature.favorite.api.Favorite
 import com.example.pokedex.feature.favorite.impl.ui.FavoriteScreen
 import com.example.pokedex.feature.pokemondetail.PokemonDetailScreen
 import com.example.pokedex.feature.pokemonlist.PokemonListScreen
-import com.google.firebase.auth.FirebaseAuth
 
 private data object PokedexListDetailScene
 
@@ -56,34 +57,31 @@ private data object PokedexListDetailScene
 fun MainNavigation(
     deepLinkUri: Uri? = null,
     onDeepLinkConsumed: () -> Unit = {},
+    viewModel: NavigationViewModel = hiltViewModel(),
 ) {
-    val firebaseAuth = remember { FirebaseAuth.getInstance() }
+    val currentUser by viewModel.currentUser.collectAsStateWithLifecycle()
     val startDestination =
         remember {
-            if (firebaseAuth.currentUser != null) PokemonList else Auth
+            if (currentUser != null) PokemonList else Auth
         }
     val backStack = rememberNavBackStack(startDestination)
 
-    DisposableEffect(Unit) {
-        val listener =
-            FirebaseAuth.AuthStateListener { firebaseAuth ->
-                if (firebaseAuth.currentUser == null && backStack.lastOrNull() != Auth) {
-                    backStack.clear()
-                    backStack.add(Auth)
-                }
-            }
-        firebaseAuth.addAuthStateListener(listener)
-        onDispose {
-            firebaseAuth.removeAuthStateListener(listener)
+    LaunchedEffect(currentUser) {
+        if (currentUser == null && backStack.lastOrNull() != Auth) {
+            backStack.clear()
+            backStack.add(Auth)
+        } else if (currentUser != null && backStack.lastOrNull() == Auth) {
+            backStack.clear()
+            backStack.add(PokemonList)
         }
     }
 
-    LaunchedEffect(key1 = deepLinkUri) {
+    LaunchedEffect(deepLinkUri, currentUser) {
         deepLinkUri?.let { uri ->
             val pokemonId = uri.toPokemonId()
             if (pokemonId == null) {
                 onDeepLinkConsumed()
-            } else if (firebaseAuth.currentUser != null) {
+            } else if (currentUser != null) {
                 val destination = PokemonDetail(id = pokemonId)
                 if (backStack.lastOrNull() != destination) {
                     backStack.add(destination)
@@ -119,10 +117,10 @@ fun MainNavigation(
                 icon = {
                     Icon(
                         Icons.Default.Home,
-                        contentDescription = "Home",
+                        contentDescription = stringResource(id = R.string.navigation_home),
                     )
                 },
-                label = { Text("Home") },
+                label = { Text(stringResource(id = R.string.navigation_home)) },
             )
             item(
                 selected = backStack.lastOrNull() is Favorite,
@@ -136,10 +134,10 @@ fun MainNavigation(
                 icon = {
                     Icon(
                         Icons.Default.Favorite,
-                        contentDescription = "Favorites",
+                        contentDescription = stringResource(id = R.string.navigation_favorites),
                     )
                 },
-                label = { Text("Favorites") },
+                label = { Text(stringResource(id = R.string.navigation_favorites)) },
             )
             item(
                 selected = backStack.lastOrNull() is Profile,
@@ -153,10 +151,10 @@ fun MainNavigation(
                 icon = {
                     Icon(
                         Icons.Default.AccountCircle,
-                        contentDescription = "Profile",
+                        contentDescription = stringResource(id = R.string.navigation_profile),
                     )
                 },
-                label = { Text("Profile") },
+                label = { Text(stringResource(id = R.string.navigation_profile)) },
             )
         },
         layoutType =
@@ -232,13 +230,9 @@ fun MainNavigation(
                     entry<Auth> {
                         AuthRoute(
                             onAuthSuccess = {
-                                backStack.clear()
-                                backStack.add(element = PokemonList)
-                                deepLinkUri?.toPokemonId()?.let { pokemonId ->
-                                    backStack.add(PokemonDetail(id = pokemonId))
-                                }
-                                if (deepLinkUri != null) {
-                                    onDeepLinkConsumed()
+                                if (backStack.lastOrNull() == Auth) {
+                                    backStack.clear()
+                                    backStack.add(element = PokemonList)
                                 }
                             },
                         )
@@ -257,7 +251,7 @@ fun MainNavigation(
     }
 }
 
-private fun Uri.toPokemonId(): Int? {
+internal fun Uri.toPokemonId(): Int? {
     if (scheme != "pokedex" || host != "pokemon") return null
     return lastPathSegment?.toIntOrNull()?.takeIf { it > 0 }
 }

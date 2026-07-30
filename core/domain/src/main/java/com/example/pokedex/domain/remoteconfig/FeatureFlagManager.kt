@@ -7,9 +7,18 @@ interface FeatureFlagManager {
     /** Fetches remote values, activates them, and refreshes observable local state. */
     suspend fun fetchAndActivate()
 
-    /** Observes [flagKey], emitting `false` when the key is unknown. */
-    fun isFeatureEnabled(flagKey: String): Flow<Boolean>
+    /** Observes [flag], falling back to its safe local default. */
+    fun isFeatureEnabled(flag: FeatureFlag): Flow<Boolean>
 
-    /** Returns the current local value for [flagKey], or `false` when it is unknown. */
-    fun isFeatureEnabledSync(flagKey: String): Boolean
+    /** Returns the current local value for [flag], or its safe default when unavailable. */
+    fun isFeatureEnabledSync(flag: FeatureFlag): Boolean
+}
+
+/** Known remotely configurable capabilities and their safe local defaults. */
+enum class FeatureFlag(
+    val key: String,
+    val defaultValue: Boolean,
+) {
+    NEW_UI("enable_new_ui", false),
+    ADS("show_ads", false),
 }

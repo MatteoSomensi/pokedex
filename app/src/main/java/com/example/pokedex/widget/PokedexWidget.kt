@@ -80,7 +80,7 @@ fun PokedexWidgetContent(pokemon: Pokemon?) {
             GlanceModifier
                 .fillMaxSize()
                 .background(GlanceTheme.colors.background)
-                .padding(dimensions.paddingMedium),
+                .padding(all = dimensions.paddingMedium),
         verticalAlignment = Alignment.CenterVertically,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -93,15 +93,15 @@ fun PokedexWidgetContent(pokemon: Pokemon?) {
                         color = GlanceTheme.colors.primary,
                     ),
             )
-            Spacer(modifier = GlanceModifier.height(dimensions.paddingSmall))
+            Spacer(modifier = GlanceModifier.height(height = dimensions.paddingSmall))
 
             Image(
                 provider = ImageProvider(R.drawable.ic_launcher_foreground),
                 contentDescription = null,
-                modifier = GlanceModifier.size(dimensions.iconSizeLarge),
+                modifier = GlanceModifier.size(size = dimensions.iconSizeLarge),
             )
 
-            Spacer(modifier = GlanceModifier.height(dimensions.paddingSmall))
+            Spacer(modifier = GlanceModifier.height(height = dimensions.paddingSmall))
             Text(
                 text = pokemon.name.replaceFirstChar { it.uppercase() },
                 style =
@@ -114,9 +114,9 @@ fun PokedexWidgetContent(pokemon: Pokemon?) {
             Image(
                 provider = ImageProvider(R.drawable.ic_launcher_foreground),
                 contentDescription = null,
-                modifier = GlanceModifier.size(dimensions.iconSizeLarge),
+                modifier = GlanceModifier.size(size = dimensions.iconSizeLarge),
             )
-            Spacer(modifier = GlanceModifier.height(dimensions.paddingSmall))
+            Spacer(modifier = GlanceModifier.height(height = dimensions.paddingSmall))
             Text(
                 text = context.getString(com.example.pokedex.core.R.string.widget_default_title),
                 style =

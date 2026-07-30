@@ -1,13 +1,28 @@
 plugins {
-    id("com.android.application")
     id("pokedex.android.application")
-    id("com.google.devtools.ksp")
     id("pokedex.android.compose")
     id("pokedex.android.hilt")
     alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.google.services)
-    alias(libs.plugins.firebase.crashlytics)
+    alias(libs.plugins.google.services) apply false
+    alias(libs.plugins.firebase.crashlytics) apply false
     alias(libs.plugins.androidx.baselineprofile)
+    alias(libs.plugins.cyclonedx)
+}
+
+tasks.named("cyclonedxDirectBom") {
+    group = "verification"
+}
+
+val firebaseConfigured = file("google-services.json").isFile
+val firebaseEnabled =
+    providers
+        .gradleProperty("FIREBASE_ENABLED")
+        .map(String::toBoolean)
+        .orElse(false)
+        .get()
+if (firebaseConfigured) {
+    apply(plugin = "com.google.gms.google-services")
+    apply(plugin = "com.google.firebase.crashlytics")
 }
 
 android {
@@ -22,6 +37,7 @@ android {
             "WEB_CLIENT_ID",
             "\"${project.findProperty("WEB_CLIENT_ID") ?: ""}\"",
         )
+        buildConfigField("boolean", "FIREBASE_CONFIGURED", (firebaseConfigured && firebaseEnabled).toString())
     }
 
     buildFeatures {
@@ -34,6 +50,18 @@ android {
             matchingFallbacks += listOf("release")
             isDebuggable = false
             proguardFiles("benchmark-rules.pro")
+        }
+    }
+
+    testOptions {
+        managedDevices {
+            localDevices {
+                create("pixel2Api35") {
+                    device = "Pixel 2"
+                    sdkVersion = 35
+                    systemImageSource = "aosp"
+                }
+            }
         }
     }
 
@@ -51,6 +79,7 @@ dependencies {
     implementation(libs.androidx.glance.material3)
 
     implementation(project(":core:common"))
+    implementation(project(":core:designsystem"))
     implementation(project(":core:domain"))
     implementation(project(":core:data"))
     implementation(project(":features:pokemon_list"))
@@ -59,9 +88,6 @@ dependencies {
     implementation(project(":features:favorite:api"))
     implementation(project(":features:favorite:impl"))
     implementation(libs.kotlinx.serialization.json)
-
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.bundles.firebase)
 
     val composeBom = platform(libs.androidx.compose.bom)
     implementation(composeBom)
@@ -72,6 +98,7 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.hilt.navigation.compose)
 
     implementation(libs.androidx.navigation3.runtime)
     implementation(libs.androidx.navigation3.ui)
@@ -80,8 +107,12 @@ dependencies {
     implementation(libs.androidx.compose.material3.adaptive.navigation.suite)
 
     testImplementation(libs.bundles.test)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.androidx.test.core)
 
     androidTestImplementation(libs.bundles.android.test)
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.androidx.uiautomator)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 

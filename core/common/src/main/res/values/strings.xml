@@ -39,5 +39,10 @@
     <string name="widget_default_title">Pokedex</string>
     <string name="widget_default_subtitle">Catch \'em all!</string>
     <string name="favorite_empty_state">No favorite Pokémon</string>
+    <string name="pokemon_empty_state">No Pokémon match the current filters.</string>
+    <string name="error_with_detail">Error: %1$s</string>
+    <string name="navigation_home">Home</string>
+    <string name="navigation_favorites">Favorites</string>
+    <string name="navigation_profile">Profile</string>
 
 </resources>

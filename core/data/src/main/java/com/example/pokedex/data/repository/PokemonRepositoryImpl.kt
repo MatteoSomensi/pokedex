@@ -15,8 +15,10 @@ import com.example.pokedex.data.remote.PokeApiService
 import com.example.pokedex.data.remote.model.PokemonDetailResponse
 import com.example.pokedex.data.remote.model.PokemonResultItem
 import com.example.pokedex.data.repository.paging.PokemonRemoteMediator
+import com.example.pokedex.data.result.appResultOf
 import com.example.pokedex.domain.model.Pokemon
 import com.example.pokedex.domain.repository.PokemonRepository
+import com.example.pokedex.domain.result.AppResult
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -90,14 +92,14 @@ class PokemonRepositoryImpl
             limit: Int,
             offset: Int,
             forceRefresh: Boolean,
-        ): Result<List<Pokemon>> =
+        ): AppResult<List<Pokemon>> =
             withContext(dispatchers.io) {
-                runCatching {
+                appResultOf {
                     if (offset == 0) isEndReached = false
 
                     val localList = dao.getPokemonList(limit, offset)
                     if (!forceRefresh && (localList.size == limit || (localList.isNotEmpty() && isEndReached))) {
-                        return@runCatching localList.map { it.toDomain() }
+                        return@appResultOf localList.map { it.toDomain() }
                     }
 
                     val listResponse = api.getPokemonList(limit = limit, offset = offset)
@@ -128,27 +130,27 @@ class PokemonRepositoryImpl
                     dao.insertAll(chunkResults.map { PokemonEntity.fromDomain(it) })
 
                     chunkResults
-                }.onFailure { if (it is CancellationException) throw it }
+                }
             }
 
-        override suspend fun getPokemonDetail(id: Int): Result<Pokemon> =
+        override suspend fun getPokemonDetail(id: Int): AppResult<Pokemon> =
             withContext(dispatchers.io) {
-                runCatching {
+                appResultOf {
                     val local = dao.getPokemonById(id)
                     if (local != null) {
-                        return@runCatching local.toDomain()
+                        return@appResultOf local.toDomain()
                     }
 
                     val detail = api.getPokemonDetail(id.toString())
                     val pokemon = detail.toDomain()
                     dao.insert(PokemonEntity.fromDomain(pokemon))
                     pokemon
-                }.onFailure { if (it is CancellationException) throw it }
+                }
             }
 
-        override suspend fun getPokemonTypes(): Result<List<String>> =
+        override suspend fun getPokemonTypes(): AppResult<List<String>> =
             withContext(dispatchers.io) {
-                runCatching {
+                appResultOf {
                     typesMutex.withLock {
                         cachedTypes?.let { return@withLock it }
 
@@ -169,16 +171,16 @@ class PokemonRepositoryImpl
                         cachedTypes = types
                         types
                     }
-                }.onFailure { if (it is CancellationException) throw it }
+                }
             }
 
         override suspend fun searchPokemon(
             query: String,
             limit: Int,
             offset: Int,
-        ): Result<List<Pokemon>> =
+        ): AppResult<List<Pokemon>> =
             withContext(dispatchers.io) {
-                runCatching {
+                appResultOf {
                     val q = query.trim().lowercase()
 
                     var useLocalOnly = false
@@ -196,7 +198,7 @@ class PokemonRepositoryImpl
 
                     if (useLocalOnly) {
                         val localResults = dao.searchPokemon(q, limit, offset)
-                        return@runCatching localResults.map { it.toDomain() }
+                        return@appResultOf localResults.map { it.toDomain() }
                     }
 
                     val filtered =
@@ -238,7 +240,7 @@ class PokemonRepositoryImpl
 
                     dao.insertAll(chunkResults.map { PokemonEntity.fromDomain(it) })
                     chunkResults
-                }.onFailure { if (it is CancellationException) throw it }
+                }
             }
 
         private fun PokemonDetailResponse.toDomain(): Pokemon =
@@ -256,23 +258,23 @@ class PokemonRepositoryImpl
         override suspend fun toggleFavoriteStatus(
             id: Int,
             isFavorite: Boolean,
-        ): Result<Unit> =
+        ): AppResult<Unit> =
             withContext(dispatchers.io) {
-                runCatching {
+                appResultOf {
                     val affected = dao.updateFavoriteStatus(id, isFavorite)
                     if (affected == 0) {
                         val detail =
                             api.getPokemonDetail(id.toString()).toDomain().copy(isFavorite = isFavorite)
                         dao.insert(PokemonEntity.fromDomain(detail))
                     }
-                }.onFailure { if (it is CancellationException) throw it }
+                }
             }
 
-        override suspend fun getFavoritePokemonList(): Result<List<Pokemon>> =
+        override suspend fun getFavoritePokemonList(): AppResult<List<Pokemon>> =
             withContext(dispatchers.io) {
-                runCatching {
+                appResultOf {
                     dao.getFavoritePokemonList().map { it.toDomain() }
-                }.onFailure { if (it is CancellationException) throw it }
+                }
             }
 
         override fun observeFavoritePokemonIds(): Flow<Set<Int>> = dao.observeFavoritePokemonIds().map { it.toSet() }

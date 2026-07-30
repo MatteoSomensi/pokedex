@@ -1,7 +1,9 @@
 package com.example.pokedex.data.repository
 
+import com.example.pokedex.data.result.appResultOf
 import com.example.pokedex.domain.model.AuthUser
 import com.example.pokedex.domain.repository.AuthRepository
+import com.example.pokedex.domain.result.AppResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
@@ -33,35 +35,26 @@ class AuthRepositoryImpl
         override suspend fun signInWithEmail(
             email: String,
             password: String,
-        ): Result<AuthUser> =
-            try {
+        ): AppResult<AuthUser> =
+            appResultOf {
                 val result = auth.signInWithEmailAndPassword(email, password).await()
-                val user = result.user?.toAuthUser() ?: throw Exception("User is null")
-                Result.success(user)
-            } catch (e: Exception) {
-                Result.failure(e)
+                result.user?.toAuthUser() ?: error("Firebase returned no authenticated user")
             }
 
         override suspend fun signUpWithEmail(
             email: String,
             password: String,
-        ): Result<AuthUser> =
-            try {
+        ): AppResult<AuthUser> =
+            appResultOf {
                 val result = auth.createUserWithEmailAndPassword(email, password).await()
-                val user = result.user?.toAuthUser() ?: throw Exception("User is null")
-                Result.success(user)
-            } catch (e: Exception) {
-                Result.failure(e)
+                result.user?.toAuthUser() ?: error("Firebase returned no authenticated user")
             }
 
-        override suspend fun signInWithGoogle(idToken: String): Result<AuthUser> =
-            try {
+        override suspend fun signInWithGoogle(idToken: String): AppResult<AuthUser> =
+            appResultOf {
                 val credential = GoogleAuthProvider.getCredential(idToken, null)
                 val result = auth.signInWithCredential(credential).await()
-                val user = result.user?.toAuthUser() ?: throw Exception("User is null")
-                Result.success(user)
-            } catch (e: Exception) {
-                Result.failure(e)
+                result.user?.toAuthUser() ?: error("Firebase returned no authenticated user")
             }
 
         override suspend fun signOut() {

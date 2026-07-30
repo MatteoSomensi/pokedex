@@ -7,11 +7,8 @@ package com.example.pokedex.domain.analytics
  * observability provider.
  */
 interface AnalyticsLogger {
-    /** Records a custom [eventName] with optional key-value [params]. */
-    fun logEvent(
-        eventName: String,
-        params: Map<String, Any> = emptyMap(),
-    )
+    /** Records one centrally named and structured analytics event. */
+    fun logEvent(event: AnalyticsEvent)
 
     /** Associates future telemetry with [userId], or clears the association when it is `null`. */
     fun setUserId(userId: String?)
@@ -24,4 +21,20 @@ interface AnalyticsLogger {
 
     /** Records [exception] as a handled, non-fatal failure. */
     fun logNonFatalException(exception: Throwable)
+}
+
+/** Provider-independent telemetry event. */
+data class AnalyticsEvent(
+    val name: Name,
+    val parameters: Map<String, Any> = emptyMap(),
+) {
+    /** Stable event names shared by all observability adapters. */
+    enum class Name(
+        val wireValue: String,
+    ) {
+        POKEMON_OPENED("pokemon_opened"),
+        FAVORITE_CHANGED("favorite_changed"),
+        AUTH_COMPLETED("auth_completed"),
+        SYNC_COMPLETED("sync_completed"),
+    }
 }

@@ -34,4 +34,9 @@ object ConfigModule {
         val fromRes = if (resId != 0) context.getString(resId) else ""
         return fromRes.ifBlank { BuildConfig.WEB_CLIENT_ID }
     }
+
+    /** Selects real cloud adapters only when a local Google Services configuration is present. */
+    @Provides
+    @Named("firebase_configured")
+    fun provideFirebaseConfigured(): Boolean = BuildConfig.FIREBASE_CONFIGURED
 }

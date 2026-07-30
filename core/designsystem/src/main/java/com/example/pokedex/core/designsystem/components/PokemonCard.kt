@@ -1,3 +1,5 @@
+@file:Suppress("MatchingDeclarationName")
+
 package com.example.pokedex.core.designsystem.components
 
 import androidx.compose.foundation.clickable
@@ -27,23 +29,33 @@ import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import coil.compose.AsyncImage
-import com.example.pokedex.domain.model.Pokemon
 import com.example.pokedex.theme.LocalDimensions
 
 /**
  * Displays a Pokémon summary using the shared design-system tokens.
  *
- * The entire card invokes [onClick]. When [pokemon] is a favorite, the favorite icon is actionable
+ * The entire card invokes [onClick]. When [isFavorite] is true, the favorite icon is actionable
  * only if [onFavoriteClick] is provided; otherwise it is a decorative status indicator.
  *
- * @param pokemon domain model rendered by the card.
+ * This component intentionally accepts primitive UI data rather than a domain model so the design
+ * system remains reusable and independent from application business types.
  * @param onClick callback for opening the Pokémon detail.
  * @param onFavoriteClick optional callback for removing or changing favorite status.
  */
+data class PokemonCardModel(
+    val name: String,
+    val imageUrl: String,
+    val imageContentDescription: String,
+    val types: List<String>,
+    val isFavorite: Boolean,
+    val favoriteContentDescription: String? = null,
+)
+
 @OptIn(ExperimentalLayoutApi::class)
+@Suppress("LongMethod", "FunctionNaming")
 @Composable
 fun PokemonCard(
-    pokemon: Pokemon,
+    model: PokemonCardModel,
     onClick: () -> Unit,
     onFavoriteClick: (() -> Unit)? = null,
 ) {
@@ -64,15 +76,15 @@ fun PokemonCard(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 AsyncImage(
-                    model = pokemon.imageUrl,
-                    contentDescription = "Immagine di ${pokemon.name}",
+                    model = model.imageUrl,
+                    contentDescription = model.imageContentDescription,
                     modifier = Modifier.size(size = dimensions.imageSizeList),
                     placeholder = if (LocalInspectionMode.current) painterResource(id = android.R.drawable.ic_menu_gallery) else null,
                     error = if (LocalInspectionMode.current) painterResource(id = android.R.drawable.ic_menu_gallery) else null,
                 )
                 Spacer(modifier = Modifier.height(height = dimensions.paddingSmall))
                 Text(
-                    text = pokemon.name.replaceFirstChar { it.uppercase() },
+                    text = model.name.replaceFirstChar { it.uppercase() },
                     style = MaterialTheme.typography.titleMedium,
                     textAlign = TextAlign.Center,
                 )
@@ -81,7 +93,7 @@ fun PokemonCard(
                     horizontalArrangement = Arrangement.spacedBy(space = dimensions.cornerRadiusSmall),
                     verticalArrangement = Arrangement.spacedBy(space = dimensions.cornerRadiusSmall),
                 ) {
-                    pokemon.types.forEach { type ->
+                    model.types.forEach { type ->
                         Surface(
                             color = MaterialTheme.colorScheme.secondaryContainer,
                             shape = MaterialTheme.shapes.small,
@@ -101,7 +113,7 @@ fun PokemonCard(
                 }
             }
 
-            if (pokemon.isFavorite) {
+            if (model.isFavorite) {
                 if (onFavoriteClick != null) {
                     IconButton(
                         onClick = onFavoriteClick,
@@ -109,7 +121,7 @@ fun PokemonCard(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Favorite,
-                            contentDescription = null,
+                            contentDescription = model.favoriteContentDescription,
                             tint = MaterialTheme.colorScheme.error,
                             modifier = Modifier.size(size = dimensions.iconSizeMedium),
                         )
