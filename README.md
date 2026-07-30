@@ -373,6 +373,10 @@ Depending on interfaces makes test doubles straightforward. Full graph tests can
 - `SessionManager`, `AuthInterceptor`, and `TokenAuthenticator` demonstrate the structure of
   authenticated HTTP calls.
 
+When Firebase is disabled, the deterministic demo adapter persists only the authenticated email in
+private application preferences so the session survives process restarts. It never stores the demo
+password or an access token.
+
 The public PokeAPI used by the project has no token-refresh endpoint. The authenticator is therefore
 an educational scaffold, and `refreshToken()` currently returns `null`.
 
