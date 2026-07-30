@@ -39,4 +39,16 @@ class AppResultMappingTest {
 
         assertSame(cancellation, thrown)
     }
+
+    @Test
+    fun fatalErrorsAreNeverWrappedAsFailure() {
+        val fatalError = AssertionError("fatal")
+
+        val thrown =
+            assertThrows(AssertionError::class.java) {
+                appResultOf<Unit> { throw fatalError }
+            }
+
+        assertSame(fatalError, thrown)
+    }
 }

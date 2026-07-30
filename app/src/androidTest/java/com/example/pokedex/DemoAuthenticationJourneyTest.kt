@@ -1,6 +1,8 @@
 package com.example.pokedex
 
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasClickAction
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
@@ -31,7 +33,7 @@ class DemoAuthenticationJourneyTest {
 
         composeRule.onNodeWithText(emailLabel).performTextInput("architect@example.com")
         composeRule.onNodeWithText(passwordLabel).performTextInput("password")
-        composeRule.onAllNodesWithText(signInLabel)[1].performClick()
+        composeRule.onNode(hasText(signInLabel) and hasClickAction()).performClick()
 
         composeRule.waitUntil(timeoutMillis = 5_000) {
             composeRule.onAllNodesWithText(homeLabel).fetchSemanticsNodes().isNotEmpty()

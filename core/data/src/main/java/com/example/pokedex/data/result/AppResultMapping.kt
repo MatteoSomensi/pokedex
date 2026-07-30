@@ -15,8 +15,8 @@ inline fun <T> appResultOf(block: () -> T): AppResult<T> =
         AppResult.success(block())
     } catch (exception: CancellationException) {
         throw exception
-    } catch (throwable: Throwable) {
-        AppResult.failure(throwable.toAppError(), throwable)
+    } catch (exception: Exception) {
+        AppResult.failure(exception.toAppError(), exception)
     }
 
 fun Throwable.toAppError(): AppError =

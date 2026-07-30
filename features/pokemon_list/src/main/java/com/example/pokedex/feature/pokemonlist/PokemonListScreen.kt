@@ -197,7 +197,7 @@ fun PokemonListScreenContent(
                                 text =
                                     stringResource(
                                         id = R.string.error_with_detail,
-                                        error.localizedMessage ?: stringResource(id = R.string.error_default),
+                                        error.localizedMessage ?: stringResource(id = R.string.error_loading),
                                     ),
                             )
                             Spacer(modifier = Modifier.height(height = dimensions.paddingSmall))

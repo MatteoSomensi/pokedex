@@ -20,7 +20,9 @@ class NavigationViewModel
         val currentUser: StateFlow<AuthUser?> =
             authRepository.currentUser.stateIn(
                 scope = viewModelScope,
-                started = SharingStarted.Eagerly,
+                started = SharingStarted.WhileSubscribed(stopTimeoutMillis = STATE_STOP_TIMEOUT_MILLIS),
                 initialValue = null,
             )
     }
+
+private const val STATE_STOP_TIMEOUT_MILLIS = 5_000L
