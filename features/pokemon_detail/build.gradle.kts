@@ -14,8 +14,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.coil.compose)
-    val composeBom = platform(libs.androidx.compose.bom)
-    implementation(composeBom)
+
     implementation(libs.bundles.compose)
 
     testImplementation(platform(libs.junit.bom))

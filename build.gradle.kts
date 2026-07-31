@@ -79,9 +79,9 @@ tasks.register<VerifyModuleBoundariesTask>("verifyModuleBoundaries") {
 }
 
 subprojects {
-    apply(plugin = "io.gitlab.arturbosch.detekt")
-    apply(plugin = "org.jlleitschuh.gradle.ktlint")
-    apply(plugin = "jacoco")
+    pluginManager.apply("io.gitlab.arturbosch.detekt")
+    pluginManager.apply("org.jlleitschuh.gradle.ktlint")
+    pluginManager.apply("jacoco")
 
     extensions.configure<io.gitlab.arturbosch.detekt.extensions.DetektExtension> {
         baseline = file("$projectDir/detekt-baseline.xml")
@@ -107,7 +107,7 @@ val documentedProjectPaths =
     )
 
 configure(documentedProjectPaths.map(::project)) {
-    apply(plugin = "org.jetbrains.dokka")
+    pluginManager.apply("org.jetbrains.dokka")
 }
 
 dependencies {

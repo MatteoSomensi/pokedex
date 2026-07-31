@@ -21,8 +21,8 @@ val firebaseEnabled =
         .orElse(false)
         .get()
 if (firebaseConfigured) {
-    apply(plugin = "com.google.gms.google-services")
-    apply(plugin = "com.google.firebase.crashlytics")
+    pluginManager.apply("com.google.gms.google-services")
+    pluginManager.apply("com.google.firebase.crashlytics")
 }
 
 android {
@@ -54,6 +54,7 @@ android {
     }
 
     testOptions {
+        @Suppress("UnstableApiUsage")
         managedDevices {
             localDevices {
                 create("pixel2Api35") {
@@ -65,10 +66,10 @@ android {
             }
         }
     }
+}
 
-    ksp {
-        arg("appfunctions:aggregateAppFunctions", "true")
-    }
+ksp {
+    arg("appfunctions:aggregateAppFunctions", "true")
 }
 
 dependencies {
@@ -90,9 +91,7 @@ dependencies {
     implementation(project(":features:favorite:impl"))
     implementation(libs.kotlinx.serialization.json)
 
-    val composeBom = platform(libs.androidx.compose.bom)
-    implementation(composeBom)
-    androidTestImplementation(composeBom)
+
     implementation(libs.bundles.compose)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -114,8 +113,7 @@ dependencies {
     androidTestImplementation(libs.bundles.android.test)
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.androidx.uiautomator)
-    debugImplementation(libs.androidx.compose.ui.tooling)
-    debugImplementation(libs.androidx.compose.ui.test.manifest)
+
 
     implementation(libs.bundles.workmanager)
     ksp(libs.androidx.hilt.compiler)

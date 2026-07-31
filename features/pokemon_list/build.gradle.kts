@@ -26,8 +26,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.coil.compose)
-    val composeBom = platform(libs.androidx.compose.bom)
-    implementation(composeBom)
+
     implementation(libs.bundles.compose)
     implementation(libs.androidx.paging.compose)
 
@@ -43,9 +42,9 @@ dependencies {
     testRuntimeOnly(libs.junit.vintage.engine)
     testRuntimeOnly(libs.junit.platform.launcher)
     testImplementation(libs.bundles.test)
-    debugImplementation(libs.androidx.compose.ui.test.manifest)
 
-    androidTestImplementation(composeBom)
+
+
     androidTestImplementation(libs.bundles.android.test)
 
     screenshotTestImplementation(libs.screenshot.validation.api)

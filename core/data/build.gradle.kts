@@ -15,6 +15,7 @@ android {
         }
     }
     testOptions {
+        @Suppress("UnstableApiUsage")
         managedDevices {
             localDevices {
                 create("pixel2Api35") {
