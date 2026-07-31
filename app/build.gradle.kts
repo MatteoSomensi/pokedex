@@ -91,7 +91,6 @@ dependencies {
     implementation(project(":features:favorite:impl"))
     implementation(libs.kotlinx.serialization.json)
 
-
     implementation(libs.bundles.compose)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -113,7 +112,6 @@ dependencies {
     androidTestImplementation(libs.bundles.android.test)
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.androidx.uiautomator)
-
 
     implementation(libs.bundles.workmanager)
     ksp(libs.androidx.hilt.compiler)

@@ -16,6 +16,5 @@ dependencies {
 
     implementation(libs.bundles.credentials)
 
-
     implementation(libs.bundles.compose)
 }

@@ -43,8 +43,6 @@ dependencies {
     testRuntimeOnly(libs.junit.platform.launcher)
     testImplementation(libs.bundles.test)
 
-
-
     androidTestImplementation(libs.bundles.android.test)
 
     screenshotTestImplementation(libs.screenshot.validation.api)
